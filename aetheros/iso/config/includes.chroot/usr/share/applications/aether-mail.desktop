@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Mail
+Exec=aether-mail
+Icon=mail-unread
+Terminal=false
+Categories=Network;
