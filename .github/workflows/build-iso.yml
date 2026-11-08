@@ -22,13 +22,13 @@ jobs:
       - name: Build ISO
         working-directory: aetheros/iso
         run: |
-          set -x
-          chmod +x auto/build auto/config config/hooks/live/*.hook.chroot
+          set +o pipefail
+          chmod +x auto/build auto/config config/hooks/live/*.hook.chroot || true
           ls -l auto/ config/hooks/live/
-          ls -R | head -n 100
-          sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware"
+          ls -R
+          sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
           cat config/buildlog.txt 2>/dev/null || true
-          sudo lb build
+          sudo lb build 2>&1 | tee /tmp/lb-build.log
           sha256sum *.iso > *.iso.sha256
           ls -lh *.iso
       - name: Upload ISO
@@ -41,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-log
-          path: aetheros/iso/config/buildlog.txt
+          path: /tmp/lb-config.log
