@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AetherOS — Download</title>
+<style>body{font-family:Inter,system-ui;background:#08090C;color:#EBEEF2;margin:0}main{max-width:1000px;margin:auto;padding:24px}.card{background:#0F131A;border:1px solid #00A3FF55;border-radius:16px;padding:20px;margin:16px 0}button{background:#00A3FF;color:#fff;border:0;padding:10px 16px;border-radius:999px;cursor:pointer}</style>
+</head><body><main>
+<h1>AetherOS</h1>
+<p>Combined Windows + Linux + macOS experience. Fully optimized for gaming. Private by design.</p>
+<p id="osDetected">Detecting your OS…</p>
+
+<section class="card">
+<h2>Operating-System</h2>
+<p>AetherOS live ISO (Debian Bookworm + GNOME Wayland). 4K wallpapers, live preview, first-boot theme. Verified with sha256.</p>
+<p><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest" target="_blank" rel="noopener">Latest ISO (Release)</a></p>
+</section>
+
+<section class="card">
+<h2>Aether-Browser</h2>
+<p>Private Chromium-based browser. No tracking, DoH encrypted, ad-block + VPN inline. Detects your OS and gives you the right installer.</p>
+<p id="browserLinks"></p>
+</section>
+
+<script>
+const u=navigator.userAgent.toLowerCase();
+let os="Linux", url="";
+if(u.includes("win")){os="Windows";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/AetherBrowser-Windows.zip" }
+else if(u.includes("mac")){os="macOS";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/AetherBrowser-macOS.zip" }
+else if(u.includes("android")){os="Android (APK)";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/AetherBrowser-Android.apk" }
+else{os="Linux";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/AetherBrowser-Linux.sh" }
+document.getElementById("osDetected").textContent=`Detected: ${os}`;
+document.getElementById("browserLinks").innerHTML=`<button onclick="window.location='${url}'">Download for ${os}</button> 
+<a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">All downloads</a>`;
+</script>
+</main></body></html>
