@@ -47,7 +47,7 @@ jobs:
           name: aetheros-live-iso
           path: aetheros/iso/*.iso*
           if-no-files-found: error
-      - name: Create Release
+      - name: Create Release (tag)
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
@@ -61,3 +61,17 @@ jobs:
             Downloads below. Verify with `sha256sum -c *.iso.sha256`.
 
             First boot: Welcome → Choose Your Aether → Appearance → Privacy → Gaming → Enter AetherOS.
+      - name: Publish latest (auto every push)
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: AetherOS latest (${{ github.sha }})
+          files: aetheros/iso/*.iso*
+          draft: false
+          prerelease: true
+          body: |
+            Auto-published latest build from main (${{ github.sha }}).
+            Users get a notification and can choose to update or not.
+            Verify with `sha256sum -c *.iso.sha256`.
+          target_commitish: ${{ github.sha }}
