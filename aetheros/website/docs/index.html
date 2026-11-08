@@ -1,35 +1,40 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AetherOS — Combined OS for Gaming | Download</title>
 <link rel="icon" href="assets/aether-logo.svg">
 <style>
-:root{--blue:#00A3FF;--obs:#0F131A;--void:#08090C}
+:root{--blue:#00A3FF;--obs:#0F131A;--void:#08090C;--ease:cubic-bezier(.34,1.2,.64,1)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--void);color:#EBEEF2;line-height:1.5}
-.nav{position:sticky;top:0;background:#000000e6;backdrop-filter:blur(12px);border-bottom:1px solid #00A3FF33;z-index:10}
+.nav{position:sticky;top:0;background:#000000e6;backdrop-filter:blur(12px);border-bottom:1px solid #ffffff14;z-index:20}
 .nav-inner{max-width:1180px;margin:auto;display:flex;gap:16px;align-items:center;padding:10px 16px}
 .nav-links{list-style:none;display:flex;gap:14px;margin:0;padding:0;flex-wrap:wrap}
 .nav-links a{color:#9AA3AD;text-decoration:none;font-size:14px}.nav-links a:hover{color:#fff}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600}
-.btn-fire{background:var(--blue);color:#fff}.btn-glass{background:#ffffff14;border:1px solid #ffffff22;color:#fff}
-.hero{padding:80px 16px;text-align:center;background:radial-gradient(800px 400px at 50% 0%,#00A3FF33,transparent)}
-.eyebrow{color:#00A3FF;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
-h1{font-size:clamp(44px,8vw,96px);margin:8px 0;letter-spacing:-.04em;line-height:.9}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700;cursor:pointer;border:1px solid transparent}
+.btn-fire{background:linear-gradient(135deg,#00A3FF,#2b56ff);color:#fff;box-shadow:0 8px 32px #00A3FF33}
+.btn-glass{background:#ffffff14;border-color:#ffffff22;color:#fff}
+.hero{padding:80px 16px 40px;text-align:center;position:relative}
+.eyebrow{color:#00A3FF;text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:700}
+h1{font-size:clamp(48px,9vw,110px);margin:6px 0;letter-spacing:-.05em;line-height:.9}
 .brand-big{font-size:28px;margin:6px 0}
-.section{padding:60px 16px;max-width:1120px;margin:auto}
+.section{padding:64px 16px;max-width:1120px;margin:auto}
+.section-head{text-align:center;margin-bottom:24px}
+.headline{font-size:clamp(28px,4vw,44px);letter-spacing:-.03em}
+.lede{color:#9AA3AD}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.card{background:var(--obs);border:1px solid #00A3FF44;border-radius:16px;padding:20px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:800px){.grid2{grid-template-columns:1fr}}
-.file-chip,.apbx-chip{display:flex;gap:12px;align-items:center;background:var(--obs);border:1px solid #ffffff22;border-radius:12px;padding:14px;margin:8px 0}
-.warn-strip{background:#ff3b3018;border:1px solid #ff3b3055;border-radius:12px;padding:12px;max-width:1120px;margin:16px auto}
+.card{background:var(--obs);border:1px solid #00A3FF22;border-radius:16px;padding:20px;transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.card:hover{transform:translateY(-4px);border-color:#00A3FF88}
+.warn-strip{max-width:1120px;margin:0 auto;background:#ff3b3012;border:1px solid #ff3b3033;border-radius:12px;padding:12px 16px;font-size:14px}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.mini{background:#0F131A;border:1px solid #ffffff14;border-radius:12px;padding:16px}
 footer{border-top:1px solid #ffffff14;padding:24px;text-align:center;color:#9AA3AD}
-</style>
-</head><body>
+#bg-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;opacity:.35}
+.faq details{background:#0F131A;border:1px solid #ffffff14;border-radius:12px;padding:12px 16px;margin:8px 0}
+</style></head><body>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
 <nav class="nav"><div class="nav-inner">
-<a href="./"><img src="assets/aether-logo.svg" width="26" style="border-radius:6px"></a>
+<a href="./"><img src="assets/aether-logo.svg" width="26" height="26" style="border-radius:6px"></a>
 <ul class="nav-links"><li><a href="#why">Why Aether</a></li><li><a href="#compare">Vs the rest</a></li><li><a href="#toolbox">Desktop</a></li><li><a href="#beta">Download</a></li></ul>
-<a class="btn btn-fire" style="margin-left:auto" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest" target="_blank">DOWNLOAD</a>
+<a class="btn btn-fire" style="margin-left:auto;padding:6px 14px" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest" target="_blank">DOWNLOAD</a>
 </div></nav>
 
 <header class="hero">
@@ -42,45 +47,45 @@ footer{border-top:1px solid #ffffff14;padding:24px;text-align:center;color:#9AA3
 <a class="btn btn-glass" href="#why">Why Aether</a>
 </div>
 </header>
-
 <main>
-<section class="section" id="toolbox"><h2>Meet the desktop.</h2><p>Every tweak as a toggle. Apply or revert in one click.</p>
+<div class="warn-strip"><strong>Heads up:</strong> Wallpaper gallery is offline-first (10 bundled). Setup finishes without internet.</div>
+<section class="section" id="toolbox"><div class="section-head"><p class="eyebrow">Desktop</p><h2 class="headline">Meet the toolbox.</h2><p class="lede">Every tweak as a toggle. Apply or revert in one click.</p></div>
 <div class="cards">
-<article class="card"><h3>Dock + Launcher</h3><p>Magnification, minimize, fuzzy search — macOS + Windows spring feel.</p></article>
-<article class="card"><h3>Aether Setup</h3><p>Wallpaper gallery (cover-fit, 4K), live desktop preview, first-boot theme.</p></article>
-<article class="card"><h3>Settings</h3><p>Solid diagnosis — no guesswork. Privacy, Power, Gaming panels.</p></article>
+<article class="card"><h3>Dock + Launcher</h3><p>Magnification, minimize, fuzzy search — macOS/Windows spring feel, original code.</p></article>
+<article class="card"><h3>Aether Setup</h3><p>Wallpaper gallery (cover-fit, 4K), live desktop preview with Dock/icons, first-boot theme.</p></article>
+<article class="card"><h3>Settings</h3><p>Mouse, Keyboard, Displays, Sound, Network, Bluetooth, Power, Gaming, Vault — real backends, not mock toggles.</p></article>
 </div></section>
 
-<section class="section" id="why"><h2>Chosen for what it does.</h2>
+<section class="section" id="why"><div class="section-head"><p class="eyebrow">Why Aether</p><h2 class="headline">Chosen for what it does.</h2><p class="lede">A combined OS, optimized, private by design.</p></div>
 <div class="cards">
-<article class="card"><h3>Auto-Tuning</h3><p>Reads hardware, picks safe profiles, no unsafe tweaks.</p></article>
-<article class="card"><h3>Game Mode</h3><p>Most-played game gets High priority, Steam downloads boosted, restore on exit.</p></article>
-<article class="card"><h3>Open tools</h3><p>Terminal, Files, Bin, Vault, Updater — ours, encrypted, no tracking.</p></article>
+<article class="card"><h3>Auto-Tuning</h3><p>Reads hardware, picks safe profiles, no unsafe kernel tweaks.</p></article>
+<article class="card"><h3>Gaming ready</h3><p>Steam + Proton-GE, Zen + VS Code, Game Mode most-played priority, safe only.</p></article>
+<article class="card"><h3>Open tools</h3><p>Terminal, Files, Bin, Vault, Updater — ours, encrypted, GPL open source.</p></article>
 </div></section>
 
-<section class="section" id="compare"><h2>Vs the rest</h2>
-<div class="grid2">
-<div class="card"><h3>Your choices rule</h3><p>Telemetry off by default, diagnostics opt-in, no data sharing even if they offer money.</p></div>
-<div class="card"><h3>Beginner friendly</h3><p>Local Disk, right-click New Folder, screenshots, recorder, help app.</p></div>
+<section class="section" id="compare"><div class="section-head"><p class="eyebrow">Vs the rest</p><h2 class="headline">Why switch.</h2><p class="lede">Fixed presets vs your choices — we let you pick.</p></div>
+<div class="compare-grid">
+<div class="mini"><h3>Your choices rule</h3><p>Telemetry off, diagnostics opt-in, no data sharing even if they offer money.</p></div>
+<div class="mini"><h3>Beginner friendly</h3><p>Local Disk, right-click New Folder, Bin on desktop, help app.</p></div>
+<div class="mini"><h3>Gaming first</h3><p>Mesa/Vulkan, Game Mode, controller tests, no FPS killers.</p></div>
+<div class="mini"><h3>Privacy</h3><p>DoH encrypted, no ad IDs, vault 5× encrypted locally.</p></div>
 </div></section>
 
-<section class="section" id="beta">
-<div class="card">
-<h2>Get AetherOS</h2>
+<section class="section" id="beta"><div class="card" style="text-align:center">
+<h2>Download AetherOS</h2>
 <p id="osDetected">Detecting your OS…</p>
 <p><a class="btn btn-fire" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest" target="_blank">Download latest ISO</a></p>
+<p><a class="btn btn-glass" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">All downloads (Browser/Mail/Vault)</a></p>
 </div></section>
 </main>
-
 <footer><p>Made for gaming. Made private. Made Aether. — © 2026 AetherOS</p></footer>
 <script>
-(function(){
 const u=navigator.userAgent.toLowerCase();
 let os="Linux";
-if(u.includes("win")) os="Windows";
-else if(u.includes("mac")) os="macOS";
-else if(u.includes("android")) os="Android";
-document.getElementById("osDetected").textContent=`Detected: ${os} — Release has ISO + Browser/Mail/Vault downloaders for your OS.`;
-})();
+if(u.includes("win")) os="Windows"; else if(u.includes("mac")) os="MacOS"; else if(u.includes("android")) os="Android";
+document.getElementById("osDetected").textContent=`Detected: ${os} — Release has ISO + Browser/Mail/Vault for your OS.`;
+const c=document.getElementById("bg-canvas"),x=c.getContext("2d");
+function rs(){c.width=innerWidth;c.height=innerHeight}addEventListener("resize",rs);rs();
+(function draw(t){x.clearRect(0,0,c.width,c.height);const g=x.createRadialGradient(c.width/2,c.height*-0.2,0,c.width/2,c.height*-0.2,900);g.addColorStop(0,"#00A3FF33");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,c.width,c.height);requestAnimationFrame(draw)})(0);
 </script>
 </body></html>
