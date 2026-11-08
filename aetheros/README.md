@@ -1,43 +1,42 @@
 # AetherOS
 
-A real operating system built on **Debian 13 'Trixie'** + **GNOME on Wayland**, with an original Aether shell, first-boot setup, wallpaper gallery, and gaming stack. No Windows/macOS code or assets.
+A real operating system on **Debian Bookworm** + **GNOME on Wayland**, with an original Aether shell, first-boot setup with offline wallpaper gallery, and gaming stack. No Windows/macOS code or assets.
+
+> Current build: **debian:bookworm-slim container** on GitHub Actions (`ubuntu-24.04` runner). Produces a downloadable `.iso` (Actions artifact + Release on tags).
 
 ## Quick start (reproducible)
 
 ```bash
-# on any machine with Docker
-make iso
-# or inside a Debian 13 VM:
-sudo apt install live-build
-cd iso && sudo lb config && sudo lb build
-# -> live-build produces aether-live-*.iso in current dir
+make iso        # via Docker (aetheros/builder)
+make test-qemu  # boot ISO in QEMU/VirtIO
 ```
 
-Test with KVM (recommended):
+Or watch it build: https://github.com/diamantmuqici-dotcom/AetherOS/actions → latest run → Artifacts → `aetheros-live-iso`
 
-```bash
-make test-qemu        # needs qemu-system-x86_64
-```
+## First-boot flow
+
+Welcome → Language → Keyboard → Network → **Choose Your Aether** (cover-fit gallery, live desktop preview with dock/icons, Fill/Cover default, 4K variants) → Appearance → Privacy → Gaming → Your AetherOS Is Ready → Enter AetherOS (no reboot).
 
 ## Layout
 
 ```
 aetheros/
   iso/       live-build config + payload (gsettings, wallpapers, hooks)
-  shell/     GNOME extensions (Dock, Launcher, TopBar)
-  setup/     Aether Setup — first-boot wizard (GTK4 + libadwaita)
-  settings/  Aether Settings — sidebar + 14 panels
-  scripts/   build, adaptive-perf, gamemode, firstboot
-  assets/    wallpapers (migrated), logo, emblem
+  shell/     GNOME extensions: dock/ launcher/ notifications/ (original)
+  setup/     Aether Setup — GTK4 wizard (10 wallpapers, 4K)
+  settings/  Aether Settings — sidebar + icons + Power/Gaming panels
+  apps/gaming-hub/  Steam/Proton/Zen launcher
+  scripts/   mk-thumbs, mk-4k, adaptive-perf, gamemode, firstboot, sign-iso
+  assets/    wallpapers, logo, emblem, manifest (1080p + 4K)
   docs/      SUPPORT_MATRIX, PRIVACY, GAMING, INSTALL
 ```
 
-## First-boot flow
+## Docs & install
 
-Welcome → Language → Keyboard → Network → **Choose Your Aether** (cover-fit gallery + live desktop preview, Fill by default) → Appearance → Privacy → Gaming → Your AetherOS Is Ready → Enter AetherOS (no reboot).
+See `docs/INSTALL.md` and `docs/SUPPORT_MATRIX.md` for flashing + test checklist.
 
 ## Design
 
-Deep Obsidian `#0F131A`, Deep Void `#08090C`, Aether Blue `#00A3FF`, Indigo `#2B56FF`. Premium, minimal — no neon excess.
+Deep Obsidian `#0F131A`, Deep Void `#08090C`, Aether Blue `#00A3FF`, Indigo `#2B56FF`. Premium, minimal.
 
-See `ARCHITECTURE.md` for the full phase plan.
+See `ARCHITECTURE.md` for the phase plan.

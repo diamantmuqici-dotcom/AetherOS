@@ -12,22 +12,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build ISO in Debian container
-        run: |
-          docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
-            set -e
-            apt-get update
-            apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates
-            chmod +x aetheros/scripts/*.sh
-            find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
-            make -C aetheros wallpapers
-            cd aetheros/iso
-            rm -rf auto
-            chmod +x config/hooks/live/*.hook.chroot || true
-            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
-            lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
-            sha256sum *.iso > *.iso.sha256
-            ls -lh *.iso
-          '
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 70
+          max_attempts: 2
+          retry_wait_seconds: 30
+          command: |
+            docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
+              set -e
+              apt-get update
+              apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates gnupg
+              chmod +x aetheros/scripts/*.sh aetheros/scripts/signing/*.sh || true
+              find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
+              make -C aetheros wallpapers
+              python3 aetheros/scripts/mk-4k.py --src aetheros/assets/wallpapers --dst aetheros/assets/wallpapers/4k || true
+              cd aetheros/iso
+              rm -rf auto
+              chmod +x config/hooks/live/*.hook.chroot || true
+              lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
+              lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
+              ISO=$(ls -1 *.iso | head -n1)
+              sha256sum "$ISO" > "$ISO.sha256"
+              ./signing/sign-iso.sh "$ISO" 2>&1 || sha256sum "$ISO" > "$ISO.sha256"
+              ls -lh *.iso*
+            '
       - name: Commit diagnostics
         if: always()
         run: |
@@ -43,11 +51,19 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: aetheros-live-iso
-          path: aetheros/iso/*.iso
+          path: aetheros/iso/*.iso*
+        if-no-files-found: error
       - name: Create Release
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: aetheros/iso/*.iso*
           draft: false
-          prerelease: true
+          prerelease: false
+          name: AetherOS ${{ github.ref_name }}
+          body: |
+            AetherOS ${{ github.ref_name }}
+
+            Downloads below. Verify with `sha256sum -c *.iso.sha256`.
+
+            First boot: Welcome → Choose Your Aether → Appearance → Privacy → Gaming → Enter AetherOS.

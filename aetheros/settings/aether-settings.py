@@ -42,6 +42,17 @@ class Settings(Adw.Application):
         for name in ["Appearance","Wallpaper","Mouse & Pointer","Keyboard","Displays","Sound","Network",
                      "Bluetooth & Devices","Controllers","Power","Gaming","Privacy & Security","Apps"]:
             row = Gtk.ActionRow(title=name)
+            try:
+                from pathlib import Path
+                icondir = Path(__file__).parent / "icons"
+                iconmap = {"Mouse & Pointer":"mouse","Keyboard":"keyboard","Displays":"displays","Sound":"sound","Network":"network","Bluetooth & Devices":"bluetooth","Controllers":"controllers","Power":"battery","Gaming":"gaming","Privacy & Security":"privacy","Apps":"apps"}
+                key = iconmap.get(name)
+                if key and (icondir / f"{key}.svg").exists():
+                    img = Gtk.Image.new_from_file(str(icondir / f"{key}.svg"))
+                    img.set_pixel_size(20)
+                    row.add_prefix(img)
+            except Exception:
+                pass
             sidebar.append(row)
             row.set_activatable(True)
             row.connect("activated", lambda r, n=name: self.open_panel(overlay, n))
@@ -134,6 +145,27 @@ class Settings(Adw.Application):
         if cmd:
             try: subprocess.Popen(cmd.split())
             except Exception: pass
+
+        if name == "Power":
+            try:
+                from panels.power import get_profile, set_profile, battery_status
+                box.append(Gtk.Label(label=f"Profile: {get_profile()}\n{battery_status()}"))
+                for prof in ["balanced", "performance", "power-saver"]:
+                    b = Gtk.Button(label=f"Use {prof}")
+                    b.connect("clicked", lambda b, p=prof: set_profile(p))
+                    box.append(b)
+            except Exception as e:
+                box.append(Gtk.Label(label=f"Power backend: {e}"))
+        elif name == "Gaming":
+            try:
+                from panels.gaming import steam_installed, proton_ge_installed, gamemode_active
+                box.append(Gtk.Label(label=f"Steam: {'installed' if steam_installed() else 'optional'}  •  Proton-GE: {'installed' if proton_ge_installed() else 'optional'}  •  Game Mode: {'active' if gamemode_active() else 'off'}"))
+                b = Gtk.Button(label="Open Aether Gaming Hub")
+                b.connect("clicked", lambda b: __import__("subprocess").Popen(["aether-gaming-hub"]))
+                box.append(b)
+                box.append(Gtk.Label(label="Safe profiles only (Balanced/Performance/Gaming/Battery Saver). No unsafe kernel tweaks."))
+            except Exception as e:
+                box.append(Gtk.Label(label=f"Gaming backend: {e}"))
 
 if __name__ == "__main__":
     sys.exit(Settings().run(sys.argv))

@@ -1,18 +1,19 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "default": "cosmos-nebula.jpg",
   "default_fit": "cover",
   "fit_modes": ["cover", "fit", "stretch", "center", "tile"],
+  "variants": ["1080p", "4k"],
   "wallpapers": [
-    {"file": "cosmos-ember.jpg", "name": "Cosmos Ember", "theme": "dark"},
-    {"file": "cosmos-inferno.jpg", "name": "Cosmos Inferno", "theme": "dark"},
-    {"file": "cosmos-nebula.jpg", "name": "Cosmos Nebula", "theme": "dark"},
-    {"file": "cosmos-sky.jpg", "name": "Cosmos Sky", "theme": "dark"},
-    {"file": "cosmos-void.jpg", "name": "Cosmos Void", "theme": "dark"},
-    {"file": "prism-arctic.jpg", "name": "Prism Arctic", "theme": "light"},
-    {"file": "prism-crimson.jpg", "name": "Prism Crimson", "theme": "dark"},
-    {"file": "prism-cyan.jpg", "name": "Prism Cyan", "theme": "dark"},
-    {"file": "prism-frost.jpg", "name": "Prism Frost", "theme": "light"},
-    {"file": "prism-void.jpg", "name": "Prism Void", "theme": "dark"}
+    {"file": "cosmos-ember.jpg", "name": "Cosmos Ember", "theme": "dark", "file_4k": "4k/cosmos-ember.jpg"},
+    {"file": "cosmos-inferno.jpg", "name": "Cosmos Inferno", "theme": "dark", "file_4k": "4k/cosmos-inferno.jpg"},
+    {"file": "cosmos-nebula.jpg", "name": "Cosmos Nebula", "theme": "dark", "file_4k": "4k/cosmos-nebula.jpg"},
+    {"file": "cosmos-sky.jpg", "name": "Cosmos Sky", "theme": "dark", "file_4k": "4k/cosmos-sky.jpg"},
+    {"file": "cosmos-void.jpg", "name": "Cosmos Void", "theme": "dark", "file_4k": "4k/cosmos-void.jpg"},
+    {"file": "prism-arctic.jpg", "name": "Prism Arctic", "theme": "light", "file_4k": "4k/prism-arctic.jpg"},
+    {"file": "prism-crimson.jpg", "name": "Prism Crimson", "theme": "dark", "file_4k": "4k/prism-crimson.jpg"},
+    {"file": "prism-cyan.jpg", "name": "Prism Cyan", "theme": "dark", "file_4k": "4k/prism-cyan.jpg"},
+    {"file": "prism-frost.jpg", "name": "Prism Frost", "theme": "light", "file_4k": "4k/prism-frost.jpg"},
+    {"file": "prism-void.jpg", "name": "Prism Void", "theme": "dark", "file_4k": "4k/prism-void.jpg"}
   ]
 }
