@@ -51,11 +51,23 @@ jobs:
             aetheros/iso/*.iso*
             browser-dist/*
           if-no-files-found: error
+      - name: Prepare per-app zips (Browser/Mail/Vault/Updater)
+        run: |
+          mkdir -p app-zips
+          cp -r aetheros/apps/browser app-zips/AetherBrowser || true
+          cp -r aetheros/apps/mail app-zips/AetherMail || true
+          cp -r aetheros/apps/vault app-zips/AetherVault || true
+          cp -r aetheros/apps/updater app-zips/AetherUpdater || true
+          cp -r aetheros/apps/gaming-hub app-zips/AetherGamingHub || true
+          ls -lh app-zips/ || true
       - name: Create Release (tag)
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: aetheros/iso/*.iso*
+          files: |
+            aetheros/iso/*.iso*
+            app-zips/*
+            browser-dist/*
           draft: false
           prerelease: false
           name: AetherOS ${{ github.ref_name }}
