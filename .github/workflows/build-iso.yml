@@ -12,30 +12,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build ISO in Debian container
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 70
-          max_attempts: 2
-          retry_wait_seconds: 30
-          command: |
-            docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
-              set -e
-              apt-get update
-              apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates gnupg
-              chmod +x aetheros/scripts/*.sh aetheros/scripts/signing/*.sh || true
-              find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
-              make -C aetheros wallpapers
-              python3 aetheros/scripts/mk-4k.py --src aetheros/assets/wallpapers --dst aetheros/assets/wallpapers/4k || true
-              cd aetheros/iso
-              rm -rf auto
-              chmod +x config/hooks/live/*.hook.chroot || true
-              lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
-              lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
-              ISO=$(ls -1 *.iso | head -n1)
-              sha256sum "$ISO" > "$ISO.sha256"
-              ./signing/sign-iso.sh "$ISO" 2>&1 || sha256sum "$ISO" > "$ISO.sha256"
-              ls -lh *.iso*
-            '
+        run: |
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
+            set -e
+            apt-get update
+            apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates gnupg
+            chmod +x aetheros/scripts/*.sh aetheros/scripts/signing/*.sh || true
+            find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
+            make -C aetheros wallpapers
+            python3 aetheros/scripts/mk-4k.py --src aetheros/assets/wallpapers --dst aetheros/assets/wallpapers/4k || true
+            cd aetheros/iso
+            rm -rf auto
+            chmod +x config/hooks/live/*.hook.chroot || true
+            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
+            lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
+            ISO=$(ls -1 *.iso | head -n1)
+            sha256sum "$ISO" > "$ISO.sha256"
+            ls -lh *.iso*
+          '
       - name: Commit diagnostics
         if: always()
         run: |
