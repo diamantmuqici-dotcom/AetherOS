@@ -22,21 +22,21 @@ jobs:
             cd aetheros/iso
             rm -rf auto
             chmod +x config/hooks/live/*.hook.chroot || true
-            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
-            lb build 2>&1 | tee /tmp/lb-build.log
+            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
+            lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
             sha256sum *.iso > *.iso.sha256
             ls -lh *.iso
           '
       - name: Commit diagnostics
         if: always()
         run: |
-          echo "diagnostics $(date -u +%FT%TZ)" > aetheros/iso/lb-config.log
-          cat /tmp/lb-config.log 2>/dev/null || ls /tmp/ 2>&1 || true
-          # logs are inside container /tmp, cat from container is not persisted here, so keep placeholder
+          echo "diagnostics $(date -u +%FT%TZ)" >> aetheros/iso/lb-config.log
+          ls -l /tmp/ >> aetheros/iso/lb-config.log 2>&1 || true
+          cat aetheros/iso/lb-build.log >> aetheros/iso/lb-config.log 2>&1 || true
           ls -R aetheros/iso >> aetheros/iso/lb-config.log 2>&1 || true
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add aetheros/iso/lb-config.log || true
+          git add aetheros/iso/lb-config.log aetheros/iso/lb-build.log || true
           git commit -m "chore: lb diagnostics [skip ci]" || true
           git push origin HEAD:main || true
       - uses: actions/upload-artifact@v4
