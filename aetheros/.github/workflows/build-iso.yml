@@ -10,44 +10,43 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install builder
+      - name: Build ISO in Debian container
         run: |
-          sudo apt-get update
-          sudo apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap
-          which lb
-          lb --version
-      - name: Sync wallpapers
-        run: |
-          chmod +x aetheros/scripts/*.sh
-          find aetheros -type f \( -name '*.sh' -name '*.hook.chroot' -o -path '*/auto/*' \) -exec sed -i 's/\r$//' {} + || true
-          make -C aetheros wallpapers
-      - name: Build ISO
-        working-directory: aetheros/iso
-        run: |
-          set -e
-          set -o pipefail
-          rm -rf auto
-          chmod +x config/hooks/live/*.hook.chroot || true
-          sudo lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --updates false --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
-          sudo sed -i '/security/d' config/archives/*.list* 2>/dev/null || true
-          sudo lb build 2>&1 | tee /tmp/lb-build.log
-          sha256sum *.iso > *.iso.sha256
-          ls -lh *.iso
+          docker run --rm -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
+            set -e
+            apt-get update
+            apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates
+            chmod +x aetheros/scripts/*.sh
+            find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
+            make -C aetheros wallpapers
+            cd aetheros/iso
+            rm -rf auto
+            chmod +x config/hooks/live/*.hook.chroot || true
+            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
+            lb build 2>&1 | tee /tmp/lb-build.log
+            sha256sum *.iso > *.iso.sha256
+            ls -lh *.iso
+          '
       - name: Commit diagnostics
         if: always()
         run: |
           echo "diagnostics $(date -u +%FT%TZ)" > aetheros/iso/lb-config.log
-          ls -l /tmp/ >> aetheros/iso/lb-config.log 2>&1 || true
-          cat /tmp/lb-config.log >> aetheros/iso/lb-config.log 2>&1 || echo "no lb-config.log" >> aetheros/iso/lb-config.log
-          cat /tmp/lb-build.log >> aetheros/iso/lb-config.log 2>&1 || echo "no lb-build.log" >> aetheros/iso/lb-config.log
+          cat /tmp/lb-config.log 2>/dev/null || ls /tmp/ 2>&1 || true
+          # logs are inside container /tmp, cat from container is not persisted here, so keep placeholder
           ls -R aetheros/iso >> aetheros/iso/lb-config.log 2>&1 || true
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add aetheros/iso/lb-config.log || true
           git commit -m "chore: lb diagnostics [skip ci]" || true
           git push origin HEAD:main || true
-      - name: Upload ISO
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: aetheros-live-iso
           path: aetheros/iso/*.iso
+      - name: Create Release
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: aetheros/iso/*.iso*
+          draft: false
+          prerelease: true
