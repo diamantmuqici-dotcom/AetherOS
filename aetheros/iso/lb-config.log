@@ -1,48 +1,132 @@
-diagnostics 2026-11-08T13:28:19Z
+diagnostics 2026-11-08T13:32:03Z
 total 40
-prwx------ 1 runner runner    0 Nov  8 13:28 clr-debug-pipe-2093-1614-in
-prwx------ 1 runner runner    0 Nov  8 13:28 clr-debug-pipe-2093-1614-out
-prwx------ 1 runner runner    0 Nov  8 13:28 clr-debug-pipe-2112-1718-in
-prwx------ 1 runner runner    0 Nov  8 13:28 clr-debug-pipe-2112-1718-out
-srw------- 1 runner runner    0 Nov  8 13:28 dotnet-diagnostic-2093-1614-socket
-srw------- 1 runner runner    0 Nov  8 13:28 dotnet-diagnostic-2112-1718-socket
--rw-r--r-- 1 runner runner  204 Nov  8 13:28 lb-build.log
--rw-r--r-- 1 runner runner  205 Nov  8 13:28 lb-config.log
-drwx------ 2 root   root   4096 Nov  8 13:27 snap-private-tmp
-drwx------ 3 root   root   4096 Nov  8 13:28 systemd-private-6f1a3c94b79d45cdb688b96660d37906-ModemManager.service-muVp5p
-drwx------ 3 root   root   4096 Nov  8 13:28 systemd-private-6f1a3c94b79d45cdb688b96660d37906-chrony.service-10q92i
-drwx------ 3 root   root   4096 Nov  8 13:27 systemd-private-6f1a3c94b79d45cdb688b96660d37906-haveged.service-z8eJdj
-drwx------ 3 root   root   4096 Nov  8 13:28 systemd-private-6f1a3c94b79d45cdb688b96660d37906-polkit.service-UWZQO0
-drwx------ 3 root   root   4096 Nov  8 13:28 systemd-private-6f1a3c94b79d45cdb688b96660d37906-systemd-logind.service-790lGg
-drwx------ 3 root   root   4096 Nov  8 13:27 systemd-private-6f1a3c94b79d45cdb688b96660d37906-systemd-resolved.service-dULtPl
-drwx------ 3 root   root   4096 Nov  8 13:28 systemd-private-6f1a3c94b79d45cdb688b96660d37906-systemd-timedated.service-F8sNBI
-[2026-11-08 13:28:19] lb_config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --archive-areas main contrib non-free non-free-firmware
-[1;37mP[0m: Executing auto/config script.
-[2026-11-08 13:28:19] lb_build 
-[1;37mP[0m: Automatically populating config tree.
-[2026-11-08 13:28:19] lb_config 
-[1;37mP[0m: Executing auto/config script.
-[1;37mP[0m: Executing auto/build script.
+prwx------ 1 runner runner    0 Nov  8 13:31 clr-debug-pipe-2147-1394-in
+prwx------ 1 runner runner    0 Nov  8 13:31 clr-debug-pipe-2147-1394-out
+prwx------ 1 runner runner    0 Nov  8 13:31 clr-debug-pipe-2175-1523-in
+prwx------ 1 runner runner    0 Nov  8 13:31 clr-debug-pipe-2175-1523-out
+srw------- 1 runner runner    0 Nov  8 13:31 dotnet-diagnostic-2147-1394-socket
+srw------- 1 runner runner    0 Nov  8 13:31 dotnet-diagnostic-2175-1523-socket
+-rw-r--r-- 1 runner runner  939 Nov  8 13:32 lb-build.log
+-rw-r--r-- 1 runner runner  278 Nov  8 13:32 lb-config.log
+drwx------ 2 root   root   4096 Nov  8 13:31 snap-private-tmp
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-ModemManager.service-495CFF
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-chrony.service-kdqLxg
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-haveged.service-J8k2xn
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-polkit.service-yGUkbK
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-systemd-logind.service-ESk1vd
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-systemd-resolved.service-lCEEj3
+drwx------ 3 root   root   4096 Nov  8 13:31 systemd-private-898bb4f5313b4822a6a5f0ce615c550f-systemd-timedated.service-Yz5pB3
+[2026-11-08 13:32:02] lb_config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --archive-areas main contrib non-free non-free-firmware
+[1;37mP[0m: Considering defaults defined in /etc/live/build.conf
+P: Updating config tree for a ubuntu/amd64 system
+[2026-11-08 13:32:02] lb_build 
+[2026-11-08 13:32:02] lb_bootstrap 
+P: Setting up cleanup function
+[2026-11-08 13:32:02] lb_bootstrap_cache restore
+P: Restoring bootstrap stage from cache...
+[2026-11-08 13:32:02] lb_bootstrap_copy 
+[2026-11-08 13:32:02] lb_bootstrap_cdebootstrap 
+[2026-11-08 13:32:02] lb_bootstrap_debootstrap 
+P: Begin bootstrapping system...
+[2026-11-08 13:32:02] lb_testroot 
+P: If the following stage fails, the most likely cause of the problem is with your mirror configuration or a caching proxy.
+P: Running debootstrap (download-only)... 
+W: Cannot check Release signature; keyring file not available /usr/share/keyrings/debian-archive-keyring.gpg
+I: Retrieving InRelease 
+I: Retrieving Release 
+E: Failed getting release file http://archive.ubuntu.com/ubuntu/dists/bookworm/Release
+P: Begin unmounting filesystems...
+P: Saving caches...
+chroot: failed to run command ‘/usr/bin/env’: No such file or directory
 aetheros/iso:
-*.iso.sha256
 auto
+chroot
 config
 lb-config.log
+local
 
 aetheros/iso/auto:
-build
-config
+
+aetheros/iso/chroot:
+debootstrap
+var
+
+aetheros/iso/chroot/debootstrap:
+debootstrap.log
+
+aetheros/iso/chroot/var:
+cache
+lib
+
+aetheros/iso/chroot/var/cache:
+apt
+
+aetheros/iso/chroot/var/cache/apt:
+archives
+
+aetheros/iso/chroot/var/cache/apt/archives:
+partial
+
+aetheros/iso/chroot/var/cache/apt/archives/partial:
+
+aetheros/iso/chroot/var/lib:
+apt
+
+aetheros/iso/chroot/var/lib/apt:
+lists
+
+aetheros/iso/chroot/var/lib/apt/lists:
+partial
+
+aetheros/iso/chroot/var/lib/apt/lists/partial:
 
 aetheros/iso/config:
+archives
+binary
+binary_debian-installer
+binary_grub
+binary_rootfs
+binary_syslinux
+bootstrap
+chroot
+chroot_apt
+common
 hooks
+includes
+includes.binary
+includes.binary_debian-installer
 includes.chroot
 package-lists
+packages
+packages.binary
+packages.chroot
+preseed
+source
+templates
+
+aetheros/iso/config/archives:
+
+aetheros/iso/config/binary_debian-installer:
+
+aetheros/iso/config/binary_grub:
+
+aetheros/iso/config/binary_rootfs:
+
+aetheros/iso/config/binary_syslinux:
+
+aetheros/iso/config/chroot_apt:
 
 aetheros/iso/config/hooks:
 live
 
 aetheros/iso/config/hooks/live:
 0100-aether-payload.hook.chroot
+
+aetheros/iso/config/includes:
+
+aetheros/iso/config/includes.binary:
+
+aetheros/iso/config/includes.binary_debian-installer:
 
 aetheros/iso/config/includes.chroot:
 etc
@@ -136,3 +220,21 @@ aether-logo.svg
 
 aetheros/iso/config/package-lists:
 aether.list.chroot
+
+aetheros/iso/config/packages:
+
+aetheros/iso/config/packages.binary:
+
+aetheros/iso/config/packages.chroot:
+
+aetheros/iso/config/preseed:
+
+aetheros/iso/config/templates:
+
+aetheros/iso/local:
+functions
+scripts
+
+aetheros/iso/local/functions:
+
+aetheros/iso/local/scripts:
