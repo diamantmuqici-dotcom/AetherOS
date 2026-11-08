@@ -30,6 +30,7 @@ jobs:
             mv "$ISO" AetherOS-live-amd64.iso || true
             sha256sum AetherOS-*.iso > *.iso.sha256
             ls -lh *.iso*
+            bash /work/aetheros/scripts/package-browser.sh || true
           '
       - name: Commit diagnostics
         if: always()
@@ -46,7 +47,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: aetheros-live-iso
-          path: aetheros/iso/*.iso*
+          path: |
+            aetheros/iso/*.iso*
+            browser-dist/*
           if-no-files-found: error
       - name: Create Release (tag)
         if: success() && startsWith(github.ref, 'refs/tags/')
