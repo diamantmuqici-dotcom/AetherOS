@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build ISO in Debian container
         run: |
-          docker run --rm -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
             set -e
             apt-get update
             apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates
