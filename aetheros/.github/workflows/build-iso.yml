@@ -26,8 +26,9 @@ jobs:
             chmod +x config/hooks/live/*.hook.chroot || true
             lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
             lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
-            ISO=$(ls -1 *.iso | head -n1)
-            sha256sum "$ISO" > "$ISO.sha256"
+            ISO=$(ls -1 live-image-*.iso *.iso 2>/dev/null | head -n1)
+            mv "$ISO" AetherOS-live-amd64.iso || true
+            sha256sum AetherOS-*.iso > *.iso.sha256
             ls -lh *.iso*
           '
       - name: Commit diagnostics
@@ -47,7 +48,7 @@ jobs:
           name: aetheros-live-iso
           path: aetheros/iso/*.iso*
           if-no-files-found: error
-      - name: Create Release
+      - name: Create Release (tag)
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
@@ -61,3 +62,17 @@ jobs:
             Downloads below. Verify with `sha256sum -c *.iso.sha256`.
 
             First boot: Welcome → Choose Your Aether → Appearance → Privacy → Gaming → Enter AetherOS.
+      - name: Publish latest (auto every push)
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: AetherOS latest (${{ github.sha }})
+          files: aetheros/iso/*.iso*
+          draft: false
+          prerelease: true
+          body: |
+            Auto-published latest build from main (${{ github.sha }}).
+            Users get a notification and can choose to update or not.
+            Verify with `sha256sum -c *.iso.sha256`.
+          target_commitish: ${{ github.sha }}
