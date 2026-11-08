@@ -12,6 +12,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make
+          which lb
+          lb --version
       - name: Sync wallpapers
         run: |
           chmod +x aetheros/scripts/*.sh
@@ -20,9 +22,11 @@ jobs:
       - name: Build ISO
         working-directory: aetheros/iso
         run: |
+          set -x
           chmod +x auto/build auto/config config/hooks/live/*.hook.chroot
           ls -l auto/ config/hooks/live/
-          sudo lb config --distribution trixie --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware"
+          ls -R | head -n 100
+          sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware"
           cat config/buildlog.txt 2>/dev/null || true
           sudo lb build
           sha256sum *.iso > *.iso.sha256
