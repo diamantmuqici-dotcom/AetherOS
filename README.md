@@ -1,5 +1,7 @@
 ﻿# AetherOS — Premium Together OS
 
+**Website:** https://diamantmuqici-dotcom.github.io/AetherOS/
+
 **Welcome to Aether.**
 
 Aether is a single OS that feels familiar whether you come from Windows, Linux, or macOS — fully optimized for gaming, built for beginners, and private by design.
