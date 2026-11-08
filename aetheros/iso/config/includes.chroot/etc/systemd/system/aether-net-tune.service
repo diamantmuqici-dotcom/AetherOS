@@ -1,0 +1,12 @@
+[Unit]
+Description=Aether boot network tune (DNS auto-pick)
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/boot-net-tune
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

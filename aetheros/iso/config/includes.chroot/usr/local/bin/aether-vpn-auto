@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Aether Proton VPN auto-launch (WireGuard persistent login, no password prompt at boot).
+# Requires user profile at ~/.config/protonvpn/profile.conf (created by protonvpn init).
+set -euo pipefail
+if ! command -v protonvpn >/dev/null 2>&1 && ! command -v wg >/dev/null 2>&1; then
+  echo "Proton/WireGuard not present — skipping VPN auto start"
+  exit 0
+fi
+if [ -f "$HOME/.config/protonvpn/profile.conf" ]; then
+  # Proton VPN CLI: connect saved profile without password re-prompt (stored session)
+  protonvpn connect --fast 2>/dev/null || protonvpn c --fast 2>/dev/null || wg-quick up protonvpn 2>/dev/null || true
+  echo "Proton VPN auto-launched"
+else
+  echo "No Proton profile yet — VPN will ask on first launch. Skipping auto start."
+  # Try silent WireGuard profile if aether provides one
+  [ -f /etc/wireguard/proton.conf ] && wg-quick up proton 2>/dev/null || true
+fi

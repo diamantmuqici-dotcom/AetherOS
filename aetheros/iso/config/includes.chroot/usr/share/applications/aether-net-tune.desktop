@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Net Tune
+Exec=/usr/local/bin/boot-net-tune
+Icon=network
+Terminal=false
+Categories=System;

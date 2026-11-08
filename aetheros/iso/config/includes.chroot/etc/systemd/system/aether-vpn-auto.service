@@ -1,0 +1,12 @@
+[Unit]
+Description=Aether Proton VPN auto-launch
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/aether-vpn-auto
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
