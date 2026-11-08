@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Factory Reset
+Exec=aether-factory-reset
+Icon=view-refresh
+Terminal=false
+Categories=System;
