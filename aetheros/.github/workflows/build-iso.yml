@@ -26,7 +26,8 @@ jobs:
         run: |
           set -e
           set -o pipefail
-          chmod +x auto/build auto/config config/hooks/live/*.hook.chroot || true
+          rm -rf auto
+          chmod +x config/hooks/live/*.hook.chroot || true
           sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
           sudo lb build 2>&1 | tee /tmp/lb-build.log
           sha256sum *.iso > *.iso.sha256
