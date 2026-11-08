@@ -1,0 +1,134 @@
+diagnostics 2026-11-08T13:18:11Z
+total 32
+prwx------ 1 runner runner    0 Nov  8 13:17 clr-debug-pipe-2187-3555-in
+prwx------ 1 runner runner    0 Nov  8 13:17 clr-debug-pipe-2187-3555-out
+prwx------ 1 runner runner    0 Nov  8 13:17 clr-debug-pipe-2207-3674-in
+prwx------ 1 runner runner    0 Nov  8 13:17 clr-debug-pipe-2207-3674-out
+srw------- 1 runner runner    0 Nov  8 13:17 dotnet-diagnostic-2187-3555-socket
+srw------- 1 runner runner    0 Nov  8 13:17 dotnet-diagnostic-2207-3674-socket
+-rw-r--r-- 1 runner runner  365 Nov  8 13:18 lb-config.log
+drwx------ 2 root   root   4096 Nov  8 13:17 snap-private-tmp
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-ModemManager.service-RFftSu
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-chrony.service-KRwTbM
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-haveged.service-m6TOwk
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-polkit.service-yRfLzp
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-systemd-logind.service-L9rcQS
+drwx------ 3 root   root   4096 Nov  8 13:17 systemd-private-86d95d03c2614dd19c660d9728e61244-systemd-resolved.service-WLccGC
+[2026-11-08 13:18:11] lb_config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --archive-areas main contrib non-free non-free-firmware
+lb config: unrecognized option '--hostname'
+lb config: unrecognized option '--username'
+lb config: unrecognized option '--image-name'
+cat: /tmp/lb-build.log: No such file or directory
+no lb-build.log
+aetheros/iso:
+auto
+config
+lb-config.log
+
+aetheros/iso/auto:
+build
+config
+
+aetheros/iso/config:
+hooks
+includes.chroot
+package-lists
+
+aetheros/iso/config/hooks:
+live
+
+aetheros/iso/config/hooks/live:
+0100-aether-payload.hook.chroot
+
+aetheros/iso/config/includes.chroot:
+etc
+usr
+
+aetheros/iso/config/includes.chroot/etc:
+aether
+
+aetheros/iso/config/includes.chroot/etc/aether:
+motd
+os-release.override
+
+aetheros/iso/config/includes.chroot/usr:
+local
+share
+
+aetheros/iso/config/includes.chroot/usr/local:
+bin
+
+aetheros/iso/config/includes.chroot/usr/local/bin:
+adaptive-perf
+aether-settings
+aether-setup
+firstboot
+gamemode-hook
+
+aetheros/iso/config/includes.chroot/usr/share:
+aether
+applications
+backgrounds
+glib-2.0
+pixmaps
+
+aetheros/iso/config/includes.chroot/usr/share/aether:
+scripts
+settings
+setup
+wallpaper-manifest.json
+wallpapers
+
+aetheros/iso/config/includes.chroot/usr/share/aether/scripts:
+adaptive-perf.sh
+firstboot.sh
+gamemode-hook.sh
+
+aetheros/iso/config/includes.chroot/usr/share/aether/settings:
+aether-settings.py
+
+aetheros/iso/config/includes.chroot/usr/share/aether/setup:
+aether-setup.py
+
+aetheros/iso/config/includes.chroot/usr/share/aether/wallpapers:
+cosmos-ember.jpg
+cosmos-inferno.jpg
+cosmos-nebula.jpg
+cosmos-sky.jpg
+cosmos-void.jpg
+prism-arctic.jpg
+prism-crimson.jpg
+prism-cyan.jpg
+prism-frost.jpg
+prism-void.jpg
+
+aetheros/iso/config/includes.chroot/usr/share/applications:
+org.aether.Settings.desktop
+org.aether.Setup.desktop
+
+aetheros/iso/config/includes.chroot/usr/share/backgrounds:
+aether
+
+aetheros/iso/config/includes.chroot/usr/share/backgrounds/aether:
+cosmos-ember.jpg
+cosmos-inferno.jpg
+cosmos-nebula.jpg
+cosmos-sky.jpg
+cosmos-void.jpg
+prism-arctic.jpg
+prism-crimson.jpg
+prism-cyan.jpg
+prism-frost.jpg
+prism-void.jpg
+
+aetheros/iso/config/includes.chroot/usr/share/glib-2.0:
+schemas
+
+aetheros/iso/config/includes.chroot/usr/share/glib-2.0/schemas:
+90_aether.gschema.override
+
+aetheros/iso/config/includes.chroot/usr/share/pixmaps:
+aether-logo.svg
+
+aetheros/iso/config/package-lists:
+aether.list.chroot
