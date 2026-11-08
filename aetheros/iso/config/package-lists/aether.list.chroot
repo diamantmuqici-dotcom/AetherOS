@@ -53,9 +53,7 @@ gnome-system-monitor
 gedit
 shotwell
 baobab
-loupe
 gnome-disk-utility
-gnome-search
 gnome-tweaks
 dconf-cli
 deja-dup
@@ -79,7 +77,5 @@ libatk-wrapper-java
 mangohud
 tracker-miner-fs
 tracker-extract
-loupe
-loupe-editor
 gimp
 alsa-utils
