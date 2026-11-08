@@ -6,6 +6,7 @@
 - Controllers: evdev test (button/stick/trigger).
 - Zen Browser: official deb (MPL), launcher integration, not rebranded.
 - FPS/quality: safe profiles only (Balanced/Performance/Gaming/Battery Saver).
+- ESG overlay: `org.aether.Overlay` (FPS/frame/RAM/GameMode) + MangoHud (`mangohud`) — Steam launch: `gamemoderun mangohud %command%`.
 
 ## Optimizations (safe only)
 `optimize-all.sh`: zram (if present), powerprofiles `balanced`, mouse accel off + flat profile, keyboard delay 250ms/interval 30ms. No undocumented kernel tweaks.

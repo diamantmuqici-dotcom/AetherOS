@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Focus
+Exec=aether-focus
+Icon=org.aether.Focus
+Terminal=false
+Categories=Utility;
+StartupNotify=true

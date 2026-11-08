@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Backup
+Exec=aether-backup
+Icon=org.aether.Backup
+Terminal=false
+Categories=Utility;Backup;
+StartupNotify=true

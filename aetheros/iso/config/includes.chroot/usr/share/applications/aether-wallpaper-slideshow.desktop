@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=aether-wallpaper-slideshow
+Exec=wallpaper-slideshow.sh
+Terminal=false
+Categories=Utility;

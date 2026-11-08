@@ -40,7 +40,7 @@ class Settings(Adw.Application):
         sidebar = Gtk.ListBox()
         sidebar.set_selection_mode(Gtk.SelectionMode.SINGLE)
         for name in ["Appearance","Wallpaper","Mouse & Pointer","Keyboard","Displays","Sound","Network",
-                     "Bluetooth & Devices","Controllers","Power","Gaming","Privacy & Security","Apps"]:
+                     "Bluetooth & Devices","Controllers","Power","Gaming","Focus","Accessibility","Privacy & Security","Apps"]:
             row = Gtk.ActionRow(title=name)
             try:
                 from pathlib import Path
@@ -112,11 +112,28 @@ class Settings(Adw.Application):
             box.append(Gtk.Label(label="Layout via gsettings input-sources. Repeat:"))
             add_slider("Key repeat delay (ms)", "org.gnome.desktop.peripherals.keyboard", "delay", 200, 1000, 500)
             add_slider("Key repeat rate (ms)", "org.gnome.desktop.peripherals.keyboard", "repeat-interval", 10, 100, 30)
-        elif name in ("Displays","Sound","Network","Bluetooth & Devices","Controllers","Power","Gaming","Privacy & Security","Apps"):
+        elif name in ("Displays","Sound","Network","Bluetooth & Devices","Controllers","Power","Gaming","Privacy & Security","Apps","Focus","Accessibility"):
             box.append(Gtk.Label(label=f"{name} — real backend wired (see docs). Panel shell is functional."))
             launch = Gtk.Button(label=f"Open {name}")
             launch.connect("clicked", lambda b: self.launch(name))
             box.append(launch)
+            if name == "Displays":
+                for lbl, args in [("HDR on", ["displays-hdr","--hdr"]), ("VRR info", ["displays-hdr","--vrr"])]:
+                    bb = Gtk.Button(label=lbl)
+                    bb.connect("clicked", lambda b, a=args: subprocess.Popen(a))
+                    box.append(bb)
+            if name == "Sound":
+                bb = Gtk.Button(label="Enable spatial audio")
+                bb.connect("clicked", lambda b: subprocess.Popen(["sound-spatial"]))
+                box.append(bb)
+            if name == "Bluetooth & Devices":
+                bb = Gtk.Button(label="Quick pair (CLI)")
+                bb.connect("clicked", lambda b: subprocess.Popen(["gnome-terminal","-e","bluetooth-quickpair.sh"]))
+                box.append(bb)
+            if name == "Mouse & Pointer":
+                bb = Gtk.Button(label="Apply pointer gestures")
+                bb.connect("clicked", lambda b: subprocess.Popen(["pointer-gestures"]))
+                box.append(bb)
         else:
             box.append(Gtk.Label(label="Panel scaffold."))
 
@@ -140,6 +157,8 @@ class Settings(Adw.Application):
             "Bluetooth & Devices": "gnome-control-center bluetooth",
             "Power": "gnome-control-center power",
             "Privacy & Security": "gnome-control-center privacy",
+            "Focus": "aether-focus",
+            "Accessibility": "aether-accessibility",
         }
         cmd = mapping.get(name)
         if cmd:

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Accessibility
+Exec=aether-accessibility
+Icon=org.aether.Accessibility
+Terminal=false
+Categories=Utility;Accessibility;
+StartupNotify=true

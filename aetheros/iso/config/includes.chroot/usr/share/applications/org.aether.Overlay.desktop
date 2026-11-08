@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether ESG Overlay
+Exec=aether-overlay
+Icon=org.aether.Overlay
+Terminal=false
+Categories=Game;
+StartupNotify=true

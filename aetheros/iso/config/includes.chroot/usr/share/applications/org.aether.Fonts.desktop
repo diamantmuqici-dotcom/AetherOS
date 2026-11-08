@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Fonts
+Exec=aether-fonts
+Icon=org.aether.Fonts
+Terminal=false
+Categories=Utility;
+StartupNotify=true

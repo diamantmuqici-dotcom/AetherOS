@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/share/aether/scripts/system-logs.sh "$@"

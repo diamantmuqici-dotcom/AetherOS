@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether System Logs
+Exec=aether-logs
+Icon=org.aether.Logs
+Terminal=false
+Categories=Utility;
+StartupNotify=true

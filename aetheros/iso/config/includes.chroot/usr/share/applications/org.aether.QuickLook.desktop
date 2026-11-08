@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Quick Look
+Exec=aether-quicklook
+Icon=org.aether.QuickLook
+Terminal=false
+Categories=Utility;FileManager;
+StartupNotify=true
