@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Gaming Hub
+Exec=aether-gaming-hub
+Icon=org.aether.GamingHub
+Terminal=false
+Categories=Game;
+StartupNotify=true

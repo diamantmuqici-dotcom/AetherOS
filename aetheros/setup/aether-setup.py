@@ -78,11 +78,27 @@ class AetherSetup(Adw.Application):
             return row
 
         # ---------- STEP 1 Welcome ----------
-        welcome = page("Welcome to AetherOS", "Premium desktop — privacy-first, gaming-ready, beautiful from the first screen.")
+        welcome = page("Welcome to Aether", "Aether is an OS that is combined between 3 different OS — Windows, Linux, MacOS. And it's fully optimized for gaming. It supports .exe and .dmg and .pkg and more.")
+        hero = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        hero.set_halign(Gtk.Align.CENTER)
+        hero.add_css_class("aether-hero")
+        big = Gtk.Label(label="Welcome to Aether")
+        big.add_css_class("aether-big")
+        hero.append(big)
+        desc = Gtk.Label(label="Aether is an OS that is combined between 3 different OS —\nWindows, Linux, MacOS.\nAnd it's fully optimized for gaming.\nIt supports .exe and .dmg and .pkg and more.", wrap=True, wrap_mode=2)
+        desc.set_justify(Gtk.Justification.CENTER)
+        hero.append(desc)
+        hero.append(Gtk.Label(label="Choose your wallpaper, configure appearance and privacy, then enter AetherOS. Works offline.", wrap=True))
+        chip_row = Gtk.Box(spacing=8, halign=Gtk.Align.CENTER)
+        for chip in ["Windows .exe", "Linux AppImage/.deb", "macOS .dmg/.pkg", "VS Code", "Steam", "Zen Browser"]:
+            c = Gtk.Label(label=f"  {chip}  ")
+            c.add_css_class("aether-chip")
+            chip_row.append(c)
+        hero.append(chip_row)
+        welcome.append(hero)
         logo = Gtk.Image.new_from_pixbuf(Gio.File.new_for_path("/usr/share/pixmaps/aether-logo.png").query_pixbuf() if pathlib.Path("/usr/share/pixmaps/aether-logo.png").exists() else None)
         logo.set_pixel_size(96)
         welcome.append(logo)
-        welcome.append(Gtk.Label(label="Choose your wallpaper, configure appearance and privacy, then enter AetherOS. Works offline."))
         welcome.append(nav_buttons("Accessibility Options", "Get Started",
             lambda b: self.show_a11y_hint(),
             lambda b: stack.set_visible_child_name("language")))

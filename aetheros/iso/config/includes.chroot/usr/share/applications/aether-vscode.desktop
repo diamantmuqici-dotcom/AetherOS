@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aether VS Code Helper
+Exec=install-vscode
+Icon=code
+Terminal=false
+Categories=Development;

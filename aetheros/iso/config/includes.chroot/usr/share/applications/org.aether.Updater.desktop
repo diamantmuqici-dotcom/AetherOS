@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Updater
+Exec=aether-updater
+Icon=system-software-install
+Terminal=false
+Categories=System;
+StartupNotify=true
