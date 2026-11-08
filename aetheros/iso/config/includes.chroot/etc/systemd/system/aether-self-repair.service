@@ -1,0 +1,11 @@
+[Unit]
+Description=Aether self-repair after unclean shutdown
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/self-repair
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
