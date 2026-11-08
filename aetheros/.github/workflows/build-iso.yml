@@ -46,7 +46,7 @@ jobs:
         with:
           name: aetheros-live-iso
           path: aetheros/iso/*.iso*
-        if-no-files-found: error
+          if-no-files-found: error
       - name: Create Release
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
