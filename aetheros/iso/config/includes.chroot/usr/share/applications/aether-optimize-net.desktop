@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Optimize Network (Ping)
+Exec=optimize-network-heavy
+Icon=network
+Terminal=true
+Categories=System;
