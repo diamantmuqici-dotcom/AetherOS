@@ -1,0 +1,11 @@
+[Unit]
+Description=Aether Antivirus (boot scan only, then idle)
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/aether-av
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
