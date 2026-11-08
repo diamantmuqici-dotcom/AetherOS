@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /usr/share/aether/scripts/adaptive-perf.sh "$@"

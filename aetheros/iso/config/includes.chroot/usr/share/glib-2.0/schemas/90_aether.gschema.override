@@ -1,0 +1,32 @@
+[org.gnome.desktop.interface]
+gtk-theme='Aether-Dark'
+color-scheme='prefer-dark'
+enable-animations=true
+cursor-size=32
+font-name='Inter 11'
+document-font-name='Inter 11'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/aether/cosmos-nebula.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/aether/cosmos-nebula.jpg'
+picture-options='zoom'
+primary-color='#08090C'
+
+[org.gnome.shell]
+favorite-apps=['org.gnome.Nautilus.desktop']
+welcome-dialog-last-shown-version='48'
+
+[org.gnome.desktop.peripherals.mouse]
+speed=0.0
+natural-scroll=false
+
+[org.gnome.desktop.peripherals.keyboard]
+delay=500
+repeat-interval=30
+
+[org.gnome.desktop.notifications]
+show-banners=true
+show-in-lock-screen=true
+
+[org.gnome.mutter]
+experimental-features=['scale-monitor-framebuffer']

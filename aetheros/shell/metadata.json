@@ -1,0 +1,8 @@
+{
+  "name": "Aether Shell",
+  "description": "Aether Dock, Launcher and TopBar for GNOME Shell (Wayland).",
+  "uuid": "aether-shell@aether.local",
+  "shell-version": ["46", "47", "48"],
+  "version": "0.1.0",
+  "url": "https://example.invalid/aether-shell"
+}

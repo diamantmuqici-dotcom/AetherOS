@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Setup
+Comment=First-boot setup — choose wallpaper, appearance, privacy
+Exec=aether-setup
+Icon=aether-setup
+Terminal=false
+Categories=System;
+StartupNotify=true

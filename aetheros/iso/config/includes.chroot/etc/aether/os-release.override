@@ -1,0 +1,7 @@
+PRETTY_NAME="AetherOS 0.1.0 (Trixie)"
+NAME="AetherOS"
+VERSION_ID="0.1.0"
+VERSION_CODENAME=trixie
+ID=aetheros
+ID_LIKE=debian
+HOME_URL="https://example.invalid/aetheros"

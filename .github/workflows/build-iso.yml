@@ -1,0 +1,30 @@
+name: Build AetherOS ISO
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make
+      - name: Sync wallpapers
+        run: |
+          chmod +x scripts/*.sh
+          make wallpapers
+      - name: Build ISO
+        working-directory: iso
+        run: |
+          sudo lb config --distribution trixie --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware"
+          sudo lb build
+          sha256sum *.iso > *.iso.sha256
+          ls -lh *.iso
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetheros-live-iso
+          path: iso/*.iso

@@ -1,0 +1,18 @@
+{
+  "version": "0.1.0",
+  "default": "cosmos-nebula.jpg",
+  "default_fit": "cover",
+  "fit_modes": ["cover", "fit", "stretch", "center", "tile"],
+  "wallpapers": [
+    {"file": "cosmos-ember.jpg", "name": "Cosmos Ember", "theme": "dark"},
+    {"file": "cosmos-inferno.jpg", "name": "Cosmos Inferno", "theme": "dark"},
+    {"file": "cosmos-nebula.jpg", "name": "Cosmos Nebula", "theme": "dark"},
+    {"file": "cosmos-sky.jpg", "name": "Cosmos Sky", "theme": "dark"},
+    {"file": "cosmos-void.jpg", "name": "Cosmos Void", "theme": "dark"},
+    {"file": "prism-arctic.jpg", "name": "Prism Arctic", "theme": "light"},
+    {"file": "prism-crimson.jpg", "name": "Prism Crimson", "theme": "dark"},
+    {"file": "prism-cyan.jpg", "name": "Prism Cyan", "theme": "dark"},
+    {"file": "prism-frost.jpg", "name": "Prism Frost", "theme": "light"},
+    {"file": "prism-void.jpg", "name": "Prism Void", "theme": "dark"}
+  ]
+}

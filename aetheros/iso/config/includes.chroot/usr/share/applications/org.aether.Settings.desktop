@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Settings
+Exec=aether-settings
+Icon=org.gnome.Settings
+Terminal=false
+Categories=System;Settings;
+StartupNotify=true

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+# Aether payload: compile gsettings overrides, set permissions, create dirs.
+mkdir -p /usr/share/backgrounds/aether /usr/share/aether/wallpapers /etc/aether ~/.config/aether 2>/dev/null || true
+
+# Wallpaper payload is copied at build time via includes.chroot; ensure perms
+chmod 644 /usr/share/backgrounds/aether/*.jpg 2>/dev/null || true
+chmod 644 /usr/share/aether/wallpaper-manifest.json 2>/dev/null || true
+
+# GSettings overrides
+if [ -f /usr/share/glib-2.0/schemas/90_aether.gschema.override ]; then
+  glib-compile-schemas /usr/share/glib-2.0/schemas || true
+fi
+
+# Copy wallpapers manifest if present in payload
+if [ -f /usr/share/aether/wallpapers/wallpaper-manifest.json ]; then
+  cp /usr/share/aether/wallpapers/wallpaper-manifest.json /usr/share/aether/wallpaper-manifest.json 2>/dev/null || true
+fi
+
+# Scripts executable
+chmod +x /usr/local/bin/aether-setup /usr/local/bin/aether-settings /usr/local/bin/adaptive-perf /usr/local/bin/gamemode-hook /usr/local/bin/firstboot 2>/dev/null || true
+
+echo "Aether payload hooks done."
