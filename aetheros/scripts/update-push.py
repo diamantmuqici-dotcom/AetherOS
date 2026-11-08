@@ -1,15 +1,31 @@
 #!/usr/bin/env python3
-"""Aether Update Push — checks GitHub Releases for a newer tag, notifies."""
-import json, urllib.request, subprocess, pathlib
+"""Aether Update Push — 3 choices: Accept / Decline / Later (12AM or shutdown)."""
+import json, urllib.request, subprocess, pathlib, time
 
-STATE = pathlib.Path.home() / ".config" / "aether" / "update-push"
-try:
-    data = json.load(urllib.request.urlopen("https://api.github.com/repos/diamantmuqici-dotcom/AetherOS/releases/latest", timeout=10))
-    latest = data.get("tag_name", "")
-    if latest and latest != "v0.0.0":
-        STATE.parent.mkdir(parents=True, exist_ok=True)
-        STATE.write_text(latest)
-        subprocess.run(["notify-send", "Aether Update", f"New release {latest} — open Aether Updater to install."], timeout=5)
-    print("checked", latest)
-except Exception as e:
-    print("update check failed (offline ok):", e)
+STATE_DIR = pathlib.Path.home() / ".config" / "aether"
+STATE = STATE_DIR / "update-push"
+LATER = STATE_DIR / "update-later"
+
+def check():
+    try:
+        data = json.load(urllib.request.urlopen("https://api.github.com/repos/diamantmuqici-dotcom/AetherOS/releases/latest", timeout=10))
+        latest = data.get("tag_name", "")
+    except Exception:
+        return
+    if not latest: return
+    # If snoozed until midnight, skip until midnight
+    if LATER.exists():
+        try:
+            when = float(LATER.read_text().strip())
+            if when > time.time():
+                print(f"snoozed until {when}")
+                return
+            else:
+                LATER.unlink()
+        except Exception:
+            pass
+    # Notify with countdown? Use Gtk dialog via aether-updater (has 3 buttons)
+    subprocess.run(["aether-updater", "--latest", latest], timeout=10)
+
+if __name__ == "__main__":
+    check()
