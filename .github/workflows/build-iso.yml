@@ -22,15 +22,22 @@ jobs:
       - name: Build ISO
         working-directory: aetheros/iso
         run: |
+          set +e
           set +o pipefail
+          echo "## Build ISO diagnostics" >> $GITHUB_STEP_SUMMARY
           chmod +x auto/build auto/config config/hooks/live/*.hook.chroot || true
-          ls -l auto/ config/hooks/live/
-          ls -R
+          ls -l auto/ config/hooks/live/ 2>&1 >> $GITHUB_STEP_SUMMARY
+          ls -R 2>&1 >> $GITHUB_STEP_SUMMARY
+          cat auto/config auto/build 2>&1 >> $GITHUB_STEP_SUMMARY
           sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
-          cat config/buildlog.txt 2>/dev/null || true
+          echo "lb-config exit: $?" >> $GITHUB_STEP_SUMMARY
+          cat /tmp/lb-config.log >> $GITHUB_STEP_SUMMARY
+          cat config/buildlog.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
           sudo lb build 2>&1 | tee /tmp/lb-build.log
-          sha256sum *.iso > *.iso.sha256
-          ls -lh *.iso
+          echo "lb-build exit: $?" >> $GITHUB_STEP_SUMMARY
+          cat /tmp/lb-build.log >> $GITHUB_STEP_SUMMARY
+          sha256sum *.iso > *.iso.sha256 || true
+          ls -lh *.iso >> $GITHUB_STEP_SUMMARY || true
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
