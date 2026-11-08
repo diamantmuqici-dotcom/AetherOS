@@ -27,19 +27,21 @@ jobs:
           set -e
           set -o pipefail
           chmod +x auto/build auto/config config/hooks/live/*.hook.chroot || true
-          sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --debian-installer none --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
+          sudo lb config --distribution bookworm --architectures amd64 --binary-images iso-hybrid --hostname aetheros-live --username aether --image-name aetheros-live --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /tmp/lb-config.log
           sudo lb build 2>&1 | tee /tmp/lb-build.log
           sha256sum *.iso > *.iso.sha256
           ls -lh *.iso
       - name: Commit diagnostics
         if: always()
         run: |
-          cp /tmp/lb-config.log aetheros/iso/lb-config.log 2>/dev/null || true
-          cp /tmp/lb-build.log aetheros/iso/lb-build.log 2>/dev/null || true
-          ls -l aetheros/iso/*.log 2>/dev/null || true
+          echo "diagnostics $(date -u +%FT%TZ)" > aetheros/iso/lb-config.log
+          ls -l /tmp/ >> aetheros/iso/lb-config.log 2>&1 || true
+          cat /tmp/lb-config.log >> aetheros/iso/lb-config.log 2>&1 || echo "no lb-config.log" >> aetheros/iso/lb-config.log
+          cat /tmp/lb-build.log >> aetheros/iso/lb-config.log 2>&1 || echo "no lb-build.log" >> aetheros/iso/lb-config.log
+          ls -R aetheros/iso >> aetheros/iso/lb-config.log 2>&1 || true
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add aetheros/iso/lb-config.log aetheros/iso/lb-build.log || true
+          git add aetheros/iso/lb-config.log || true
           git commit -m "chore: lb diagnostics [skip ci]" || true
           git push origin HEAD:main || true
       - name: Upload ISO
