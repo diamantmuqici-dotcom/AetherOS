@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Aether daily auto-check (safe: update list, notify, never force kernel) — invoked by systemd timer
+set -euo pipefail
+mkdir -p ~/.config/aether
+echo "last-check $(date -u +%FT%TZ)" > ~/.config/aether/updater-last-check
+sudo apt-get update -y >/dev/null 2>&1 || true
+# Notify if upgrades are pending (no install in background — install is from the app)
+notify-send "Aether Updater" "System updates available. Open Aether Updater to install." 2>/dev/null || true

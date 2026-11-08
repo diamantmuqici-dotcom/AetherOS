@@ -1,0 +1,4 @@
+#!/bin/sh
+# Enable Aether update timer (daily, boot + 24h)
+systemctl daemon-reload 2>/dev/null || true
+systemctl enable --now aether-update-check.timer 2>/dev/null || true

@@ -13,7 +13,7 @@ picture-options='zoom'
 primary-color='#08090C'
 
 [org.gnome.shell]
-favorite-apps=['org.gnome.Nautilus.desktop']
+favorite-apps=['org.gnome.Nautilus.desktop', 'org.aether.Updater.desktop', 'org.aether.Settings.desktop', 'org.aether.Setup.desktop']
 welcome-dialog-last-shown-version='48'
 
 [org.gnome.desktop.peripherals.mouse]
