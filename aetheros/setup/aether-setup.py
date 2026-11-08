@@ -183,15 +183,16 @@ class AetherSetup(Adw.Application):
         preview_label = Gtk.Label(label=wfiles[0].name if wfiles else "No wallpapers")
         wall.append(preview_label)
 
-        # gallery (cover-fit thumbnails via grid)
+        # gallery (cover-fit thumbnails via grid) — LAZY: thumbs first, full-res on select
         gallery = Gtk.FlowBox()
         gallery.set_column_spacing(8); gallery.set_row_spacing(8)
         gallery.set_selection_mode(Gtk.SelectionMode.NONE)
         gallery.set_min_children_per_line(4)
         gallery.set_max_children_per_line(6)
         self._gallery_cards = []
+        thumb_dir = pathlib.Path("/usr/share/aether/thumbs") if pathlib.Path("/usr/share/aether/thumbs").exists() else None
         for f in wfiles:
-            card = self.make_wallpaper_card(f, preview_img, preview_label)
+            card = self.make_wallpaper_card(f, preview_img, preview_label, thumb_dir)
             gallery.append(card)
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_child(gallery)
@@ -282,21 +283,35 @@ class AetherSetup(Adw.Application):
 
         win.set_child(stack)
         win.present()
+        # Boot-speed: finish window setup first, then load heavy preview on idle
+        GLib.idle_add(lambda: self.select_wallpaper(self.selected_wallpaper, preview_img, preview_label), preview_img)
+
+    def _fill_thumb(self, img, path):
+        try:
+            pix = Gio.File.new_for_path(str(path)).query_pixbuf()
+            img.set_pixbuf(pix.scale_simple(160, 100, 2))
+        except Exception:
+            pass
+        return False  # one-shot
 
     def show_a11y_hint(self):
         # Accessibility options open GNOME settings (if available)
         Gio.AppInfo.launch_default_for_type("application/x-desktop", None)
 
-    def make_wallpaper_card(self, f: pathlib.Path, preview_img: Gtk.Image, preview_label: Gtk.Label):
+    def make_wallpaper_card(self, f: pathlib.Path, preview_img: Gtk.Image, preview_label: Gtk.Label, thumb_dir=None):
         btn = Gtk.ToggleButton()
         btn.set_can_focus(False)
         thumb = Gtk.Image()
+        # Prefer pre-generated thumb (fast, no freeze), fallback to scaled original
         try:
-            pix = Gio.File.new_for_path(str(f)).query_pixbuf()
+            thumb_path = pathlib.Path(thumb_dir) / f.name if thumb_dir else None
+            src = thumb_path if (thumb_path and thumb_path.exists()) else f
+            pix = Gio.File.new_for_path(str(src)).query_pixbuf()
             scaled = pix.scale_simple(160, 100, 2)  # device scale
             thumb.set_pixbuf(scaled)
         except Exception:
-            thumb.set_from_pixbuf(Gio.File.new_for_path(str(FALLBACK_BG_DIR / "cosmos-nebula.jpg")).query_pixbuf())
+            pass  # thumb fills in when idle callback runs
+            GLib.idle_add(lambda: self._fill_thumb(thumb, f), thumb)
         btn.set_child(thumb)
         # checkmark overlay
         overlay = Gtk.Overlay()

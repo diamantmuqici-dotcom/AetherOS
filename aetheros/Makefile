@@ -35,6 +35,7 @@ wallpapers:
 	mkdir -p iso/config/includes.chroot/usr/share/backgrounds/aether
 	cp -v assets/wallpapers/*.jpg iso/config/includes.chroot/usr/share/backgrounds/aether/
 	cp -v assets/wallpapers/*.jpg iso/config/includes.chroot/usr/share/aether/wallpapers/ 2>/dev/null || true
+	python3 scripts/mk-thumbs.py --src assets/wallpapers --dst iso/config/includes.chroot/usr/share/aether/thumbs --width 480 || true
 
 thumbs:
 	python3 scripts/mk-thumbs.py --src assets/wallpapers --dst assets/wallpapers/thumbs --width 480
