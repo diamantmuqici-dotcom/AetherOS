@@ -1,3 +1,4 @@
 #!/bin/sh
-set -e
-lb build 2>&1 | tee build.log
+# AetherOS: build is driven by the GitHub Actions workflow.
+# This file is intentionally a no-op to break infinite lb recursion.
+exit 0

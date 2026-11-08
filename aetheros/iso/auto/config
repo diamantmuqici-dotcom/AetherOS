@@ -1,7 +1,5 @@
 #!/bin/sh
-set -e
-lb config \
-  --distribution bookworm \
-  --architectures amd64 \
-  --binary-images iso-hybrid \
-  --archive-areas "main contrib non-free non-free-firmware"
+# AetherOS: config is passed explicitly by the GitHub Actions workflow.
+# This file is intentionally a no-op to break infinite lb recursion
+# (lb auto-executes auto/config on every invocation).
+exit 0
