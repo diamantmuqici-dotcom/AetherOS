@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.sh text eol=lf
+*.hook.chroot text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+auto/* text eol=lf
+*.list.chroot text eol=lf
