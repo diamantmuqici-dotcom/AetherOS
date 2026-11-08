@@ -17,8 +17,23 @@
 
 <section class="card">
 <h2>Aether-Browser</h2>
-<p>Private Chromium-based browser. No tracking, DoH encrypted, ad-block + VPN inline. Detects your OS and gives you the right installer.</p>
+<p>Private Chromium-based browser. No tracking, DoH encrypted, ad-block + VPN inline. Detects your OS and gives you the right installer. All extensions from Chrome Web Store compatible.</p>
 <p id="browserLinks"></p>
+<p><b>Linux install:</b> <code>wget .../AetherBrowser-Linux.sh && bash AetherBrowser-Linux.sh</code> &nbsp; <b>Windows:</b> .exe/.zip &nbsp; <b>macOS:</b> .dmg/.pkg &nbsp; <b>Android:</b> .apk</p>
+</section>
+
+<section class="card">
+<h2>Aether-Mail</h2>
+<p>End-to-end encrypted email (PGP + Proton Bridge). Gmail/Outlook via IMAP with no data sync to Google. Detects your OS.</p>
+<p id="mailLinks"></p>
+<p><b>Linux:</b> <code>wget .../AetherMail-Linux.sh && bash AetherMail-Linux.sh</code> &nbsp; <b>exe/dmg/pkg:</b> same Release</p>
+</section>
+
+<section class="card">
+<h2>Aether-Vault</h2>
+<p>Passwords + history encrypted 5×, offline. No cloud. <b>Note:</b> OS itself can't be installed on a phone — Vault/Browser/Mail work on Android/iOS via APK/.apk wrappers.</p>
+<p id="vaultLinks"></p>
+<p><b>Linux:</b> <code>wget .../AetherVault-Linux.sh && bash AetherVault-Linux.sh</code></p>
 </section>
 
 <script>
@@ -31,5 +46,7 @@ else{os="Linux";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/l
 document.getElementById("osDetected").textContent=`Detected: ${os}`;
 document.getElementById("browserLinks").innerHTML=`<button onclick="window.location='${url}'">Download for ${os}</button> 
 <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">All downloads</a>`;
+document.getElementById("mailLinks").innerHTML=`<button onclick="window.location='https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest'">Download Aether-Mail (${os})</button>`;
+document.getElementById("vaultLinks").innerHTML=`<button onclick="window.location='https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest'">Download Aether-Vault (${os})</button>`;
 </script>
 </main></body></html>
