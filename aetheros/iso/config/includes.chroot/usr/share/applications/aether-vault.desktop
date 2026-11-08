@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Vault (Passwords)
+Exec=python3 /usr/share/aether/vault/aether-vault.py
+Icon=dialog-password
+Terminal=false
+Categories=Utility;
