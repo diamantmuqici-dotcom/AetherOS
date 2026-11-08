@@ -1,33 +1,33 @@
-diagnostics 2026-11-08T13:40:35Z
+diagnostics 2026-11-08T13:44:08Z
 total 68
-prwx------ 1 runner runner     0 Nov  8 13:39 clr-debug-pipe-2249-3912-in
-prwx------ 1 runner runner     0 Nov  8 13:39 clr-debug-pipe-2249-3912-out
-prwx------ 1 runner runner     0 Nov  8 13:39 clr-debug-pipe-2267-4016-in
-prwx------ 1 runner runner     0 Nov  8 13:39 clr-debug-pipe-2267-4016-out
-srw------- 1 runner runner     0 Nov  8 13:39 dotnet-diagnostic-2249-3912-socket
-srw------- 1 runner runner     0 Nov  8 13:39 dotnet-diagnostic-2267-4016-socket
--rw-r--r-- 1 runner runner 33441 Nov  8 13:40 lb-build.log
--rw-r--r-- 1 runner runner   387 Nov  8 13:39 lb-config.log
-drwx------ 2 root   root    4096 Nov  8 13:38 snap-private-tmp
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-ModemManager.service-3JqS8P
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-chrony.service-taq3sp
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-haveged.service-RunMOB
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-polkit.service-XpdaZJ
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-systemd-logind.service-5lwPhQ
-drwx------ 3 root   root    4096 Nov  8 13:38 systemd-private-10404aadab294100ac2c1144d73f31dc-systemd-resolved.service-YsVEdn
-[2026-11-08 13:39:36] lb_config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas main contrib non-free non-free-firmware
+prwx------ 1 runner runner     0 Nov  8 13:43 clr-debug-pipe-2066-33603-in
+prwx------ 1 runner runner     0 Nov  8 13:43 clr-debug-pipe-2066-33603-out
+prwx------ 1 runner runner     0 Nov  8 13:43 clr-debug-pipe-2085-33735-in
+prwx------ 1 runner runner     0 Nov  8 13:43 clr-debug-pipe-2085-33735-out
+srw------- 1 runner runner     0 Nov  8 13:43 dotnet-diagnostic-2066-33603-socket
+srw------- 1 runner runner     0 Nov  8 13:43 dotnet-diagnostic-2085-33735-socket
+-rw-r--r-- 1 runner runner 33440 Nov  8 13:44 lb-build.log
+-rw-r--r-- 1 runner runner   387 Nov  8 13:43 lb-config.log
+drwx------ 2 root   root    4096 Nov  8 13:37 snap-private-tmp
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-ModemManager.service-yZZZHO
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-chrony.service-bMw75g
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-haveged.service-Z3NDPd
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-polkit.service-7bqG1f
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-systemd-logind.service-o1fuxf
+drwx------ 3 root   root    4096 Nov  8 13:37 systemd-private-1b1e955a777b4f84870ee8de9612ee35-systemd-resolved.service-l8lJaq
+[2026-11-08 13:43:24] lb_config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas main contrib non-free non-free-firmware
 [1;37mP[0m: Considering defaults defined in /etc/live/build.conf
 P: Updating config tree for a debian/amd64 system
-[2026-11-08 13:39:36] lb_build 
-[2026-11-08 13:39:36] lb_bootstrap 
+[2026-11-08 13:43:24] lb_build 
+[2026-11-08 13:43:24] lb_bootstrap 
 P: Setting up cleanup function
-[2026-11-08 13:39:36] lb_bootstrap_cache restore
+[2026-11-08 13:43:24] lb_bootstrap_cache restore
 P: Restoring bootstrap stage from cache...
-[2026-11-08 13:39:36] lb_bootstrap_copy 
-[2026-11-08 13:39:37] lb_bootstrap_cdebootstrap 
-[2026-11-08 13:39:37] lb_bootstrap_debootstrap 
+[2026-11-08 13:43:24] lb_bootstrap_copy 
+[2026-11-08 13:43:24] lb_bootstrap_cdebootstrap 
+[2026-11-08 13:43:24] lb_bootstrap_debootstrap 
 P: Begin bootstrapping system...
-[2026-11-08 13:39:37] lb_testroot 
+[2026-11-08 13:43:25] lb_testroot 
 P: If the following stage fails, the most likely cause of the problem is with your mirror configuration or a caching proxy.
 P: Running debootstrap (download-only)... 
 W: Cannot check Release signature; keyring file not available /usr/share/keyrings/debian-archive-keyring.gpg
@@ -902,63 +902,63 @@ I: Configuring tasksel...
 I: Configuring tasksel-data...
 I: Configuring libc-bin...
 I: Base system installed successfully.
-[2026-11-08 13:40:31] lb_bootstrap_cache save
+[2026-11-08 13:44:05] lb_bootstrap_cache save
 P: Saving bootstrap stage to cache...
 P: Begin unmounting filesystems...
 P: Saving caches...
 Reading package lists...
 Building dependency tree...
-[2026-11-08 13:40:32] lb_chroot 
+[2026-11-08 13:44:06] lb_chroot 
 P: Setting up cleanup function
-[2026-11-08 13:40:32] lb_chroot_cache restore
-[2026-11-08 13:40:32] lb_chroot_devpts install
-[2026-11-08 13:40:32] lb_testroot 
+[2026-11-08 13:44:06] lb_chroot_cache restore
+[2026-11-08 13:44:06] lb_chroot_devpts install
+[2026-11-08 13:44:06] lb_testroot 
 P: Begin mounting /dev/pts...
-[2026-11-08 13:40:32] lb_chroot_proc install
-[2026-11-08 13:40:32] lb_testroot 
+[2026-11-08 13:44:06] lb_chroot_proc install
+[2026-11-08 13:44:06] lb_testroot 
 P: Begin mounting /proc...
-[2026-11-08 13:40:33] lb_chroot_selinuxfs install
-[2026-11-08 13:40:33] lb_testroot 
-[2026-11-08 13:40:33] lb_chroot_sysfs install
-[2026-11-08 13:40:33] lb_testroot 
+[2026-11-08 13:44:06] lb_chroot_selinuxfs install
+[2026-11-08 13:44:06] lb_testroot 
+[2026-11-08 13:44:06] lb_chroot_sysfs install
+[2026-11-08 13:44:06] lb_testroot 
 P: Begin mounting /sys...
-[2026-11-08 13:40:33] lb_chroot_debianchroot install
+[2026-11-08 13:44:06] lb_chroot_debianchroot install
 P: Configuring file /etc/debian_chroot
-[2026-11-08 13:40:33] lb_chroot_dpkg install
+[2026-11-08 13:44:06] lb_chroot_dpkg install
 P: Configuring file /sbin/start-stop-daemon
-[2026-11-08 13:40:33] lb_chroot_tmpfs install
-[2026-11-08 13:40:33] lb_chroot_sysv-rc install
+[2026-11-08 13:44:07] lb_chroot_tmpfs install
+[2026-11-08 13:44:07] lb_chroot_sysv-rc install
 P: Configuring file /usr/sbin/policy-rc.d
-[2026-11-08 13:40:33] lb_chroot_upstart install
+[2026-11-08 13:44:07] lb_chroot_upstart install
 P: Configuring file /sbin/initctl
-[2026-11-08 13:40:33] lb_chroot_hosts install
+[2026-11-08 13:44:07] lb_chroot_hosts install
 P: Configuring file /etc/hosts
-[2026-11-08 13:40:33] lb_chroot_resolv install
+[2026-11-08 13:44:07] lb_chroot_resolv install
 P: Configuring file /etc/resolv.conf
-[2026-11-08 13:40:33] lb_chroot_hostname install
+[2026-11-08 13:44:07] lb_chroot_hostname install
 P: Configuring file /etc/hostname
 P: Configuring file /bin/hostname
-[2026-11-08 13:40:33] lb_chroot_apt install
+[2026-11-08 13:44:07] lb_chroot_apt install
 P: Configuring file /etc/apt/apt.conf
-[2026-11-08 13:40:33] lb_chroot_archives chroot install
+[2026-11-08 13:44:07] lb_chroot_archives chroot install
 P: Configuring file /etc/apt/sources.list
 P: Clean up /etc/apt/preferences.d/* now that we have persisted the existing files for later restoration ...
 Hit:1 http://deb.debian.org/debian bookworm InRelease
 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-Ign:3 http://security.debian.org bookworm/updates InRelease
-Get:4 http://deb.debian.org/debian bookworm/main Sources [9492 kB]
-Get:5 http://deb.debian.org/debian bookworm/non-free-firmware Sources [7152 B]
-Get:6 http://deb.debian.org/debian bookworm/contrib Sources [51.1 kB]
-Get:7 http://deb.debian.org/debian bookworm/non-free Sources [78.0 kB]
-Get:8 http://deb.debian.org/debian bookworm/main Translation-en [6107 kB]
-Err:9 http://security.debian.org bookworm/updates Release
-  404  Not Found [IP: 140.248.150.132 80]
-Get:10 http://deb.debian.org/debian bookworm/contrib Translation-en [48.4 kB]
-Get:11 http://deb.debian.org/debian bookworm/non-free Translation-en [68.2 kB]
-Get:12 http://deb.debian.org/debian bookworm/non-free-firmware Translation-en [20.9 kB]
-Get:13 http://deb.debian.org/debian bookworm-updates/main Sources [3288 B]
-Get:14 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
-Get:15 http://deb.debian.org/debian bookworm-updates/main Translation-en [5448 B]
+Get:3 http://deb.debian.org/debian bookworm/main Sources [9492 kB]
+Get:4 http://deb.debian.org/debian bookworm/non-free Sources [78.0 kB]
+Get:5 http://deb.debian.org/debian bookworm/contrib Sources [51.1 kB]
+Get:6 http://deb.debian.org/debian bookworm/non-free-firmware Sources [7152 B]
+Get:7 http://deb.debian.org/debian bookworm/main Translation-en [6107 kB]
+Get:8 http://deb.debian.org/debian bookworm/contrib Translation-en [48.4 kB]
+Get:9 http://deb.debian.org/debian bookworm/non-free Translation-en [68.2 kB]
+Get:10 http://deb.debian.org/debian bookworm/non-free-firmware Translation-en [20.9 kB]
+Get:11 http://deb.debian.org/debian bookworm-updates/main Sources [3288 B]
+Get:12 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+Get:13 http://deb.debian.org/debian bookworm-updates/main Translation-en [5448 B]
+Ign:14 http://security.debian.org bookworm/updates InRelease
+Err:15 http://security.debian.org bookworm/updates Release
+  404  Not Found [IP: 151.101.74.132 80]
 Reading package lists...
 E: The repository 'http://security.debian.org bookworm/updates Release' does not have a Release file.
 P: Begin unmounting filesystems...
