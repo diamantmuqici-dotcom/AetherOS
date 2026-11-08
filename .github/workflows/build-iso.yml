@@ -31,6 +31,7 @@ jobs:
             sha256sum AetherOS-*.iso > *.iso.sha256
             ls -lh *.iso*
             bash /work/aetheros/scripts/package-browser.sh || true
+            bash /work/aetheros/scripts/package-app-dist.sh || true
           '
       - name: Commit diagnostics
         if: always()
@@ -68,6 +69,7 @@ jobs:
             aetheros/iso/*.iso*
             app-zips/*
             browser-dist/*
+            dist/*
           draft: false
           prerelease: false
           name: AetherOS ${{ github.ref_name }}
