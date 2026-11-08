@@ -1,0 +1,19 @@
+# Aether Browser Extensions (Chrome Web Store compatible)
+# One-click install list — Chromium loads each into its private profile at first run.
+
+- uBlock Origin — ad/tracking blocker
+- NoScript — JS control
+- Privacy Badger — tracking fingerprint
+- Privacy Essentials — cookie control
+- WebTorrent — P2P (opt-in)
+- Dark Reader — dark mode
+- Bitwarden — passwords
+- BehindTheOverlay — overlay popup blocker
+- ClearURLs — tracking URL cleaner
+- Decentraleyes — local CDN
+- Enhancer for YouTube — playback
+- IGH Pro — Reddit ad blocker
+- Mutant — script manager
+
+All extensions install from Chrome Web Store (open-source MIT where possible).
+To add a new extension after release, paste its ID into `extensions.txt` and relaunch.
