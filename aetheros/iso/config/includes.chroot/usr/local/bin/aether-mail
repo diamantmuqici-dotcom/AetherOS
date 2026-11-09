@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+import pathlib, subprocess, sys
+
+candidates = [
+    pathlib.Path("/usr/share/aether/aether-mail.py"),
+    pathlib.Path(__file__).parent / "aether-mail.py",
+]
+for c in candidates:
+    if c.exists():
+        sys.exit(subprocess.call([sys.executable, str(c)] + sys.argv[1:]))
+
+print("aether-mail not found", file=sys.stderr)
+sys.exit(1)

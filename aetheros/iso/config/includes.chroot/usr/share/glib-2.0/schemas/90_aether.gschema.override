@@ -2,6 +2,7 @@
 gtk-theme='Aether-Dark'
 color-scheme='prefer-dark'
 enable-animations=true
+enable-hot-corners=false
 cursor-size=32
 font-name='Inter 11'
 document-font-name='Inter 11'
@@ -13,8 +14,18 @@ picture-options='zoom'
 primary-color='#08090C'
 
 [org.gnome.shell]
-favorite-apps=['org.gnome.Nautilus.desktop', 'org.aether.Updater.desktop', 'org.aether.Settings.desktop', 'org.aether.Setup.desktop']
+favorite-apps=['aether-browser.desktop', 'aether-mail.desktop', 'aether-vault.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'org.aether.Settings.desktop']
+enabled-extensions=['dash-to-dock@example.com']
 welcome-dialog-last-shown-version='48'
+
+[org.gnome.shell.extensions.dash-to-dock]
+dock-position='BOTTOM'
+extend-height=true
+autohide=false
+dash-max-icon-size=40
+show-mounts=false
+show-show-apps-button=true
+show-trash=false
 
 [org.gnome.desktop.peripherals.mouse]
 speed=0.0

@@ -18,7 +18,7 @@ if [ -f /usr/share/aether/wallpapers/wallpaper-manifest.json ]; then
 fi
 
 # Scripts executable
-chmod +x /usr/local/bin/aether-setup /usr/local/bin/aether-settings /usr/local/bin/adaptive-perf /usr/local/bin/gamemode-hook /usr/local/bin/firstboot /usr/local/bin/aether-updater /usr/local/bin/aether-update-check /usr/local/bin/firstboot 2>/dev/null || true
+chmod +x /usr/local/bin/aether-setup /usr/local/bin/aether-settings /usr/local/bin/adaptive-perf /usr/local/bin/gamemode-hook /usr/local/bin/firstboot /usr/local/bin/aether-updater /usr/local/bin/aether-update-check /usr/local/bin/firstboot /usr/local/bin/aether-browser /usr/local/bin/aether-mail 2>/dev/null || true
 
 # Enable Aether boot services (DNS tune + VPN auto)
 systemctl daemon-reload 2>/dev/null || true

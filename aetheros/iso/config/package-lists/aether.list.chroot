@@ -3,6 +3,7 @@
 gnome-session
 gnome-shell
 gnome-shell-extensions
+gnome-shell-extension-dash-to-dock
 gdm3
 nautilus
 gnome-terminal

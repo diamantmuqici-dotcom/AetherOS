@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import pathlib, subprocess, sys, os
+
+candidates = [
+    pathlib.Path("/usr/share/aether/browser/aether-browser.py"),
+    pathlib.Path(__file__).parent / "aether-browser.py",
+]
+for c in candidates:
+    if c.exists():
+        sys.exit(subprocess.call([sys.executable, str(c)] + sys.argv[1:]))
+
+# Fallback: launch Chromium directly with hardened flags from the app script
+flags = [
+    "--no-first-run", "--no-default-browser-check",
+    "--disable-component-update", "--disable-background-networking",
+    "--disable-sync", "--disable-translate",
+    "--force-dark-mode", "--enable-features=EncryptedDns",
+    "--dns-over-https-templates=https://cloudflare-dns.com/dns-query",
+    "--dns-over-https-mode=secure",
+    "--disable-hang-monitor", "--webrtc-ip-handling-policy=disable_non_proxied_udp",
+]
+for b in ("chromium", "chromium-browser", "google-chrome"):
+    p = pathlib.Path("/usr/bin") / b
+    if p.exists():
+        os.execv(str(p), [str(p)] + flags + sys.argv[1:])
+
+print("aether-browser: Chromium not found", file=sys.stderr)
+sys.exit(1)
