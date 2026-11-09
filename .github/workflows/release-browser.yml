@@ -1,0 +1,39 @@
+name: Release Aether Browser
+# Standalone release for the Aether Browser app. Triggered by tags like
+# `browser-v1.0.0`. See RELEASING.md for the full tagging scheme.
+on:
+  push:
+    tags: ['browser-v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package Aether Browser
+        run: |
+          chmod +x aetheros/scripts/package-app.sh
+          bash aetheros/scripts/package-app.sh browser "Browser" aetheros/apps/browser iso/config/includes.chroot/usr/share/applications/aether-browser.desktop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aether-browser
+          path: dist/browser/*
+          if-no-files-found: error
+      - name: Create Release
+        if: success() && startsWith(github.ref, 'refs/tags/browser-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/browser/*
+          draft: false
+          prerelease: false
+          name: Aether Browser ${{ github.ref_name }}
+          body: |
+            Aether Browser ${{ github.ref_name }}
+
+            Private, de-googled Chromium launcher with DNS-over-HTTPS, ad-block, and tracking disabled by default.
+
+            This is a standalone bundle for GNOME/GTK4 Linux desktops. It
+            ships preinstalled on [AetherOS](https://github.com/diamantmuqici-dotcom/AetherOS)
+            — no separate download needed there. Verify with `sha256sum -c SHA256SUMS`.

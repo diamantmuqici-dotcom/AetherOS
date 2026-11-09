@@ -1,0 +1,39 @@
+name: Release Aether Updater
+# Standalone release for the Aether Updater app. Triggered by tags like
+# `updater-v1.0.0`. See RELEASING.md for the full tagging scheme.
+on:
+  push:
+    tags: ['updater-v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package Aether Updater
+        run: |
+          chmod +x aetheros/scripts/package-app.sh
+          bash aetheros/scripts/package-app.sh updater "Updater" aetheros/apps/updater iso/config/includes.chroot/usr/share/applications/org.aether.Updater.desktop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aether-updater
+          path: dist/updater/*
+          if-no-files-found: error
+      - name: Create Release
+        if: success() && startsWith(github.ref, 'refs/tags/updater-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/updater/*
+          draft: false
+          prerelease: false
+          name: Aether Updater ${{ github.ref_name }}
+          body: |
+            Aether Updater ${{ github.ref_name }}
+
+            AetherOS update manager — accept, decline, or defer updates, with self-repair on failure.
+
+            This is a standalone bundle for GNOME/GTK4 Linux desktops. It
+            ships preinstalled on [AetherOS](https://github.com/diamantmuqici-dotcom/AetherOS)
+            — no separate download needed there. Verify with `sha256sum -c SHA256SUMS`.

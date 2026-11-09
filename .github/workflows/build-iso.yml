@@ -1,8 +1,10 @@
 name: Build AetherOS ISO
+# OS-only release. App components (browser, mail, vault, updater, gaming hub)
+# have their own workflows and tag prefixes — see RELEASING.md.
 on:
   push:
     branches: [main]
-    tags: ['*']
+    tags: ['os-v*']
   workflow_dispatch:
 permissions:
   contents: write
@@ -30,8 +32,6 @@ jobs:
             mv "$ISO" AetherOS-live-amd64.iso || true
             sha256sum AetherOS-*.iso > *.iso.sha256
             ls -lh *.iso*
-            bash /work/aetheros/scripts/package-browser.sh || true
-            bash /work/aetheros/scripts/package-app-dist.sh || true
           '
       - name: Commit diagnostics
         if: always()
@@ -48,28 +48,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: aetheros-live-iso
-          path: |
-            aetheros/iso/*.iso*
-            browser-dist/*
+          path: aetheros/iso/*.iso*
           if-no-files-found: error
-      - name: Prepare per-app zips (Browser/Mail/Vault/Updater)
-        run: |
-          mkdir -p app-zips
-          cp -r aetheros/apps/browser app-zips/AetherBrowser || true
-          cp -r aetheros/apps/mail app-zips/AetherMail || true
-          cp -r aetheros/apps/vault app-zips/AetherVault || true
-          cp -r aetheros/apps/updater app-zips/AetherUpdater || true
-          cp -r aetheros/apps/gaming-hub app-zips/AetherGamingHub || true
-          ls -lh app-zips/ || true
-      - name: Create Release (tag)
-        if: success() && startsWith(github.ref, 'refs/tags/')
+      - name: Create Release (os-v* tag)
+        if: success() && startsWith(github.ref, 'refs/tags/os-v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            aetheros/iso/*.iso*
-            app-zips/*
-            browser-dist/*
-            dist/*
+          files: aetheros/iso/*.iso*
           draft: false
           prerelease: false
           name: AetherOS ${{ github.ref_name }}
@@ -79,6 +64,11 @@ jobs:
             Downloads below. Verify with `sha256sum -c *.iso.sha256`.
 
             First boot: Welcome → Choose Your Aether → Appearance → Privacy → Gaming → Enter AetherOS.
+
+            Looking for Aether Browser, Mail, Vault, Updater, or the Gaming
+            Hub as a standalone download? Those ship from their own tags —
+            see the [Releases page](https://github.com/diamantmuqici-dotcom/AetherOS/releases)
+            or `RELEASING.md`.
       - name: Publish latest (auto every push)
         if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: softprops/action-gh-release@v2

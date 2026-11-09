@@ -3,99 +3,647 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="AetherOS — a real OS built for gaming, privacy and everyday use. Download, flash, boot."/>
-<title>AetherOS — Download</title>
-<style>
-:root{--bg:#0B0D10;--card:#13161B;--line:#23272F;--text:#E6E8EC;--muted:#9BA3B0;--accent:#4C8DFF}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6}
-.topbar{border-bottom:1px solid var(--line);background:var(--bg)}
-.topbar-in{max-width:1080px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:16px}
-.topbar-in b{font-weight:700;letter-spacing:.02em}
-.topbar-in nav{margin-left:auto;display:flex;gap:16px;font-size:14px}
-.topbar-in a{color:var(--muted);text-decoration:none}
-.topbar-in a:hover{color:var(--text)}
-.wrap{max-width:1080px;margin:auto;padding:40px 20px}
-h1{font-size:44px;line-height:1.1;letter-spacing:-.02em}
-h2{font-size:26px;margin:0 0 12px}
-h3{font-size:17px;margin:0 0 8px}
-p{color:var(--muted);margin:0 0 12px}
-.hero{padding:56px 0 32px;border-bottom:1px solid var(--line)}
-.hero .lead{font-size:18px;max-width:720px}
-.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
-.meta span{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted)}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:8px;border:1px solid var(--accent)}
-.btn.secondary{background:transparent;color:var(--text);border-color:var(--line)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
-.section{padding:36px 0;border-bottom:1px solid var(--line)}
-.download{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--card)}
-.download code{background:#000;border:1px solid var(--line);padding:8px 10px;border-radius:8px;display:block;margin-top:8px}
-footer{color:var(--muted);font-size:14px;padding:24px 20px;text-align:center}
-@media(max-width:800px){.grid{grid-template-columns:1fr}h1{font-size:34px}}
-</style></head>
-<body>
-<header class="topbar"><div class="topbar-in">
-<b>AetherOS</b>
-<nav><a href="#download">Download</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Releases</a></nav>
-</div></header>
+<title>AetherOS — a real desktop OS for gaming, built private by design</title>
+<meta name="description" content="AetherOS is a free, open-source Linux desktop (Debian + GNOME) tuned for gaming and built private by default: no telemetry, encrypted vault, Steam + Proton-GE, Game Mode. Download the ISO."/>
+<meta name="theme-color" content="#08090C"/>
+<link rel="canonical" href="https://diamantmuqici-dotcom.github.io/AetherOS/"/>
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png"/>
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/>
 
-<div class="wrap">
-<section class="hero">
-<p class="meta" style="border:0;padding:0"><span>Welcome to Aether</span></p>
-<h1>AetherOS<br/>Combined OS — for gaming.</h1>
-<p class="lead">A single desktop that feels familiar whether you come from Windows, Linux, or macOS. Fully optimized for gaming, beginner-friendly, privacy-first. Supports .exe and .dmg and .pkg and more.</p>
-<div class="meta"><span>Debian Bookworm</span><span>GNOME Wayland</span><span>Vault encrypted</span><span>Open source</span></div>
-<div style="margin-top:20px"><a class="btn" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Download AetherOS</a> <a class="btn secondary" href="#features">See features</a></div>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="AetherOS — a real desktop OS for gaming, built private by design"/>
+<meta property="og:description" content="Free, open-source Linux desktop tuned for gaming. No telemetry. Encrypted vault. Steam + Proton-GE. Download the ISO, verify, boot."/>
+<meta property="og:image" content="https://diamantmuqici-dotcom.github.io/AetherOS/assets/og-emblem.png"/>
+<meta property="og:url" content="https://diamantmuqici-dotcom.github.io/AetherOS/"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="AetherOS — a real desktop OS for gaming, built private by design"/>
+<meta name="twitter:description" content="Free, open-source Linux desktop tuned for gaming. No telemetry. Encrypted vault. Steam + Proton-GE."/>
+<meta name="twitter:image" content="https://diamantmuqici-dotcom.github.io/AetherOS/assets/og-emblem.png"/>
+
+<link rel="preload" href="assets/hero-bg.jpg" as="image"/>
+
+<style>
+:root{
+  --bg:#08090C;
+  --bg-raised:#0F131A;
+  --bg-raised-2:#151A22;
+  --line:#232330;
+  --line-soft:#1A1E27;
+  --text:#EBEEF2;
+  --text-dim:#9AA3AD;
+  --text-faint:#636B78;
+  --accent:#00A3FF;
+  --accent-2:#2B56FF;
+  --success:#2ED99B;
+  --warning:#F5B544;
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:20px;
+  --maxw:1120px;
+  --font:"Inter","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{color-scheme:dark}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3{font-weight:800;letter-spacing:-0.01em;margin:0 0 12px}
+p{margin:0 0 14px;color:var(--text-dim);max-width:68ch}
+a{color:inherit}
+img{max-width:100%;display:block}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.skip-link{
+  position:absolute;left:12px;top:-60px;z-index:100;
+  background:var(--accent);color:#06121F;font-weight:700;
+  padding:10px 16px;border-radius:var(--radius-sm);
+  transition:top .15s ease;
+}
+.skip-link:focus{top:12px}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:20px}
+
+/* Nav */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(8,9,12,.88);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  display:flex;align-items:center;gap:20px;
+  padding:12px 20px;max-width:var(--maxw);margin:0 auto;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;letter-spacing:-0.01em;font-size:16px}
+.brand img{width:26px;height:26px}
+.brand span{color:var(--text)}
+.topnav{margin-left:auto;display:flex;align-items:center;gap:22px;font-size:14px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{color:var(--text-dim);text-decoration:none;white-space:nowrap;padding:6px 2px;border-bottom:2px solid transparent}
+.topnav a:hover{color:var(--text)}
+.topnav a.cta{
+  color:#06121F;background:var(--accent);font-weight:700;
+  padding:9px 16px;border-radius:999px;border-bottom:none;
+}
+.topnav a.cta:hover{background:#2BB4FF}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent);color:#06121F;text-decoration:none;
+  font-weight:700;font-size:15px;padding:13px 22px;border-radius:var(--radius-sm);
+  border:1px solid var(--accent);
+  box-shadow:0 20px 60px -24px rgba(0,163,255,.45);
+  transition:background .15s ease, transform .1s ease;
+}
+.btn:hover{background:#2BB4FF;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.secondary{
+  background:transparent;color:var(--text);border-color:var(--line);box-shadow:none;
+}
+.btn.secondary:hover{border-color:var(--accent);background:var(--bg-raised)}
+.btn.small{padding:9px 16px;font-size:14px}
+.btn[disabled],.btn.disabled{opacity:.45;pointer-events:none;box-shadow:none}
+
+/* Hero */
+.hero{
+  position:relative;
+  padding:84px 0 72px;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:
+    linear-gradient(180deg, rgba(8,9,12,.55) 0%, rgba(8,9,12,.88) 55%, var(--bg) 100%),
+    url("assets/hero-bg.jpg") center 30%/cover no-repeat;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:radial-gradient(60% 50% at 18% 0%, rgba(0,163,255,.16), transparent 60%);
+}
+.hero-in{position:relative;z-index:1}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--accent);
+  border:1px solid rgba(0,163,255,.35);background:rgba(0,163,255,.08);
+  padding:6px 14px;border-radius:999px;margin-bottom:18px;
+}
+.kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px rgba(46,217,155,.2)}
+.hero h1{font-size:clamp(32px,5.4vw,56px);line-height:1.08;max-width:18ch}
+.hero .lead{font-size:18px;line-height:1.6;max-width:56ch;color:var(--text-dim)}
+.pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 28px}
+.pill{
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+  font-size:13px;color:var(--text-dim);background:rgba(15,19,26,.6);
+}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Sections */
+.section{padding:72px 0;border-bottom:1px solid var(--line)}
+.section-head{max-width:640px;margin-bottom:40px}
+.eyebrow{
+  font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;
+}
+.section h2{font-size:clamp(24px,3.2vw,30px)}
+
+/* Reveal animation */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.is-visible{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{scroll-behavior:auto !important}
+}
+
+/* Download */
+.download-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch}
+.card{
+  background:var(--bg-raised);border:1px solid var(--line);
+  border-radius:var(--radius-md);padding:28px;
+}
+.card h3{font-size:19px;margin-bottom:10px}
+#osLine{color:var(--text);font-weight:600;font-size:14px;margin-bottom:6px}
+#osLine span{color:var(--accent)}
+.steps{counter-reset:step;list-style:none;margin:0;padding:0}
+.steps li{
+  counter-increment:step;position:relative;padding-left:34px;margin-bottom:14px;
+  color:var(--text-dim);font-size:15px;
+}
+.steps li::before{
+  content:counter(step);position:absolute;left:0;top:0;
+  width:22px;height:22px;border-radius:50%;background:var(--bg-raised-2);
+  border:1px solid var(--line);color:var(--accent);font-weight:700;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.codeblock{
+  background:var(--bg-raised-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);
+  font-family:var(--mono);font-size:13.5px;color:var(--text-dim);
+  padding:12px 14px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  overflow-x:auto;
+}
+.codeblock button{
+  background:transparent;border:1px solid var(--line);color:var(--text-dim);
+  border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;white-space:nowrap;
+  font-family:var(--font);
+}
+.codeblock button:hover{color:var(--text);border-color:var(--accent)}
+
+/* Features */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature{
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:24px;
+}
+.feature .ico{
+  width:38px;height:38px;border-radius:10px;background:rgba(0,163,255,.1);
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  color:var(--accent);
+}
+.feature h3{font-size:16.5px;margin-bottom:6px}
+.feature p{font-size:14.5px;margin:0}
+.badge{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;
+  padding:3px 8px;border-radius:999px;margin-left:8px;vertical-align:middle;text-transform:uppercase;
+}
+.badge.ready{color:var(--success);background:rgba(46,217,155,.12)}
+.badge.staged{color:var(--warning);background:rgba(245,181,68,.12)}
+
+/* Apps */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.app-card{
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:24px;display:flex;flex-direction:column;gap:12px;
+}
+.app-card h3{font-size:17px;margin:0}
+.app-card p{font-size:14px;margin:0;flex-grow:1}
+.app-card .tag{font-family:var(--mono);font-size:12px;color:var(--text-faint)}
+
+/* Matrix */
+.matrix{width:100%;border-collapse:collapse;font-size:14.5px}
+.matrix th{text-align:left;color:var(--text-faint);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;padding:0 0 10px;border-bottom:1px solid var(--line)}
+.matrix td{padding:12px 0;border-bottom:1px solid var(--line-soft);color:var(--text-dim)}
+.matrix td:first-child{color:var(--text);font-weight:600}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.status.ready{color:var(--success)}
+.status.staged{color:var(--warning)}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+
+/* Wallpapers strip */
+.wall-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.wall-strip img{
+  width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;
+  border:1px solid var(--line);
+}
+
+/* FAQ */
+.faq{max-width:760px}
+details{border-bottom:1px solid var(--line);padding:16px 0}
+summary{
+  cursor:pointer;font-weight:700;font-size:16px;color:var(--text);
+  list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--accent);font-size:20px;font-weight:400;flex-shrink:0}
+details[open] summary::after{content:"−"}
+details p{margin-top:10px}
+
+footer{border-top:none;padding:40px 0 60px}
+.footer-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:14px}
+.footer-links a{color:var(--text-dim);text-decoration:none}
+.footer-links a:hover{color:var(--text)}
+footer .fine{color:var(--text-faint);font-size:13px;margin-top:18px}
+
+@media (max-width:860px){
+  .grid3{grid-template-columns:1fr}
+  .download-grid{grid-template-columns:1fr}
+  .wall-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:640px){
+  .section{padding:56px 0}
+  .hero{padding:56px 0 48px}
+  .topnav{gap:14px}
+  .topnav a:not(.cta){display:none}
+  .wall-strip{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#top">
+      <img src="assets/aether-logo.svg" alt="" width="26" height="26"/>
+      <span>AetherOS</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#apps">Apps</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#status">Status</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS" target="_blank" rel="noopener">GitHub</a>
+      <a class="cta" href="#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="wrap hero-in">
+    <span class="kicker">Open source · MIT licensed</span>
+    <h1>One desktop OS. Built for gaming.<br/>Private by default.</h1>
+    <p class="lead">AetherOS is a Debian + GNOME Linux desktop that feels familiar whether you're coming from Windows, Linux, or macOS — tuned for gaming, built for beginners, and shipped with no telemetry at all.</p>
+    <div class="pillrow" aria-hidden="false">
+      <span class="pill">Debian 13 Bookworm/Trixie</span>
+      <span class="pill">GNOME · Wayland</span>
+      <span class="pill">Vault: 5× local encryption</span>
+      <span class="pill">Zero telemetry</span>
+    </div>
+    <div class="hero-ctas">
+      <a class="btn" href="#download">Download AetherOS</a>
+      <a class="btn secondary" href="#features">See what's inside</a>
+    </div>
+  </div>
 </section>
 
 <section class="section" id="download">
-<h2>Download</h2>
-<div class="download">
-<p id="osDetected">Detecting your OS…</p>
-<p><a class="btn" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/download/v0.1.0-proof/live-image-amd64.hybrid.iso">Download AetherOS-*.iso (1433 MB)</a></p>
-<p><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">All files (ISO + sha256 + zsync)</a></p>
-<h3 style="margin-top:18px">Aether Browser</h3>
-<p>Private browser. No tracking, DoH encrypted, ad-block + VPN inline.</p>
-<p id="browserLinks"></p>
-<h3 style="margin-top:18px">Aether Mail &amp; Vault</h3>
-<p>Mail is end-to-end encrypted. Vault stores passwords/history 5× encrypted locally.</p>
-<p><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Download Mail / Vault</a></p>
-</div>
-<div class="download" style="margin-top:16px">
-<h3>Install in 3 steps</h3>
-<p>1. Download the ISO from Releases.<br/>2. Flash with Rufus (UEFI, DD mode).<br/>3. Boot from USB → Aether Setup → Enter AetherOS.</p>
-</div>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Get AetherOS</div>
+      <h2>Download, verify, boot</h2>
+      <p>The ISO is built and signed straight from this repo on every tagged release. No account, no installer phoning home.</p>
+    </div>
+
+    <div class="download-grid">
+      <div class="card reveal">
+        <p id="osLine">Detecting your platform…</p>
+        <p>AetherOS boots from USB on any UEFI PC. There's no separate "Windows build" — one ISO, every machine.</p>
+        <div class="hero-ctas" style="margin:14px 0 4px">
+          <a class="btn" id="primaryDownload" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=os-v&expanded=true">Download the ISO</a>
+          <a class="btn secondary" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/tag/latest">Latest dev build</a>
+        </div>
+        <p style="font-size:13px;color:var(--text-faint);margin:0">Tagged releases (<code style="font-family:var(--mono)">os-v*</code>) are stable. <code style="font-family:var(--mono)">latest</code> republishes on every push to <code style="font-family:var(--mono)">main</code> — a rolling preview, not for daily use.</p>
+        <div class="codeblock">
+          <code id="verifyCmd">sha256sum -c AetherOS-*.iso.sha256</code>
+          <button type="button" data-copy="sha256sum -c AetherOS-*.iso.sha256">Copy</button>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3>Install in 3 steps</h3>
+        <ol class="steps">
+          <li>Download the ISO + <code style="font-family:var(--mono);font-size:13px">.sha256</code> from Releases, verify it.</li>
+          <li>Flash with <a href="https://rufus.ie" target="_blank" rel="noopener">Rufus</a> (UEFI, GPT, DD mode) or Ventoy, USB ≥ 8&nbsp;GB.</li>
+          <li>Boot the USB → Aether Setup → wallpaper, appearance, privacy, gaming → Enter AetherOS. No reboot needed.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="section" id="features">
-<h2>Features</h2>
-<div class="grid">
-<article class="card"><h3>Desktop</h3><p>Dock, launcher, notifications, workspaces, snap windows. Clean, fast, no clutter.</p></article>
-<article class="card"><h3>Gaming</h3><p>Steam + Proton-GE, Zen Browser, Game Mode (most-played gets priority, safe only).</p></article>
-<article class="card"><h3>Privacy</h3><p>No telemetry, no ad IDs, private browser with DoH, Vault encrypted locally.</p></article>
-<article class="card"><h3>Network</h3><p>Auto-pick fastest DNS by ping, BBR, Proton VPN auto-launch after first profile.</p></article>
-<article class="card"><h3>Performance</h3><p>Raw mouse, tuned keyboard, adaptive visuals. Fresh boot stays responsive (thumbs-first gallery).</p></article>
-<article class="card"><h3>Updater</h3><p>Pinned updates app. Accept / Decline / Later (midnight / reboot). Self-repair on crash.</p></article>
-</div>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Inside AetherOS</div>
+      <h2>Fast, familiar, and it doesn't watch you</h2>
+    </div>
+    <div class="grid3">
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 20h8M12 16v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <h3>A desktop that feels familiar</h3>
+        <p>Dock, taskbar, launcher, notifications, workspaces, snap windows — GNOME Wayland underneath, Aether's own shell extensions on top.</p>
+      </article>
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Gaming, built in<span class="badge staged">staged</span></h3>
+        <p>Steam + Proton-GE, Game Mode (priority boost for your running game, restored on exit), controller support via evdev. No fake universal-compatibility promises — graphics-only tuning, your inputs are never touched.</p>
+      </article>
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 118 0v3" stroke="currentColor" stroke-width="1.6"/></svg>
+        </div>
+        <h3>Private by default</h3>
+        <p>No telemetry, no ad IDs, no behavioral tracking, no hidden cloud sync. Crash/diagnostic reporting is off until you opt in — one file, <code style="font-family:var(--mono);font-size:12.5px">privacy.json</code>, is the single source of truth.</p>
+      </article>
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16M12 4c2.5 2.3 2.5 15.7 0 16M12 4c-2.5 2.3-2.5 15.7 0 16" stroke="currentColor" stroke-width="1.4"/></svg>
+        </div>
+        <h3>Network tuned</h3>
+        <p>Auto-picks the fastest DNS by ping, BBR + larger buffers out of the box, Proton VPN auto-launches after your first profile — never silently.</p>
+      </article>
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Adaptive performance</h3>
+        <p>Raw mouse input (no acceleration), tuned keyboard response, and visuals that scale down automatically on weaker hardware so low-end machines stay responsive.</p>
+      </article>
+      <article class="feature reveal">
+        <div class="ico" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 1116 0 8 8 0 01-16 0z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Updates you control</h3>
+        <p>Accept, decline, or defer to midnight / next reboot. If an update fails, Aether self-repairs rather than leaving you on a broken system.</p>
+      </article>
+    </div>
+  </div>
 </section>
 
-<section class="section" id="faq">
-<h2>FAQ</h2>
-<p><b>Is it free?</b> Yes. Open source under MIT.</p>
-<p><b>Does it support .exe / .dmg?</b> .exe via Wine. .dmg/.pkg are macOS binaries — not run directly, Aether shows a helper prompt and suggests a Linux alternative.</p>
-<p><b>How do I verify the ISO?</b> <span style="font-family:ui-monospace,monospace">sha256sum -c *.iso.sha256</span></p>
+<section class="section" id="apps">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Apps</div>
+      <h2>The Aether apps, preinstalled — or standalone</h2>
+      <p>Each app ships inside AetherOS and also releases on its own tag, so you can grab one without the whole ISO if you're already on a GNOME/GTK4 Linux desktop.</p>
+    </div>
+    <div class="apps-grid">
+      <article class="app-card reveal">
+        <h3>Aether Browser</h3>
+        <p>Private, de-googled Chromium launcher — DNS-over-HTTPS, ad-block, sync and background networking disabled by default.</p>
+        <span class="tag">tag: browser-v*</span>
+        <a class="btn secondary small" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=browser-v&expanded=true">Releases</a>
+      </article>
+      <article class="app-card reveal">
+        <h3>Aether Mail</h3>
+        <p>End-to-end encrypted mail (PGP). Works with Gmail/Outlook over IMAP — no data shared beyond headers — plus Proton Bridge.</p>
+        <span class="tag">tag: mail-v*</span>
+        <a class="btn secondary small" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=mail-v&expanded=true">Releases</a>
+      </article>
+      <article class="app-card reveal">
+        <h3>Aether Vault</h3>
+        <p>Passwords and history, encrypted at rest locally with your passphrase. Five layers of encryption, no cloud copy.</p>
+        <span class="tag">tag: vault-v*</span>
+        <a class="btn secondary small" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=vault-v&expanded=true">Releases</a>
+      </article>
+      <article class="app-card reveal">
+        <h3>Aether Updater</h3>
+        <p>Accept / Decline / Later. Pinned update channel with self-repair if an update fails midway.</p>
+        <span class="tag">tag: updater-v*</span>
+        <a class="btn secondary small" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=updater-v&expanded=true">Releases</a>
+      </article>
+      <article class="app-card reveal">
+        <h3>Aether Gaming Hub</h3>
+        <p>Game library, per-game priority, Proton-GE management, and the ESG overlay (FPS/frametime/RAM/Game Mode).</p>
+        <span class="tag">tag: gaming-hub-v*</span>
+        <a class="btn secondary small" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases?q=gaming-hub-v&expanded=true">Releases</a>
+      </article>
+    </div>
+  </div>
 </section>
-</div>
-<footer>AetherOS — private by design. Verify checksums before installing.</footer>
+
+<section class="section" id="privacy">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Privacy model</div>
+      <h2>Off until you turn it on</h2>
+      <p>No dark patterns — every toggle in Aether Setup explains exactly what it turns on, and nothing is collected before you say so.</p>
+    </div>
+    <div class="grid3">
+      <article class="feature reveal">
+        <h3>Nothing by default</h3>
+        <p>No telemetry, no advertising identifiers, no behavioral tracking, no hidden cloud sync — out of the box, not behind a toggle you have to find.</p>
+      </article>
+      <article class="feature reveal">
+        <h3>One file, one truth</h3>
+        <p>Diagnostics are opt-in only, from Aether Setup → Privacy, and recorded in <code style="font-family:var(--mono);font-size:12.5px">~/.config/aether/privacy.json</code> — nowhere else.</p>
+      </article>
+      <article class="feature reveal">
+        <h3>You can check it yourself</h3>
+        <p>It's open source: <code style="font-family:var(--mono);font-size:12.5px">grep -r telemetry /usr/share/aether</code> returns no endpoints. Don't take our word for it.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="status">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Build status</div>
+      <h2>What's ready today</h2>
+      <p>AetherOS is built in the open and still moving fast. This is the honest state of things, not a roadmap dressed up as done.</p>
+    </div>
+    <table class="matrix reveal">
+      <thead>
+        <tr><th>Component</th><th>Status</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Debian Bookworm base (amd64)</td><td><span class="status ready">Ready</span></td><td>Built in a <code style="font-family:var(--mono);font-size:12.5px">debian:bookworm-slim</code> container</td></tr>
+        <tr><td>GNOME Wayland shell</td><td><span class="status ready">Ready</span></td><td>Aether dock/launcher/top bar extensions</td></tr>
+        <tr><td>First-boot setup wizard</td><td><span class="status ready">Ready</span></td><td>Wallpaper → appearance → privacy → gaming</td></tr>
+        <tr><td>Calamares installer</td><td><span class="status staged">Staged</span></td><td>Live boot works today; permanent-install UI lands in Phase 6</td></tr>
+        <tr><td>Steam / Proton-GE / Game Mode</td><td><span class="status staged">Staged</span></td><td>Hub + scripts are in the ISO; installs at setup (Phase 5)</td></tr>
+        <tr><td>Zen Browser</td><td><span class="status staged">Staged</span></td><td>Official deb integration lands in Phase 5</td></tr>
+        <tr><td>4K display support</td><td><span class="status ready">Ready</span></td><td>4K wallpaper variants, no stretching</td></tr>
+        <tr><td>QEMU test matrix</td><td><span class="status ready">Ready</span></td><td><code style="font-family:var(--mono);font-size:12.5px">make test-qemu</code> — baseline, weak HW, Hi-DPI, UEFI</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px;font-size:13.5px"><a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/aetheros/docs/SUPPORT_MATRIX.md" target="_blank" rel="noopener">Full support matrix →</a></p>
+  </div>
+</section>
+
+<section class="section" id="wallpapers" style="border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Identity</div>
+      <h2>Ten wallpapers, cover-fit, no stretching</h2>
+      <p>Picked during Aether Setup. 1080p shipped, 4K variants generated for Hi-DPI displays.</p>
+    </div>
+    <div class="wall-strip reveal">
+      <img src="assets/wallpapers/cosmos-nebula.jpg" alt="Aether wallpaper: Cosmos Nebula" width="320" height="240" loading="lazy"/>
+      <img src="assets/wallpapers/cosmos-void.jpg" alt="Aether wallpaper: Cosmos Void" width="320" height="240" loading="lazy"/>
+      <img src="assets/wallpapers/cosmos-ember.jpg" alt="Aether wallpaper: Cosmos Ember" width="320" height="240" loading="lazy"/>
+      <img src="assets/wallpapers/prism-cyan.jpg" alt="Aether wallpaper: Prism Cyan" width="320" height="240" loading="lazy"/>
+      <img src="assets/wallpapers/prism-crimson.jpg" alt="Aether wallpaper: Prism Crimson" width="320" height="240" loading="lazy"/>
+      <img src="assets/wallpapers/prism-arctic.jpg" alt="Aether wallpaper: Prism Arctic" width="320" height="240" loading="lazy"/>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq" style="border-bottom:none">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">FAQ</div>
+      <h2>Questions people actually ask</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal">
+        <summary>Is AetherOS free?</summary>
+        <p>Yes. Everything here — the OS, the shell, the apps, the website — is open source under the <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>. Third-party components it installs (Debian, GNOME, Steam, Proton-GE, Zen Browser) keep their own upstream licenses.</p>
+      </details>
+      <details class="reveal">
+        <summary>Does it run Windows (.exe) or macOS (.dmg/.pkg) apps?</summary>
+        <p><code style="font-family:var(--mono);font-size:13px">.exe</code> files run through Wine/Aether runtimes. <code style="font-family:var(--mono);font-size:13px">.AppImage</code> and <code style="font-family:var(--mono);font-size:13px">.deb</code> install with a double-click. <code style="font-family:var(--mono);font-size:13px">.dmg</code>/<code style="font-family:var(--mono);font-size:13px">.pkg</code> are macOS binaries and genuinely can't run on Linux — Aether shows a clear prompt and suggests a Linux alternative instead of pretending it can.</p>
+      </details>
+      <details class="reveal">
+        <summary>How do I verify the ISO before installing?</summary>
+        <p>Every build publishes a checksum alongside it. Download both files, then run <code style="font-family:var(--mono);font-size:13px">sha256sum -c AetherOS-*.iso.sha256</code> and confirm it says OK before you flash a drive.</p>
+      </details>
+      <details class="reveal">
+        <summary>What hardware has this actually been tested on?</summary>
+        <p>The build host is a Ryzen 7 5700X; the QEMU matrix covers a 4GB baseline, 2GB weak-hardware (adaptive perf drops blur/transparency), Hi-DPI 4K, and UEFI boot. Physical hardware coverage grows as people boot the USB and report back — see the <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/aetheros/docs/SUPPORT_MATRIX.md" target="_blank" rel="noopener">support matrix</a>.</p>
+      </details>
+      <details class="reveal">
+        <summary>Why do the apps have separate version tags from the OS?</summary>
+        <p>Aether Browser, Mail, Vault, Updater, and Gaming Hub each change on their own schedule and can be useful without the full ISO. A browser fix shouldn't force a new OS release number — so each component tags and releases independently. See <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/RELEASING.md" target="_blank" rel="noopener">RELEASING.md</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <div class="footer-grid">
+    <div>
+      <a class="brand" href="#top" style="margin-bottom:10px;display:flex">
+        <img src="assets/aether-logo.svg" alt="" width="22" height="22"/>
+        <span>AetherOS</span>
+      </a>
+      <p style="font-size:13.5px;max-width:40ch">Made for gaming. Made private. Made Aether.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases" target="_blank" rel="noopener">Releases</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/RELEASING.md" target="_blank" rel="noopener">Release process</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/aetheros/docs/PRIVACY.md" target="_blank" rel="noopener">Privacy</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/aetheros/docs/GAMING.md" target="_blank" rel="noopener">Gaming</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/blob/main/LICENSE" target="_blank" rel="noopener">License (MIT)</a>
+    </nav>
+  </div>
+  <p class="fine">AetherOS is an independent open-source project and is not affiliated with Microsoft, Apple, Valve, or Google. Always verify checksums before installing.</p>
+</footer>
+
 <script>
-const u=navigator.userAgent.toLowerCase();
-let os="Linux", url="";
-if(u.includes("win")){os="Windows";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest"}
-else if(u.includes("mac")){os="MacOS";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest"}
-else if(u.includes("android")){os="Android";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest"}
-else{os="Linux";url="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest"}
-document.getElementById("osDetected").textContent="Detected: "+os;
-document.getElementById("browserLinks").innerHTML='<a class="btn" href="'+url+'">Download Browser for '+os+'</a> <a class="btn secondary" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">All downloads</a>';
+(function(){
+  "use strict";
+
+  // OS detection for the download card — labels only, same download for everyone.
+  var ua = navigator.userAgent.toLowerCase();
+  var os = "Linux";
+  if (ua.indexOf("win") !== -1) os = "Windows";
+  else if (ua.indexOf("mac") !== -1) os = "macOS";
+  else if (ua.indexOf("android") !== -1) os = "Android";
+  else if (ua.indexOf("linux") !== -1) os = "Linux";
+
+  var osLine = document.getElementById("osLine");
+  if (osLine) {
+    if (os === "Android") {
+      osLine.innerHTML = "Detected: <span>Android</span> — AetherOS installs on a PC, not a phone. Grab the ISO below for a spare machine or VM.";
+    } else {
+      osLine.innerHTML = "Detected: <span>" + os + "</span> — the ISO below boots on any UEFI PC, replacing or living alongside " + os + ".";
+    }
+  }
+
+  // Copy-to-clipboard for the verify command.
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.getAttribute("data-copy");
+      var done = function () {
+        var original = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = original; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {});
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  // Scroll-reveal, skipped entirely for reduced-motion users. Anything
+  // already near the viewport at load is shown immediately (no flash of
+  // invisible content / no dependence on the observer's first callback
+  // firing before paint); content further down still animates in on scroll.
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reveals = document.querySelectorAll(".reveal");
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    reveals.forEach(function (el) { el.classList.add("is-visible"); });
+  } else {
+    var nearStart = window.innerHeight * 1.4;
+    var toObserve = [];
+    reveals.forEach(function (el) {
+      if (el.getBoundingClientRect().top < nearStart) {
+        el.classList.add("is-visible");
+      } else {
+        toObserve.push(el);
+      }
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    toObserve.forEach(function (el) { io.observe(el); });
+  }
+})();
 </script>
-</body></html>
+</body>
+</html>
