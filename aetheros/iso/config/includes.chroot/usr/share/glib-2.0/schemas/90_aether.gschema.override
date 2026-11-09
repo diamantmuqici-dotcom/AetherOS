@@ -14,7 +14,7 @@ picture-options='zoom'
 primary-color='#08090C'
 
 [org.gnome.shell]
-favorite-apps=['aether-browser.desktop', 'aether-mail.desktop', 'aether-vault.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'org.aether.Settings.desktop']
+favorite-apps=['aether-browser.desktop', 'aether-mail.desktop', 'aether-vault.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'org.aether.Updater.desktop', 'org.aether.Settings.desktop']
 enabled-extensions=['dash-to-dock@example.com']
 welcome-dialog-last-shown-version='48'
 

@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
-# Aether daily auto-check (safe: update list, notify, never force kernel) — invoked by systemd timer
-set -euo pipefail
-mkdir -p ~/.config/aether
-echo "last-check $(date -u +%FT%TZ)" > ~/.config/aether/updater-last-check
-sudo apt-get update -y >/dev/null 2>&1 || true
-# Notify if upgrades are pending (no install in background — install is from the app)
-notify-send "Aether Updater" "System updates available. Open Aether Updater to install." 2>/dev/null || true
+# Aether update check.
+# - As the system timer (no GUI session): refresh the apt lists only.
+# - At desktop login (autostart, GUI session present): check GitHub for a
+#   newer AetherOS release and open the Updater dialog if there is one.
+set -uo pipefail
+
+GUI_SESSION="${WAYLAND_DISPLAY:-${DISPLAY:-}}"
+
+if [ -z "$GUI_SESSION" ]; then
+  # System timer path: no user session, just refresh package lists.
+  apt-get update -y >/dev/null 2>&1 || true
+  exit 0
+fi
+
+# GUI path: run the release check (python3, stdlib only).
+exec python3 /usr/share/aether/scripts/update-push.py

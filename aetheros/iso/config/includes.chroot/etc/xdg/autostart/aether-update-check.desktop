@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Update Check
+Comment=Check for a newer AetherOS release at login
+Exec=aether-update-check
+Terminal=false
+Categories=System;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=10
+StartupNotify=false

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Aether Auto Updater — safe, documented. No blind distro switches.
+# pkexec shows the polkit GUI auth dialog (agent: polkit-gnome-authentication-agent-1).
 set -euo pipefail
 echo "==> Aether Updater: checking repository..."
-sudo apt-get update -y || true
+pkexec apt-get update -y || true
 echo "==> Upgrading (safe defaults, no breaking changes)..."
-sudo apt-get upgrade -y || true
-sudo apt-get autoremove -y || true
+pkexec apt-get upgrade -y || true
+pkexec apt-get autoremove -y || true
 echo "==> Flatpak updates (if flatpak present)..."
 command -v flatpak >/dev/null 2>&1 && flatpak update -y || echo "(no flatpak)"
 echo "==> Firmware (fwupdmgr, if present)..."
