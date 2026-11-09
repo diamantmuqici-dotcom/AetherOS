@@ -48,13 +48,17 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: aetheros-live-iso
-          path: aetheros/iso/*.iso*
+          path: |
+            aetheros/iso/*.iso
+            aetheros/iso/*.sha256
           if-no-files-found: error
       - name: Create Release (os-v* tag)
         if: success() && startsWith(github.ref, 'refs/tags/os-v')
         uses: softprops/action-gh-release@v2
         with:
-          files: aetheros/iso/*.iso*
+          files: |
+            aetheros/iso/*.iso
+            aetheros/iso/*.sha256
           draft: false
           prerelease: false
           name: AetherOS ${{ github.ref_name }}
@@ -75,7 +79,9 @@ jobs:
         with:
           tag_name: latest
           name: AetherOS latest (${{ github.sha }})
-          files: aetheros/iso/*.iso*
+          files: |
+            aetheros/iso/*.iso
+            aetheros/iso/*.sha256
           draft: false
           prerelease: true
           body: |
