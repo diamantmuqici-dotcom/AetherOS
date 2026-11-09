@@ -30,7 +30,7 @@ jobs:
             lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
             ISO=$(ls -1 live-image-*.iso *.iso 2>/dev/null | head -n1)
             mv "$ISO" AetherOS-live-amd64.iso || true
-            sha256sum AetherOS-*.iso > *.iso.sha256
+            sha256sum AetherOS-live-amd64.iso > AetherOS-live-amd64.iso.sha256
             ls -lh *.iso*
           '
       - name: Commit diagnostics
@@ -65,7 +65,7 @@ jobs:
           body: |
             AetherOS ${{ github.ref_name }}
 
-            Downloads below. Verify with `sha256sum -c *.iso.sha256`.
+            Downloads below. Verify with `sha256sum -c AetherOS-live-amd64.iso.sha256`.
 
             First boot: Welcome → Choose Your Aether → Appearance → Privacy → Gaming → Enter AetherOS.
 
@@ -87,5 +87,5 @@ jobs:
           body: |
             Auto-published latest build from main (${{ github.sha }}).
             Users get a notification and can choose to update or not.
-            Verify with `sha256sum -c *.iso.sha256`.
+            Verify with `sha256sum -c AetherOS-live-amd64.iso.sha256`.
           target_commitish: ${{ github.sha }}
