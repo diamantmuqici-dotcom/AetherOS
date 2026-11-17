@@ -4,6 +4,13 @@ plymouth
 plymouth-themes
 chromium
 thunderbird
+# Crypto/update/mail runtime: Ed25519 signatures, Argon2id vault, OpenPGP, LUKS2
+python3-cryptography
+gnupg
+cryptsetup
+apparmor
+apparmor-utils
+flatpak
 gnome-session
 gnome-shell
 gnome-shell-extensions

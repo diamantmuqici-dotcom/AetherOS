@@ -22,18 +22,26 @@ Welcome → Language → Keyboard → Network → **Choose Your Aether** (cover-
 ```
 aetheros/
   iso/       live-build config + payload (gsettings, wallpapers, hooks)
-  shell/     GNOME extensions: dock/ launcher/ notifications/ (original)
-  setup/     Aether Setup — GTK4 wizard (10 wallpapers, 4K)
-  settings/  Aether Settings — sidebar + icons + Power/Gaming panels
-  apps/gaming-hub/  Steam/Proton/Zen launcher
-  scripts/   mk-thumbs, mk-4k, adaptive-perf, gamemode, firstboot, sign-iso
+  core/      vault/, update/, mail/ — audited crypto, signed updates, real mail
+  shell/     GNOME extensions: dock/ launcher/ notifications/ animations/
+  setup/     Aether Setup — GTK4 wizard (10 wallpapers, 4K, guided tour)
+  settings/  Aether Settings — sidebar + Power/Gaming/Animations panels
+  apps/      browser/ mail/ app-center/ security-center/ vault/ updater/ gaming-hub/
+  scripts/   mk-thumbs, mk-4k, aether-fix, aether-doctor, aether-tune-vault, test-iso, sign-iso
+  tests/     vault, update-signature, mail, hardening, iso (83 tests)
   assets/    wallpapers, logo, emblem, manifest (1080p + 4K)
-  docs/      SUPPORT_MATRIX, PRIVACY, GAMING, INSTALL
+  docs/      APPS, BROWSER, MAIL, UPDATES, RECOVERY, ENCRYPTION, ANIMATIONS,
+             BEGINNERS, TESTING, HARDENING, SUPPORT_MATRIX, INSTALL
 ```
+
+Preinstalled: Aether Browser (Chromium + managed policy + MV3 filter), Mail
+(IMAP/SMTP/PGP), Vault, Updater (signed), App Center, Security Center, Animations,
+Gaming Hub, Doctor, Fix, plus the GNOME/gaming/media stack. Everything launches
+without a download first.
 
 ## Docs & install
 
-See `docs/APPS.md` for the full preinstalled app list and the one-command repair (`aether-fix`). `docs/INSTALL.md` and `docs/SUPPORT_MATRIX.md` cover flashing + test checklist.
+See `docs/APPS.md` for the full preinstalled app list and the one-command repair (`aether-fix`). `docs/BEGINNERS.md` is the plain-language help table; `aether-doctor` prints what's wrong and the exact command to fix it. `docs/INSTALL.md`, `docs/SUPPORT_MATRIX.md`, `docs/TESTING.md` cover flashing + verification.
 
 ## Design
 

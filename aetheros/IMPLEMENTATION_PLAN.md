@@ -1,65 +1,75 @@
 # AetherOS Implementation Checklist (Phase 1 audit → phases)
 
-Status key: DONE (verified here), CONFIG (changed but not built/tested), OPEN (not implemented).
+Status key: DONE (verified here), CONFIG (changed and unit-tested, not built/booted), OPEN (not implemented).
 
-## 0. Branding, motion and preinstalled apps (this pass)
+## Verification summary (this integration)
+- Full Python suite: `python -m unittest discover -s aetheros/tests -p 'test_*.py'` → **83 tests, OK (3 QEMU/ISO skips)**.
+- Components: vault 15, vault-extras 16, update-signature 13, mail 19, hardening 9, iso 11 (3 skipped).
+- `python -m compileall -q aetheros` clean. CI YAML parses; GNOME schema XML, Chromium policy JSON, MV3 extension JSON all parse.
+- 25/25 `.desktop` Exec targets resolve to a launcher or whitelisted system tool.
+- NOT verified: ISO build/boot, GNOME Shell extension load, Plymouth render, GTK UI runtime, live IMAP/SMTP — no Linux host/QEMU image on this bench. `scripts/test-iso.sh` + `ci.yml` run these in the build pipeline.
+
+## 0. Branding, motion and preinstalled apps
 - [x] Aether-only branding: os-release, MOTD, website, README, architecture/support/vault docs.
+- [x] Real `/etc/os-release` hook generates Aether identity; functional `VERSION_CODENAME=trixie` / `ID_LIKE=debian` pinned against values-file override so apt stays working.
 - [x] Aether Plymouth boot splash replaces upstream art; `quiet splash` on the live boot line; upstream splash themes removed at build.
-- [x] Aether Animations extension with full/reduced/off presets, installable schema, wired into setup.
-- [x] Every Aether desktop entry resolves to a real launcher (22/22 checked statically).
-- [x] Browser and Mail launch real preinstalled engines instead of printing flags / notification stubs.
-- [x] `aether-fix` repairs launchers, permissions, schemas, services and boot theme; verified at build and available on first boot.
-- [ ] ISO rebuild and boot test to verify splash, extension and app launching at runtime.
+- [x] Aether Animations extension: full/reduced/off + intensity/window/workspace/lock keys, settings panel, setup wired. Motion pass two adds window map/close, workspace, lock-screen motion.
+- [x] Every Aether desktop entry resolves to a real launcher (25/25 checked statically).
+- [x] Browser and Mail launch real preinstalled engines; App Center, Security Center, Doctor added.
+- [x] `aether-fix` repairs launchers, permissions, schemas, services and boot theme; verified at build and on first boot.
+- [x] One-command repair + beginner layer: `aether-doctor` (read-only), three-card guided tour, `docs/BEGINNERS.md`.
 
 ## 1. Repository audit and architecture
-- [x] Inspect working tree, branch, history, tags — created `hardening/aetheros-phase-1`.
-- [x] Read critical apps, workflows, systemd units, privileged scripts.
-- [x] Document findings — `SECURITY.md`.
-- [ ] Restore component boundaries: dedicated `core/`, `services/`, `apps/` packages per section 17.
-- [ ] Remove duplicated payloads under `iso/config/includes.chroot/usr/share/aether` in favour of packaging.
+- [x] Branch `hardening/aetheros-phase-1`; findings in `SECURITY.md`.
+- [x] Component boundaries introduced: `core/update/`, `core/mail/`, `core/vault/` keyfile/recovery/benchmark.
+- [ ] Remove duplicated payloads under `iso/config/includes.chroot/usr/share/aether` in favour of a packaging step (mirrors kept byte-identical for now).
 
-## 2. Debian 13 Trixie base
-- [x] Both `build-iso.yml` workflows: container `debian:trixie-slim`, `lb config --distribution trixie`.
-- [x] Package-list comment, README, SUPPORT_MATRIX, website docs.
-- [ ] Rebuild ISO on a Debian host/container and boot-test it. Logs under `iso/` are historical Bookworm records and were left untouched.
-- [ ] Re-audit package availability in Trixie; remove packages deleted from Trixie.
+## 2. Trixie base
+- [x] Both `build-iso.yml` workflows: container `debian:trixie-slim`, `lb config --distribution trixie`, `--debian-installer none` kept functional.
+- [x] codec-pack repointed bookworm → trixie; keyring → `debian-archive-keyring`.
+- [x] Package list adds crypto/mail/update dependencies: `python3-cryptography`, `gnupg`, `cryptsetup`, `apparmor`, `apparmor-utils`, `flatpak`.
+- [ ] Rebuild ISO on a Debian host/container and boot-test it. Logs under `iso/` are historical records, left untouched.
+- [ ] Re-audit package availability in Trixie.
 
 ## 3. Security remediation
-- [x] Vault crypto rewritten and tested (15 tests).
-- [ ] Replace `shell=True` destructive commands with argument-vector subprocesses and explicit path validation.
-- [ ] Signature verification for all update/AV/metadata fetches.
-- [ ] Service least-privilege review, AppArmor profiles, firewall defaults.
-- [ ] Security Center backed by real system state.
+- [x] Vault crypto Argon2id + ChaCha20-Poly1305, atomic writes; 15 tests.
+- [x] `shell=True` removed from factory-reset; argv subprocesses + target allow/deny lists; 9 hardening tests.
+- [x] Ed25519 signature verification for release manifests, verified before any field is read; 13 tests.
+- [x] Service hardening: `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=strict`, scoped `ReadWritePaths` on all five aether services; AppArmor enforce profiles for Browser and Mail.
+- [x] Security Center backed by real `aa-status`/`ufw`/`nft`/`systemctl`/`apt` state.
 
 ## 4. Aether Vault
 - [x] Secure format, atomic writes, backup, migration, password change, CLI.
-- [ ] GTK UI runtime verification on Debian, Argon2 parameter benchmark, keyfile/recovery flow, clipboard auto-clear.
+- [x] Argon2id benchmark/tuner (`aether-tune-vault`), keyfile factor + HKDF, 24-word recovery phrase with checksum, LUKS2 installer helper (`AETHER_CONFIRM` gate). 16 tests.
+- [ ] GTK UI runtime verification on a live desktop; clipboard auto-clear timer.
 
-## 5. Aether Mail — OPEN
-- [ ] Core: IMAP sync, SMTP send, TLS enforcement, OAuth2, multi-account.
-- [ ] Secret Service credential storage; no plaintext provider passwords.
-- [ ] Mail Lock: Argon2id-derived key, auto-lock, inactivity/suspend lock, recovery.
-- [ ] OpenPGP via GnuPG/GPGME; key management, PGP/MIME, status before send.
-- [ ] Safe HTML rendering, remote-image controls, phishing/link warnings.
-- [ ] Full settings panel and mock-server test suite.
+## 5. Aether Mail
+- [x] Account validation with TLS enforcement; IMAP sync (200-header/2 MiB caps, text/plain only), SMTP send with implicit/STARTTLS.
+- [x] SecretService-first credentials with Argon2id + ChaCha20-Poly1305 local fallback, 0600, no plaintext.
+- [x] Mail Lock: Argon2id verifier, inactivity predicate, suspend/lock hooks.
+- [x] OpenPGP via gpg argv + stdin, fingerprint validation, fail-closed.
+- [x] Allowlist HTML sanitizer, remote-image blocked by default.
+- [x] GTK4 app with real account/sync/read/compose/lock actions, PGP status before send. 19 tests. Headless `--check`.
+- [ ] Live IMAP/SMTP server integration; calendar/Exchange/attachments/OAuth2 browser flow (documented as out of scope in `MAIL.md`).
 
-## 6. Update infrastructure — OPEN (design required)
-- [ ] Signed APT repository (`deb [signed-by=...]`) for Aether packages; Debian security via unattended-upgrades.
-- [ ] Release channels stable/beta/development, staged rollout, pause/rollback.
-- [ ] CI: format, lint, SAST, dependency scan, unit/integration tests, package build, signed repo metadata with key held outside the repo.
-- [ ] Replace `update-push.py` GitHub check with authenticated APT policy check.
-- [ ] Update Center UI with real `apt` state and changelogs.
+## 6. Update infrastructure
+- [x] Signed release manifests (Ed25519), 1 MiB cap, schema + UTC expiry, fail closed.
+- [x] Channels stable/beta/development with per-channel overrides; upgrade plan intersects only manifest-pinned versions.
+- [x] Update Center UI reads real apt state; refuses apply unless signature VALID; snooze persisted. Headless `--check` JSON.
+- [x] `sign-iso.sh` manifest signing with `AETHER_SIGNING_KEY` (private key never in repo); `docs/UPDATES.md`, `docs/RECOVERY.md`.
+- [ ] Bake release public key into the ISO: staging dir `.../updates/` with `README.key`; drop `aether-release.pub.pem` before build. Held — no key generated on this bench.
+- [ ] Authenticated APT policy check replacing `update-push.py` GitHub check.
 
-## 7–16. Desktop, apps, gaming, privacy, backup, installer — OPEN
-- [ ] Settings type/callback audit; Security/Privacy/Update/About panels.
-- [ ] Browser: real Zen integration with official update mechanism; no sandbox weakening.
-- [ ] App Center on trusted Debian/Flatpak sources with permission visibility.
+## 7–16. Desktop, apps, gaming, privacy, backup, installer
+- [x] Browser: Chromium managed policy (DoH, WebRTC, no sync/sign-in), MV3 filter extension, profile isolation, `--diagnose`.
+- [x] App Center: Flatpak + dpkg listing, permission panel, install/remove, `--list` JSON.
+- [x] Security Center: real system state, `--check` JSON.
 - [ ] GameMode scoped to game PIDs with guaranteed restore; presets.
 - [ ] Backup/recovery with integrity verification and non-destructive restore.
-- [ ] Installer and first-boot wizard; consistent Aether-only branding across boot, login and desktop.
+- [x] First-boot wizard + guided tour; Aether-only branding across boot, login, desktop.
 
-## 17–23. Architecture, QA, docs, release — PARTIAL
-- [x] `SECURITY.md`, `IMPLEMENTATION_PLAN.md` added.
-- [ ] `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `RELEASE.md`, `UPDATES.md`, `PRIVACY.md`, `INSTALL.md`, `RECOVERY.md`, `MAIL.md`, `VAULT.md`, `GAMING.md`, `SUPPORT_MATRIX.md` — author/refresh in repo root.
-- [ ] Automated OS tests (ISO boot, installer, first boot, update, recovery) on a Debian VM host.
-- [ ] Reproducible build from clean environment; checksums and signed release metadata.
+## 17–23. Architecture, QA, docs, release
+- [x] `SECURITY.md`, `IMPLEMENTATION_PLAN.md`, `docs/BROWSER.md`, `docs/MAIL.md`, `docs/UPDATES.md`, `docs/RECOVERY.md`, `docs/ENCRYPTION.md`, `docs/ANIMATIONS.md`, `docs/BEGINNERS.md`, `docs/TESTING.md`, `docs/HARDENING.md`, `docs/APPS.md`.
+- [x] Automated OS tests staged: `scripts/test-iso.sh` (QEMU/OVMF boot smoke, exit 0/1/77) + `.github/workflows/ci.yml` (`static-checks`, `iso-boot-test`). CI runs the full unit matrix strictly.
+- [ ] Execute `ci.yml` on GitHub runners and confirm the ISO boot test passes end to end.
+- [ ] Reproducible build verification; checksums and signed release metadata (key held outside repo).
