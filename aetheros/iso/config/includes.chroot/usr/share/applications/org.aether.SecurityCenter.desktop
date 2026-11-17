@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Security Center
+Exec=aether-security-center
+Icon=security-high
+Terminal=false
+Categories=System;Utility;
+StartupNotify=true

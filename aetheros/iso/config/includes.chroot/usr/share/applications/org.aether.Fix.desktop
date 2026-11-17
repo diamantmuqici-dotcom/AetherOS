@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Fix
+Comment=Repair launchers, permissions, services and boot theme
+Exec=aether-fix
+Icon=system-software-update
+Terminal=true
+Categories=System;Utility;

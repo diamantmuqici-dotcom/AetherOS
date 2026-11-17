@@ -22,6 +22,7 @@ STATE_DIR = pathlib.Path.home() / ".config" / "aether"
 PRIVACY_FILE = STATE_DIR / "privacy.json"
 FINISHED_MARKER = STATE_DIR / "firstboot.done"
 FIRSTBOOT_MARKER = STATE_DIR / "firstboot"
+TOUR_MARKER = STATE_DIR / "tour.done"
 
 def wallpapers():
     d = AETHER_BG_DIR if AETHER_BG_DIR.exists() else FALLBACK_BG_DIR
@@ -275,11 +276,39 @@ class AetherSetup(Adw.Application):
         fin.append(Gtk.Label(label=f"Wallpaper: {self.selected_wallpaper.name}\nTheme: Dark • Accent: Aether Blue #00A3FF\nPrivacy: all diagnostics off (recommended)\nGaming: Steam optional • Game Mode experimental"))
         enter_btn = Gtk.Button(label="Enter AetherOS")
         enter_btn.add_css_class("suggested")
-        enter_btn.connect("clicked", lambda b: self.finish(win))
+        enter_btn.connect("clicked", lambda b: self.enter_from_finish(win, stack))
         fin.append(enter_btn)
         fin.append(nav_buttons("Back", "Back", lambda b: stack.set_visible_child_name("gaming"), lambda b: None))
         # hide unused second nav by default — keep simple: only enter button matters here
         stack.add_named(fin, "finish")
+
+        # ---------- STEP 10 Guided tour (once) ----------
+        tour = page("Quick Tour", "Three things worth knowing before you enter AetherOS.")
+        tour_cards = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)
+        tour_cards.set_halign(Gtk.Align.CENTER)
+        tour_data = [
+            ("Super key opens everything", "Press Super, then type to find any app or file."),
+            ("Aether Fix repairs anything", "Run aether-fix in a terminal when something looks broken."),
+            ("Aether Doctor tells you what to do", "Run aether-doctor to get the exact fix command."),
+        ]
+        for title, tip in tour_data:
+            card = Gtk.Frame()
+            card.set_size_request(260, 150)
+            inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+            inner.set_margin_top(18); inner.set_margin_bottom(18)
+            inner.set_margin_start(16); inner.set_margin_end(16)
+            card_label = Gtk.Label(label=title, wrap=True)
+            card_label.add_css_class("aether-big")
+            inner.append(card_label)
+            inner.append(Gtk.Label(label=tip, wrap=True))
+            card.set_child(inner)
+            card.set_tooltip_text(tip)
+            tour_cards.append(card)
+        tour.append(tour_cards)
+        tour.append(nav_buttons("Back", "Enter AetherOS",
+            lambda b: stack.set_visible_child_name("finish"),
+            lambda b: self.complete_tour(win)))
+        stack.add_named(tour, "tour")
 
         win.set_child(stack)
         win.present()
@@ -380,7 +409,11 @@ class AetherSetup(Adw.Application):
         gtk_theme = "Aether-Dark" if theme == "Dark" else "Aether-Light" if theme == "Light" else "Aether-Dark"
         gset("org.gnome.desktop.interface", "gtk-theme", gtk_theme)
         gset("org.gnome.desktop.interface", "color-scheme", "prefer-dark" if theme == "Dark" else "prefer-light" if theme == "Light" else "default")
-        gset("org.gnome.desktop.interface", "enable-animations", "false" if animations == "Disabled" else "true")
+        preset = {"Disabled": "off", "Reduced": "reduced"}.get(animations, "full")
+        try:
+            subprocess.run(["/usr/local/bin/aether-animations", preset], check=False, timeout=5)
+        except Exception:
+            gset("org.gnome.desktop.interface", "enable-animations", "false" if preset == "off" else "true")
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         (STATE_DIR / "appearance.json").write_text(json.dumps({"theme": theme, "accent": accent, "transparency": transparency, "animations": animations}, indent=2))
         return True
@@ -397,6 +430,22 @@ class AetherSetup(Adw.Application):
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         (STATE_DIR / "gaming.json").write_text(json.dumps(self.gaming, indent=2))
         return True
+
+    def enter_from_finish(self, win, stack):
+        # Show the guided tour on first boot, then go straight to the desktop.
+        if TOUR_MARKER.exists():
+            self.finish(win)
+        else:
+            stack.set_visible_child_name("tour")
+
+    def complete_tour(self, win):
+        # Persist the one-time marker, then finish setup.
+        try:
+            STATE_DIR.mkdir(parents=True, exist_ok=True)
+            TOUR_MARKER.touch(exist_ok=True)
+        except Exception:
+            pass
+        self.finish(win)
 
     def finish(self, win):
         try:

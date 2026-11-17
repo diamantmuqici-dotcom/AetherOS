@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Antivirus
+Exec=aether-av
+Icon=security-high
+Terminal=false
+Categories=System;Security;
+StartupNotify=true

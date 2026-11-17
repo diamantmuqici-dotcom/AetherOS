@@ -4,6 +4,14 @@ Description=Aether daily update check
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/aether-update-check
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/.config/aether /var/cache/apt /var/lib/apt /etc/apt
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target

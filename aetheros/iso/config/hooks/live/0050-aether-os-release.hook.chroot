@@ -1,0 +1,84 @@
+#!/bin/sh
+set -e
+
+# Functional base fields: apt and unattended-upgrades read these from the real os-release.
+VERSION_CODENAME=trixie
+ID_LIKE="debian"
+
+# Aether-facing identity defaults; a build-time values file may override them.
+PRETTY_NAME="AetherOS 1.0"
+NAME="AetherOS"
+VERSION_ID="1.0"
+ID="aetheros"
+HOME_URL="https://github.com/diamantmuqici-dotcom/AetherOS"
+BUG_REPORT_URL="https://github.com/diamantmuqici-dotcom/AetherOS/issues"
+LOGO="aether-logo"
+ANSI_COLOR="0;36"
+
+VALUES=/usr/share/aether/os-release.values
+if [ -f "$VALUES" ]; then
+  while IFS='=' read -r key value; do
+    case "$value" in
+      \"*\") value=${value#\"}; value=${value%\"} ;;
+      \'*\') value=${value#\'}; value=${value%\'} ;;
+    esac
+    case "$key" in
+      PRETTY_NAME)    PRETTY_NAME=$value ;;
+      NAME)           NAME=$value ;;
+      VERSION_ID)     VERSION_ID=$value ;;
+      ID)             ID=$value ;;
+      HOME_URL)       HOME_URL=$value ;;
+      BUG_REPORT_URL) BUG_REPORT_URL=$value ;;
+      LOGO)           LOGO=$value ;;
+      ANSI_COLOR)     ANSI_COLOR=$value ;;
+    esac
+  done < "$VALUES"
+fi
+
+# The two functional fields are not branding and stay pinned to the trixie base.
+VERSION_CODENAME=trixie
+ID_LIKE="debian"
+
+OVERRIDE_KEYS="PRETTY_NAME NAME VERSION_ID VERSION_CODENAME ID ID_LIKE HOME_URL BUG_REPORT_URL LOGO ANSI_COLOR"
+
+tmp=$(mktemp /etc/os-release.aether.XXXXXX)
+trap 'rm -f "$tmp"' 0 HUP INT TERM
+
+if [ -f /etc/os-release ]; then
+  awk -v keys="$OVERRIDE_KEYS" '
+    BEGIN {
+      n = split(keys, a, " ")
+      for (i = 1; i <= n; i++) override[a[i]] = 1
+    }
+    {
+      if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/) {
+        eq = index($0, "=")
+        key = substr($0, 1, eq - 1)
+        if (!(key in override)) print
+      } else {
+        print
+      }
+    }
+  ' /etc/os-release > "$tmp"
+fi
+
+cat >> "$tmp" <<EOF
+PRETTY_NAME="$PRETTY_NAME"
+NAME="$NAME"
+VERSION_ID="$VERSION_ID"
+VERSION_CODENAME=$VERSION_CODENAME
+ID=$ID
+ID_LIKE="$ID_LIKE"
+HOME_URL="$HOME_URL"
+BUG_REPORT_URL="$BUG_REPORT_URL"
+LOGO="$LOGO"
+ANSI_COLOR="$ANSI_COLOR"
+EOF
+
+mv -f "$tmp" /etc/os-release
+chmod 644 /etc/os-release
+
+printf '%s\n' 'AetherOS 1.0 \n \l' > /etc/issue
+printf '%s\n' 'AetherOS 1.0' > /etc/issue.net
+
+echo "Aether os-release installed."

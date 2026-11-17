@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=aether-bluetooth-quickpair
-Exec=bluetooth-quickpair.sh
+Exec=bluetooth-quickpair
 Terminal=false
 Categories=Utility;

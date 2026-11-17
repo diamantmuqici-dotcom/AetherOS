@@ -1,0 +1,157 @@
+name: CI Pipeline
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Byte-compile Python sources
+        run: python -m compileall -q aetheros
+      - name: Unit tests
+        run: |
+          python -m pip install --quiet cryptography PyYAML
+          python -m unittest discover -s aetheros/tests -p 'test_*.py' -v
+      - name: Shellcheck (non-blocking)
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update || true
+            sudo apt-get install -y shellcheck || true
+          fi
+          if command -v shellcheck >/dev/null 2>&1; then
+            shellcheck aetheros/scripts/test-iso.sh || true
+          else
+            echo "shellcheck unavailable; skipped"
+          fi
+      - name: ISO boot-check self-test (no VM)
+        run: bash aetheros/scripts/test-iso.sh --self-test
+      - name: JSON and XML validity
+        run: |
+          python - <<'PY'
+          import glob
+          import json
+          import xml.etree.ElementTree as ET
+
+          json_files = [
+            "aetheros/iso/config/includes.chroot/etc/chromium/policies/managed/aether.json",
+            "aetheros/iso/config/includes.chroot/usr/share/aether/wallpaper-manifest.json",
+            "aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/animations@aether/metadata.json",
+          ]
+          json_files += glob.glob(
+            "aetheros/iso/config/includes.chroot/usr/share/**/*.json", recursive=True
+          )
+          for path in sorted(set(json_files)):
+            with open(path, encoding="utf-8") as handle:
+              json.load(handle)
+            print("json ok", path)
+
+          for path in sorted(glob.glob("aetheros/iso/config/**/*.xml", recursive=True)):
+            ET.parse(path)
+            print("xml ok", path)
+          PY
+      - name: Desktop entry launcher verification
+        run: |
+          set -euo pipefail
+          APPDIR=aetheros/iso/config/includes.chroot/usr/share/applications
+          BINDIR=aetheros/iso/config/includes.chroot/usr/local/bin
+          SYSTEM_TOOLS="sh bash python3 python env gsettings gdbus xdg-open x-terminal-emulator"
+          missing=0
+          for f in "$APPDIR"/*.desktop; do
+            exec_line="$(grep -m1 '^Exec=' "$f" | cut -d= -f2-)"
+            cmd="$(printf '%s' "$exec_line" | awk '{print $1}')"
+            base="$(basename "$cmd")"
+            if [[ -e "$BINDIR/$base" ]] || grep -qw "$base" <<<"$SYSTEM_TOOLS"; then
+              continue
+            fi
+            echo "MISSING launcher '$base' referenced by $f"
+            missing=1
+          done
+          exit "$missing"
+
+  iso-boot-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install QEMU and OVMF
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 ovmf genisoimage
+      - name: Build ISO in Debian container
+        timeout-minutes: 35
+        run: |
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:trixie-slim bash -c '
+            set -e
+            apt-get update
+            apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates gnupg
+            chmod +x aetheros/scripts/*.sh aetheros/scripts/signing/*.sh || true
+            find aetheros -type f \( -name "*.sh" -o -name "*.hook.chroot" -o -path "*/auto/*" \) -exec sed -i "s/\r$//" {} + || true
+            make -C aetheros wallpapers
+            python3 aetheros/scripts/mk-4k.py --src aetheros/assets/wallpapers --dst aetheros/assets/wallpapers/4k || true
+            cd aetheros/iso
+            rm -rf auto
+            chmod +x config/hooks/live/*.hook.chroot || true
+            lb config --mode debian --distribution trixie --architectures amd64 --binary-images iso-hybrid --bootappend-live "boot=live components quiet splash console=ttyS0,115200 loglevel=7 hostname=aetheros-live username=aether union=overlay apparmor=1" --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
+            lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
+            ISO=$(ls -1 live-image-*.iso *.iso 2>/dev/null | head -n1)
+            mv "$ISO" AetherOS-live-amd64.iso || true
+            sha256sum AetherOS-*.iso > *.iso.sha256
+            ls -lh *.iso*
+            bash /work/aetheros/scripts/package-browser.sh || true
+            bash /work/aetheros/scripts/package-app-dist.sh || true
+          '
+      - name: Boot test
+        timeout-minutes: 10
+        run: |
+          ISO="$(ls -1 aetheros/iso/*.iso 2>/dev/null | head -n1)"
+          test -n "$ISO"
+          AETHER_TEST_LOG="aether-iso-serial.log" \
+          AETHER_TEST_SCREENSHOT="aether-iso-screenshot.ppm" \
+          AETHER_TEST_RESULT="aether-iso-result.json" \
+          bash aetheros/scripts/test-iso.sh "$ISO" --timeout 180
+      - name: Fail if boot test skipped
+        if: always()
+        run: |
+          set -euo pipefail
+          result="aether-iso-result.json"
+          if [[ ! -f "$result" ]]; then
+            echo "::error::boot result JSON missing ($result)"
+            exit 1
+          fi
+          info="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("status",""), d.get("exit_code",""))' "$result")"
+          status="${info%% *}"
+          code="${info##* }"
+          if [[ -z "$status" || "$status" == "skip" || "$code" == "77" ]]; then
+            echo "::error::ISO boot test skipped or produced no status (info: $info); a missing VM cannot pass this job"
+            exit 1
+          fi
+          echo "boot result: status=$status exit_code=$code"
+      - name: Upload boot-test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetheros-iso-boot-artifacts
+          path: |
+            aether-iso-serial.log
+            aether-iso-screenshot.ppm
+            aether-iso-result.json
+          if-no-files-found: warn
+      - name: Upload boot result JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetheros-iso-result
+          path: aether-iso-result.json
+          if-no-files-found: warn

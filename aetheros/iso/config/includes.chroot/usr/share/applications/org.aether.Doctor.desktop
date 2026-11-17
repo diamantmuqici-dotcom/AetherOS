@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether Doctor
+Comment=See what's wrong and the one command to fix it
+Exec=aether-doctor
+Icon=utilities-system-monitor
+Terminal=true
+Categories=System;Utility;

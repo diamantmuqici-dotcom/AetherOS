@@ -1,0 +1,11 @@
+# AetherOS privacy lockdown: location off, no telemetry or reporting.
+
+[org/gnome/desktop/privacy]
+send-software-usage-stats=false
+report-technical-problems=false
+recent-files-enabled=false
+remove-old-temp-files=true
+remove-old-trash-files=true
+
+[org/gnome/system/location]
+enabled=false

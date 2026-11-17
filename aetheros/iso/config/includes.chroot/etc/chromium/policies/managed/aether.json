@@ -1,0 +1,22 @@
+{
+  "DefaultNotificationsSetting": 2,
+  "DefaultSearchProviderEnabled": true,
+  "DefaultSearchProviderName": "Aether Search",
+  "DefaultSearchProviderSearchURL": "https://search.aetheros.org/search?q={searchTerms}",
+  "DefaultSearchProviderSuggestURL": "https://search.aetheros.org/suggest?q={searchTerms}",
+  "DnsOverHttpsMode": "secure",
+  "DnsOverHttpsTemplates": [
+    "https://cloudflare-dns.com/dns-query{?dns}",
+    "https://dns.google/dns-query{?dns}"
+  ],
+  "ExtensionInstallSources": [
+    "file:///usr/share/aether/browser/extensions/*"
+  ],
+  "HomepageIsNewTabPage": false,
+  "HomepageLocation": "https://search.aetheros.org/",
+  "MetricsReportingEnabled": false,
+  "SafeBrowsingProtectionLevel": 1,
+  "SigninAllowed": false,
+  "SyncDisabled": true,
+  "WebRtcIPHandling": "disable_non_proxied_udp"
+}

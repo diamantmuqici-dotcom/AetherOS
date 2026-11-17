@@ -22,6 +22,7 @@ STATE_DIR = pathlib.Path.home() / ".config" / "aether"
 PRIVACY_FILE = STATE_DIR / "privacy.json"
 FINISHED_MARKER = STATE_DIR / "firstboot.done"
 FIRSTBOOT_MARKER = STATE_DIR / "firstboot"
+TOUR_MARKER = STATE_DIR / "tour.done"
 
 def wallpapers():
     d = AETHER_BG_DIR if AETHER_BG_DIR.exists() else FALLBACK_BG_DIR
@@ -78,11 +79,27 @@ class AetherSetup(Adw.Application):
             return row
 
         # ---------- STEP 1 Welcome ----------
-        welcome = page("Welcome to AetherOS", "Premium desktop — privacy-first, gaming-ready, beautiful from the first screen.")
+        welcome = page("Welcome to Aether", "Aether is an OS that is combined between 3 different OS — Windows, Linux, MacOS. And it's fully optimized for gaming. It supports .exe and .dmg and .pkg and more.")
+        hero = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        hero.set_halign(Gtk.Align.CENTER)
+        hero.add_css_class("aether-hero")
+        big = Gtk.Label(label="Welcome to Aether")
+        big.add_css_class("aether-big")
+        hero.append(big)
+        desc = Gtk.Label(label="Aether is an OS that is combined between 3 different OS —\nWindows, Linux, MacOS.\nAnd it's fully optimized for gaming.\nIt supports .exe and .dmg and .pkg and more.", wrap=True, wrap_mode=2)
+        desc.set_justify(Gtk.Justification.CENTER)
+        hero.append(desc)
+        hero.append(Gtk.Label(label="Choose your wallpaper, configure appearance and privacy, then enter AetherOS. Works offline.", wrap=True))
+        chip_row = Gtk.Box(spacing=8, halign=Gtk.Align.CENTER)
+        for chip in ["Windows .exe", "Linux AppImage/.deb", "macOS .dmg/.pkg", "VS Code", "Steam", "Zen Browser"]:
+            c = Gtk.Label(label=f"  {chip}  ")
+            c.add_css_class("aether-chip")
+            chip_row.append(c)
+        hero.append(chip_row)
+        welcome.append(hero)
         logo = Gtk.Image.new_from_pixbuf(Gio.File.new_for_path("/usr/share/pixmaps/aether-logo.png").query_pixbuf() if pathlib.Path("/usr/share/pixmaps/aether-logo.png").exists() else None)
         logo.set_pixel_size(96)
         welcome.append(logo)
-        welcome.append(Gtk.Label(label="Choose your wallpaper, configure appearance and privacy, then enter AetherOS. Works offline."))
         welcome.append(nav_buttons("Accessibility Options", "Get Started",
             lambda b: self.show_a11y_hint(),
             lambda b: stack.set_visible_child_name("language")))
@@ -167,15 +184,16 @@ class AetherSetup(Adw.Application):
         preview_label = Gtk.Label(label=wfiles[0].name if wfiles else "No wallpapers")
         wall.append(preview_label)
 
-        # gallery (cover-fit thumbnails via grid)
+        # gallery (cover-fit thumbnails via grid) — LAZY: thumbs first, full-res on select
         gallery = Gtk.FlowBox()
         gallery.set_column_spacing(8); gallery.set_row_spacing(8)
         gallery.set_selection_mode(Gtk.SelectionMode.NONE)
         gallery.set_min_children_per_line(4)
         gallery.set_max_children_per_line(6)
         self._gallery_cards = []
+        thumb_dir = pathlib.Path("/usr/share/aether/thumbs") if pathlib.Path("/usr/share/aether/thumbs").exists() else None
         for f in wfiles:
-            card = self.make_wallpaper_card(f, preview_img, preview_label)
+            card = self.make_wallpaper_card(f, preview_img, preview_label, thumb_dir)
             gallery.append(card)
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_child(gallery)
@@ -258,29 +276,71 @@ class AetherSetup(Adw.Application):
         fin.append(Gtk.Label(label=f"Wallpaper: {self.selected_wallpaper.name}\nTheme: Dark • Accent: Aether Blue #00A3FF\nPrivacy: all diagnostics off (recommended)\nGaming: Steam optional • Game Mode experimental"))
         enter_btn = Gtk.Button(label="Enter AetherOS")
         enter_btn.add_css_class("suggested")
-        enter_btn.connect("clicked", lambda b: self.finish(win))
+        enter_btn.connect("clicked", lambda b: self.enter_from_finish(win, stack))
         fin.append(enter_btn)
         fin.append(nav_buttons("Back", "Back", lambda b: stack.set_visible_child_name("gaming"), lambda b: None))
         # hide unused second nav by default — keep simple: only enter button matters here
         stack.add_named(fin, "finish")
 
+        # ---------- STEP 10 Guided tour (once) ----------
+        tour = page("Quick Tour", "Three things worth knowing before you enter AetherOS.")
+        tour_cards = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)
+        tour_cards.set_halign(Gtk.Align.CENTER)
+        tour_data = [
+            ("Super key opens everything", "Press Super, then type to find any app or file."),
+            ("Aether Fix repairs anything", "Run aether-fix in a terminal when something looks broken."),
+            ("Aether Doctor tells you what to do", "Run aether-doctor to get the exact fix command."),
+        ]
+        for title, tip in tour_data:
+            card = Gtk.Frame()
+            card.set_size_request(260, 150)
+            inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+            inner.set_margin_top(18); inner.set_margin_bottom(18)
+            inner.set_margin_start(16); inner.set_margin_end(16)
+            card_label = Gtk.Label(label=title, wrap=True)
+            card_label.add_css_class("aether-big")
+            inner.append(card_label)
+            inner.append(Gtk.Label(label=tip, wrap=True))
+            card.set_child(inner)
+            card.set_tooltip_text(tip)
+            tour_cards.append(card)
+        tour.append(tour_cards)
+        tour.append(nav_buttons("Back", "Enter AetherOS",
+            lambda b: stack.set_visible_child_name("finish"),
+            lambda b: self.complete_tour(win)))
+        stack.add_named(tour, "tour")
+
         win.set_child(stack)
         win.present()
+        # Boot-speed: finish window setup first, then load heavy preview on idle
+        GLib.idle_add(lambda: self.select_wallpaper(self.selected_wallpaper, preview_img, preview_label), preview_img)
+
+    def _fill_thumb(self, img, path):
+        try:
+            pix = Gio.File.new_for_path(str(path)).query_pixbuf()
+            img.set_pixbuf(pix.scale_simple(160, 100, 2))
+        except Exception:
+            pass
+        return False  # one-shot
 
     def show_a11y_hint(self):
         # Accessibility options open GNOME settings (if available)
         Gio.AppInfo.launch_default_for_type("application/x-desktop", None)
 
-    def make_wallpaper_card(self, f: pathlib.Path, preview_img: Gtk.Image, preview_label: Gtk.Label):
+    def make_wallpaper_card(self, f: pathlib.Path, preview_img: Gtk.Image, preview_label: Gtk.Label, thumb_dir=None):
         btn = Gtk.ToggleButton()
         btn.set_can_focus(False)
         thumb = Gtk.Image()
+        # Prefer pre-generated thumb (fast, no freeze), fallback to scaled original
         try:
-            pix = Gio.File.new_for_path(str(f)).query_pixbuf()
+            thumb_path = pathlib.Path(thumb_dir) / f.name if thumb_dir else None
+            src = thumb_path if (thumb_path and thumb_path.exists()) else f
+            pix = Gio.File.new_for_path(str(src)).query_pixbuf()
             scaled = pix.scale_simple(160, 100, 2)  # device scale
             thumb.set_pixbuf(scaled)
         except Exception:
-            thumb.set_from_pixbuf(Gio.File.new_for_path(str(FALLBACK_BG_DIR / "cosmos-nebula.jpg")).query_pixbuf())
+            pass  # thumb fills in when idle callback runs
+            GLib.idle_add(lambda: self._fill_thumb(thumb, f), thumb)
         btn.set_child(thumb)
         # checkmark overlay
         overlay = Gtk.Overlay()
@@ -349,7 +409,11 @@ class AetherSetup(Adw.Application):
         gtk_theme = "Aether-Dark" if theme == "Dark" else "Aether-Light" if theme == "Light" else "Aether-Dark"
         gset("org.gnome.desktop.interface", "gtk-theme", gtk_theme)
         gset("org.gnome.desktop.interface", "color-scheme", "prefer-dark" if theme == "Dark" else "prefer-light" if theme == "Light" else "default")
-        gset("org.gnome.desktop.interface", "enable-animations", "false" if animations == "Disabled" else "true")
+        preset = {"Disabled": "off", "Reduced": "reduced"}.get(animations, "full")
+        try:
+            subprocess.run(["/usr/local/bin/aether-animations", preset], check=False, timeout=5)
+        except Exception:
+            gset("org.gnome.desktop.interface", "enable-animations", "false" if preset == "off" else "true")
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         (STATE_DIR / "appearance.json").write_text(json.dumps({"theme": theme, "accent": accent, "transparency": transparency, "animations": animations}, indent=2))
         return True
@@ -366,6 +430,22 @@ class AetherSetup(Adw.Application):
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         (STATE_DIR / "gaming.json").write_text(json.dumps(self.gaming, indent=2))
         return True
+
+    def enter_from_finish(self, win, stack):
+        # Show the guided tour on first boot, then go straight to the desktop.
+        if TOUR_MARKER.exists():
+            self.finish(win)
+        else:
+            stack.set_visible_child_name("tour")
+
+    def complete_tour(self, win):
+        # Persist the one-time marker, then finish setup.
+        try:
+            STATE_DIR.mkdir(parents=True, exist_ok=True)
+            TOUR_MARKER.touch(exist_ok=True)
+        except Exception:
+            pass
+        self.finish(win)
 
     def finish(self, win):
         try:

@@ -1,5 +1,16 @@
-# AetherOS core (Debian Bookworm, built in container)
-# VS Code is installed via Microsoft deb (see scripts/install-vscode.sh) — not in Debian repos
+# AetherOS core — every app below ships preinstalled in the ISO
+# VS Code is installed via Microsoft deb (see scripts/install-vscode.sh)
+plymouth
+plymouth-themes
+chromium
+thunderbird
+# Crypto/update/mail runtime: Ed25519 signatures, Argon2id vault, OpenPGP, LUKS2
+python3-cryptography
+gnupg
+cryptsetup
+apparmor
+apparmor-utils
+flatpak
 gnome-session
 gnome-shell
 gnome-shell-extensions

@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Aether
+Description=AetherOS boot splash — obsidian field with the Aether emblem
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/aether
+ScriptFile=/usr/share/plymouth/themes/aether/aether.script

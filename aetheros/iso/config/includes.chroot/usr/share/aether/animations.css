@@ -1,40 +1,203 @@
-/* Taskbar animations — macOS magnification + Windows spring (original). */
+/* AetherOS motion system — spring dock, glide overview, soft notifications.
+   Presets: full / reduced / off (org.aether.animations profile).
+   Pass two: window lifecycle, workspace switching, lock-screen fade. */
+
 #panel {
-  transition-duration: 200ms;
-}
-#panel .taskbar {
-  transition-duration: 180ms;
-  transition-timing-function: cubic-bezier(0.34, 1.2, 0.64, 1);
-}
-#panel button:hover {
-  background-color: rgba(0, 163, 255, 0.18);
-}
-#panel button:active {
-  background-color: rgba(0, 163, 255, 0.28);
-}
-.aether-dock {
   transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.22, 0.85, 0.3, 1.15);
+}
+
+.panel-button,
+#panel .panel-button {
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1.2);
+  transition-property: background-color, color, padding;
+}
+.panel-button:hover { background-color: rgba(0, 163, 255, 0.18); }
+.panel-button:active { background-color: rgba(0, 163, 255, 0.30); }
+
+.aether-topbar {
+  background-color: rgba(8, 9, 12, 0.86);
+  border: 1px solid rgba(0, 163, 255, 0.35);
+  border-radius: 0 0 12px 12px;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.22, 0.85, 0.3, 1.15);
+}
+
+.aether-dock {
+  transition-duration: 240ms;
   transition-timing-function: cubic-bezier(0.34, 1.3, 0.64, 1);
+  transition-property: margin, padding, background-color, opacity;
 }
 .aether-dock .dock-icon {
-  transition-duration: 140ms;
+  transition-duration: 150ms;
   transition-timing-function: cubic-bezier(0.34, 1.5, 0.64, 1);
+  transition-property: width, height, margin, opacity, transform;
 }
-.aether-dock .dock-icon:hover {
-  transform: scale(1.18);
+.aether-dock .dock-icon:hover { transform: scale(1.18); }
+.aether-dock .dock-icon:active { transform: scale(0.94); }
+
+#dash,
+.dash {
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.34, 1.25, 0.64, 1);
 }
-.aether-launcher {
-  transition-duration: 250ms;
+.app-well-app,
+.dash-item,
+.app-grid .app-well-app {
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.2, 0.85, 0.3, 1.2);
+  transition-property: opacity, background-color, margin;
 }
+.app-well-app:hover,
+.dash-item:hover { background-color: rgba(0, 163, 255, 0.16); }
+
+.aether-launcher,
+.overview {
+  transition-duration: 260ms;
+  transition-timing-function: cubic-bezier(0.22, 0.8, 0.28, 1.1);
+  transition-property: opacity, background-color;
+}
+.workspace {
+  transition-duration: 280ms;
+  transition-timing-function: cubic-bezier(0.22, 0.85, 0.3, 1.05);
+}
+.window-picker .window-clone { transition-duration: 200ms; }
+
+.notification,
+.message,
+.notification-banner {
+  transition-duration: 240ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-property: opacity, margin, background-color;
+}
+.notification:hover,
+.message:hover { background-color: rgba(15, 19, 26, 0.96); }
+
+.popup-menu,
+.modal-dialog,
+.dialog {
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+#searchEntry,
+.search-entry {
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.85, 0.3, 1.1);
+}
+
+/* Window map / unmap / close — clones are the stylable window actors. */
+.window-picker .window-clone {
+  transition-property: opacity, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.22, 0.85, 0.3, 1.15);
+}
+.window-picker .window-clone:selected { opacity: 1.0; }
+
+/* Workspace switching — switcher and overview workspace actors. */
+.workspace-switcher,
+.shell-overview,
+.shell-overview .workspace {
+  transition-property: opacity, transform, background-color;
+  transition-duration: 280ms;
+  transition-timing-function: cubic-bezier(0.22, 0.85, 0.3, 1.05);
+}
+
+/* Lock-screen fade — shield, lock group, login and modal dialogs. */
+#lockDialogGroup,
+.screen-shield,
+.login-dialog,
+.modal-dialog {
+  transition-property: opacity, background-color;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.screen-shield { background-color: rgba(8, 9, 12, 0.94); }
+.login-dialog { border: 1px solid rgba(0, 163, 255, 0.35); }
+
+/* Intensity bands — set on the root UI group by the extension. */
+.aether-motion-soft .window-picker .window-clone,
+.aether-motion-soft .aether-dock,
+.aether-motion-soft .overview,
+.aether-motion-soft .workspace,
+.aether-motion-soft .workspace-switcher,
+.aether-motion-soft .shell-overview,
+.aether-motion-soft #lockDialogGroup,
+.aether-motion-soft .screen-shield,
+.aether-motion-soft .login-dialog,
+.aether-motion-soft .modal-dialog,
+.aether-motion-soft .notification {
+  transition-duration: 110ms;
+}
+.aether-motion-bold .window-picker .window-clone,
+.aether-motion-bold .aether-dock,
+.aether-motion-bold .overview,
+.aether-motion-bold .workspace,
+.aether-motion-bold .workspace-switcher,
+.aether-motion-bold .shell-overview,
+.aether-motion-bold #lockDialogGroup,
+.aether-motion-bold .screen-shield,
+.aether-motion-bold .login-dialog,
+.aether-motion-bold .modal-dialog,
+.aether-motion-bold .notification {
+  transition-duration: 320ms;
+}
+
+/* Per-feature gates from the boolean gsettings keys. */
+.aether-no-window-motion .window-picker .window-clone {
+  transition-duration: 1ms;
+}
+.aether-no-workspace-motion .workspace-switcher,
+.aether-no-workspace-motion .shell-overview,
+.aether-no-workspace-motion .shell-overview .workspace,
+.aether-no-workspace-motion .workspace {
+  transition-duration: 1ms;
+}
+.aether-no-lock-motion #lockDialogGroup,
+.aether-no-lock-motion .screen-shield,
+.aether-no-lock-motion .login-dialog,
+.aether-no-lock-motion .modal-dialog {
+  transition-duration: 1ms;
+}
+
+/* Off preset and intensity zero collapse everything. Loaded last to win. */
+.aether-motion-off #panel,
+.aether-motion-off .panel-button,
+.aether-motion-off .aether-topbar,
+.aether-motion-off .aether-dock,
+.aether-motion-off .aether-dock .dock-icon,
+.aether-motion-off #dash,
+.aether-motion-off .app-well-app,
+.aether-motion-off .dash-item,
+.aether-motion-off .aether-launcher,
+.aether-motion-off .overview,
+.aether-motion-off .workspace,
+.aether-motion-off .window-picker .window-clone,
+.aether-motion-off .workspace-switcher,
+.aether-motion-off .shell-overview,
+.aether-motion-off .shell-overview .workspace,
+.aether-motion-off #lockDialogGroup,
+.aether-motion-off .screen-shield,
+.aether-motion-off .login-dialog,
+.aether-motion-off .modal-dialog,
+.aether-motion-off .notification,
+.aether-motion-off .message,
+.aether-motion-off .dialog,
+.aether-motion-off #searchEntry,
+.aether-motion-off .search-entry {
+  transition-duration: 1ms;
+}
+.aether-motion-off .aether-dock .dock-icon:hover,
+.aether-motion-off .aether-dock .dock-icon:active,
+.aether-no-window-motion .window-picker .window-clone:hover { transform: none; }
+
 .aether-big {
   font-size: 28pt;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #EBEEF2;
 }
-.aether-hero {
-  spacing: 10px;
-}
+.aether-hero { spacing: 10px; }
 .aether-chip {
   background: rgba(0, 163, 255, 0.14);
   border: 1px solid rgba(0, 163, 255, 0.35);
@@ -42,4 +205,18 @@
   padding: 4px 10px;
   font-size: 10pt;
   color: #EBEEF2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel, .panel-button, .aether-topbar, .aether-dock,
+  .aether-dock .dock-icon, #dash, .app-well-app, .dash-item,
+  .aether-launcher, .overview, .workspace, .window-picker .window-clone,
+  .workspace-switcher, .shell-overview, .shell-overview .workspace,
+  #lockDialogGroup, .screen-shield, .login-dialog, .modal-dialog,
+  .notification, .message, .dialog, #searchEntry, .search-entry {
+    transition-duration: 1ms;
+  }
+  .aether-dock .dock-icon:hover,
+  .aether-dock .dock-icon:active,
+  .window-picker .window-clone:hover { transform: none; }
 }

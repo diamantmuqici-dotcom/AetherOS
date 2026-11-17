@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build ISO in Debian container
         run: |
-          docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm-slim bash -c '
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:trixie-slim bash -c '
             set -e
             apt-get update
             apt-get install -y live-build squashfs-tools xorriso isolinux syslinux-common genisoimage python3-pil make debootstrap ca-certificates gnupg
@@ -26,7 +26,7 @@ jobs:
             cd aetheros/iso
             rm -rf auto
             chmod +x config/hooks/live/*.hook.chroot || true
-            lb config --mode debian --distribution bookworm --architectures amd64 --binary-images iso-hybrid --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
+            lb config --mode debian --distribution trixie --architectures amd64 --binary-images iso-hybrid --bootappend-live "boot=live components quiet splash hostname=aetheros-live username=aether union=overlay apparmor=1" --mirror-bootstrap http://deb.debian.org/debian/ --mirror-binary http://deb.debian.org/debian/ --archive-areas "main contrib non-free non-free-firmware" 2>&1 | tee /work/aetheros/iso/lb-config.log
             lb build 2>&1 | tee /work/aetheros/iso/lb-build.log
             ISO=$(ls -1 live-image-*.iso *.iso 2>/dev/null | head -n1)
             mv "$ISO" AetherOS-live-amd64.iso || true

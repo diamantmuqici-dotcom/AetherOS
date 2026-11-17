@@ -1,0 +1,22 @@
+Antivirus definition-signing public key — build-time staging.
+
+Before building an ISO, place the Aether AV Ed25519 public key PEM here as:
+
+    aether-av.pub.pem
+
+live-build copies everything in this includes.chroot tree into the image, so
+the file lands at /usr/share/aether/updates/aether-av.pub.pem — the exact path
+DEFAULT_PUBLIC_KEY in aether-av.py reads. AETHER_AV_PUBLIC_KEY can override it
+for tests and local runs.
+
+Only the PUBLIC key belongs in this repository or any ISO. Generate the AV
+keypair offline and keep the private key outside the repo. Definition sets are
+signed with scripts/signing/sign_release over the canonical JSON form; the
+matching detached 64-byte Ed25519 signature is published as <defs>.sig next to
+aether-av-sigs.json in the release assets.
+
+Fail-closed behavior: if the public key, definition file or signature is
+absent, --check reports SIGNATURE_MISSING and no file is quarantined. If any of
+them is present but malformed, tampered, wrong-schema or expired, --check
+reports SIGNATURE_INVALID, and --update writes nothing and acts on no hash.
+The AV never fetches and applies unsigned JSON.

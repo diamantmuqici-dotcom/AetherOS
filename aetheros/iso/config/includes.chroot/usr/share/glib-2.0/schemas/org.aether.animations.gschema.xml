@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="aether">
+  <schema id="org.aether.animations" path="/org/aether/animations/">
+    <key name="profile" type="s">
+      <default>'full'</default>
+      <choices>
+        <choice value='full'/>
+        <choice value='reduced'/>
+        <choice value='off'/>
+      </choices>
+      <summary>Animation preset</summary>
+      <description>full uses spring motion, reduced shortens transitions, off disables compositor animations.</description>
+    </key>
+    <key name="intensity" type="d">
+      <default>1.0</default>
+      <summary>Motion intensity</summary>
+      <description>Duration multiplier, valid range 0.0 to 2.0; 0.0 collapses transitions, 1.0 is the spring baseline.</description>
+    </key>
+    <key name="window-animations" type="b">
+      <default>true</default>
+      <summary>Window map, unmap and close motion</summary>
+      <description>Enables transitions on window clones and window lifecycle actors.</description>
+    </key>
+    <key name="workspace-swipe" type="b">
+      <default>true</default>
+      <summary>Workspace switch motion</summary>
+      <description>Enables transitions on the workspace switcher and overview workspace actors.</description>
+    </key>
+    <key name="lock-fade" type="b">
+      <default>true</default>
+      <summary>Lock-screen fade</summary>
+      <description>Enables opacity transitions on the shield, lock dialog group, login dialog and modal dialogs.</description>
+    </key>
+  </schema>
+</schemalist>

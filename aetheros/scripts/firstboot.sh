@@ -9,14 +9,15 @@ if [ -f "$MARKER.done" ]; then
   exit 0
 fi
 
-# Launch setup in background after short delay so desktop/mouse come up first
-# (prevents 60s wallpaper-screen freeze; Setup appears seconds later ready)
-sleep 2 &
+# Repair launchers and services before the beginner-facing wizard.
+if [ -x /usr/local/bin/aether-fix ]; then
+  /usr/local/bin/aether-fix --quiet || true
+fi
+
+# Launch setup (Wayland native). If it exits non-zero, keep marker for retry.
 aether-setup
 RC=$?
 if [ $RC -eq 0 ]; then
   touch "$MARKER.done"
 fi
-# Async perf tune (non-blocking)
-(adaptive-perf auto >/dev/null 2>&1 || true) &
 exit $RC
