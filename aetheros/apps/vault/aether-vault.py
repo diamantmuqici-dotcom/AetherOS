@@ -163,7 +163,5 @@ def gui_main() -> int:
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    if args and args[0] in {"create", "unlock", "add", "list", "save", "change-password", "migrate"}:
-        sys.exit(cli_main(args))
-    sys.exit(gui_main())
+    parsed = build_parser().parse_args()
+    sys.exit(cli_main() if parsed.command else gui_main())
