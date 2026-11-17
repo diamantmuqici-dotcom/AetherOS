@@ -24,6 +24,19 @@ jobs:
         run: |
           python -m pip install --quiet cryptography PyYAML
           python -m unittest discover -s aetheros/tests -p 'test_*.py' -v
+      - name: Shellcheck (non-blocking)
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update || true
+            sudo apt-get install -y shellcheck || true
+          fi
+          if command -v shellcheck >/dev/null 2>&1; then
+            shellcheck aetheros/scripts/test-iso.sh || true
+          else
+            echo "shellcheck unavailable; skipped"
+          fi
+      - name: ISO boot-check self-test (no VM)
+        run: bash aetheros/scripts/test-iso.sh --self-test
       - name: JSON and XML validity
         run: |
           python - <<'PY'
@@ -104,12 +117,27 @@ jobs:
         run: |
           ISO="$(ls -1 aetheros/iso/*.iso 2>/dev/null | head -n1)"
           test -n "$ISO"
-          AETHER_ISO="$ISO" \
           AETHER_TEST_LOG="aether-iso-serial.log" \
           AETHER_TEST_SCREENSHOT="aether-iso-screenshot.ppm" \
           AETHER_TEST_RESULT="aether-iso-result.json" \
-          AETHER_TEST_TIMEOUT=180 \
-          bash aetheros/scripts/test-iso.sh
+          bash aetheros/scripts/test-iso.sh "$ISO" --timeout 180
+      - name: Fail if boot test skipped
+        if: always()
+        run: |
+          set -euo pipefail
+          result="aether-iso-result.json"
+          if [[ ! -f "$result" ]]; then
+            echo "::error::boot result JSON missing ($result)"
+            exit 1
+          fi
+          info="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("status",""), d.get("exit_code",""))' "$result")"
+          status="${info%% *}"
+          code="${info##* }"
+          if [[ -z "$status" || "$status" == "skip" || "$code" == "77" ]]; then
+            echo "::error::ISO boot test skipped or produced no status (info: $info); a missing VM cannot pass this job"
+            exit 1
+          fi
+          echo "boot result: status=$status exit_code=$code"
       - name: Upload boot-test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -119,4 +147,11 @@ jobs:
             aether-iso-serial.log
             aether-iso-screenshot.ppm
             aether-iso-result.json
+          if-no-files-found: warn
+      - name: Upload boot result JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetheros-iso-result
+          path: aether-iso-result.json
           if-no-files-found: warn
