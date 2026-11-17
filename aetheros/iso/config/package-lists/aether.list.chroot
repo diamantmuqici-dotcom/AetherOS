@@ -15,7 +15,8 @@ gnome-session
 gnome-shell
 gnome-shell-extensions
 gnome-shell-extension-dash-to-dock
-polkit-gnome-authentication-agent-1
+pkexec
+polkitd
 gdm3
 nautilus
 gnome-terminal

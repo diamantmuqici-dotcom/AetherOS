@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Aether Auto Updater — safe, documented. No blind distro switches.
-# pkexec shows the polkit GUI auth dialog (agent: polkit-gnome-authentication-agent-1).
+# pkexec shows the polkit GUI auth dialog (agent provided by gnome-shell).
 set -euo pipefail
 echo "==> Aether Updater: checking repository..."
 pkexec apt-get update -y || true

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Aether update check.
 # - As the system timer (no GUI session): refresh the apt lists only.
-# - At desktop login (autostart, GUI session present): check GitHub for a
-#   newer AetherOS release and open the Updater dialog if there is one.
+# - At desktop login (autostart, GUI session present): open the signed updater
+#   dialog, which reads the verified release manifest and keeps install
+#   disabled unless the Ed25519 signature is VALID.
 set -uo pipefail
 
 GUI_SESSION="${WAYLAND_DISPLAY:-${DISPLAY:-}}"
@@ -13,5 +14,5 @@ if [ -z "$GUI_SESSION" ]; then
   exit 0
 fi
 
-# GUI path: run the release check (python3, stdlib only).
-exec python3 /usr/share/aether/scripts/update-push.py
+# GUI path: the updater app performs the offline signature-verified check.
+exec aether-updater
