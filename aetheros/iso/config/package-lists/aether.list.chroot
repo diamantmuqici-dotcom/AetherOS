@@ -1,4 +1,4 @@
-# AetherOS core (Debian Bookworm, built in container)
+# AetherOS core (Debian 13 Trixie, built in container)
 # VS Code is installed via Microsoft deb (see scripts/install-vscode.sh) — not in Debian repos
 gnome-session
 gnome-shell

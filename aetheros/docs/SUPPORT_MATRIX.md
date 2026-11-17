@@ -2,7 +2,7 @@
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Debian Bookworm (amd64) | ✅ | Built in `debian:bookworm-slim` container |
+| Debian 13 Trixie (amd64) | ✅ | Built in `debian:trixie-slim` container |
 | GNOME Wayland | ✅ | Aether shell extensions (original code) |
 | Installer | 🔜 Calamares (Phase 6) | Live-boot + first-boot wizard works today |
 | 4K display | ✅ | Wallpapers have 4K cover variants (upscaled 1080p→4K) |

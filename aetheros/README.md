@@ -1,8 +1,8 @@
 # AetherOS
 
-A real operating system on **Debian Bookworm** + **GNOME on Wayland**, with an original Aether shell, first-boot setup with offline wallpaper gallery, and gaming stack. No Windows/macOS code or assets.
+A real operating system on **Debian 13 Trixie** + **GNOME on Wayland**, with an original Aether shell, first-boot setup with offline wallpaper gallery, and gaming stack. No Windows/macOS code or assets.
 
-> Current build: **debian:bookworm-slim container** on GitHub Actions (`ubuntu-24.04` runner). Produces a downloadable `.iso` (Actions artifact + Release on tags).
+> Current build: **debian:trixie-slim container** on GitHub Actions (`ubuntu-24.04` runner). Produces a downloadable `.iso` (Actions artifact + Release on tags).
 
 ## Quick start (reproducible)
 
