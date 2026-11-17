@@ -1,8 +1,8 @@
 # AetherOS
 
-A real operating system on **Debian 13 Trixie** + **GNOME on Wayland**, with an original Aether shell, first-boot setup with offline wallpaper gallery, and gaming stack. No Windows/macOS code or assets.
+AetherOS is one desktop built from the best of **Windows, Linux and macOS** — familiar layouts, a real app ecosystem, and gaming baked in. Original Aether shell, beginner-first setup, offline wallpaper gallery, and a full Aether app suite preinstalled.
 
-> Current build: **debian:trixie-slim container** on GitHub Actions (`ubuntu-24.04` runner). Produces a downloadable `.iso` (Actions artifact + Release on tags).
+> Current build: reproducible container build on GitHub Actions (`ubuntu-24.04` runner). Produces a downloadable `.iso` (Actions artifact + Release on tags).
 
 ## Quick start (reproducible)
 

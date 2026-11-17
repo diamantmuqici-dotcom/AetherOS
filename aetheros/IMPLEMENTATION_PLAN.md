@@ -47,7 +47,7 @@ Status key: DONE (verified here), CONFIG (changed but not built/tested), OPEN (n
 - [ ] App Center on trusted Debian/Flatpak sources with permission visibility.
 - [ ] GameMode scoped to game PIDs with guaranteed restore; presets.
 - [ ] Backup/recovery with integrity verification and non-destructive restore.
-- [ ] Installer and first-boot wizard; consistent branding with Debian attribution.
+- [ ] Installer and first-boot wizard; consistent Aether-only branding across boot, login and desktop.
 
 ## 17–23. Architecture, QA, docs, release — PARTIAL
 - [x] `SECURITY.md`, `IMPLEMENTATION_PLAN.md` added.

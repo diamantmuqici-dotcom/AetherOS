@@ -53,7 +53,7 @@ version, backup contents, interrupted `os.replace`, password change, lock state,
 backup restore, and legacy migration (success and wrong-password failure).
 
 Limitations: tests ran on Windows/Python 3.12/cryptography 50.0.2. Directory
-`fsync` is skipped on Windows and active on the Debian target. GTK UI was not
+`fsync` is skipped on Windows and active on the AetherOS target. GTK UI was not
 launched here. Argon2id parameters require benchmarking on target hardware.
 
 ## Remaining work

@@ -23,7 +23,7 @@ lb config \
   --distribution "$DISTRO_CODENAME" \
   --architectures "$ARCH" \
   --binary-images iso-hybrid \
-  --bootappend-live "boot=live components hostname=${HOSTNAME} username=${USER} union=overlay apparmor=1" \
+  --bootappend-live "boot=live components quiet splash hostname=${HOSTNAME} username=${USER} union=overlay apparmor=1" \
   --hostname "$HOSTNAME" \
   --username "$USER" \
   --image-name "aetheros-live" \

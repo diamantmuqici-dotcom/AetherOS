@@ -1,2 +1,13 @@
-Welcome to AetherOS — privacy-first, gaming-ready.
-See /usr/share/aether/wallpaper-manifest.json for bundled wallpapers.
+
+   ___    ______   ___    ____ ____   ____  _____ ____
+  / _ \  |  ____| / _ \  / ___/ ___| / ___|| ____|  _ \
+ | | | | | |__   | | | | \___ \___ \| |    |  _| | |_) |
+ | |_| | |  __|  | |_| |  ___) |__) | |___ | |___|  __/
+  \___/  |_|      \___/  |____/____/ \____||_____|_|
+
+  AetherOS 1.0 — Windows familiarity. Linux freedom. macOS polish.
+  Everything preinstalled. Setup runs on first login.
+
+  Help: press Super, type "Aether". Fix anything: aether-fix
+  Wallpapers: /usr/share/aether/wallpaper-manifest.json
+

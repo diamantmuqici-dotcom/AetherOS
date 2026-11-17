@@ -3,7 +3,7 @@
 ## Status
 
 The storage core (`aetheros/core/vault/secure_vault.py`) is implemented and tested.
-The GTK interface launches on Debian but was not exercised in the audit environment.
+The GTK interface launches on AetherOS but was not exercised in the audit environment.
 This document describes the implemented format, not planned features.
 
 ## Container format (version 2)

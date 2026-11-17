@@ -2,7 +2,7 @@
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Debian 13 Trixie (amd64) | ✅ | Built in `debian:trixie-slim` container |
+| AetherOS 1.0 (amd64) | ✅ | Reproducible container build; Aether-only branding and boot splash |
 | GNOME Wayland | ✅ | Aether shell extensions (original code) |
 | Installer | 🔜 Calamares (Phase 6) | Live-boot + first-boot wizard works today |
 | 4K display | ✅ | Wallpapers have 4K cover variants (upscaled 1080p→4K) |
@@ -22,7 +22,7 @@
 | Printer IPP | ✅ | `printer-ipp.sh` / system-config-printer |
 | Aether Backup | ✅ | `org.aether.Backup` / Deja Dup + rsync |
 | System Logs | ✅ | `org.aether.Logs` / journalctl |
-| Codec pack (opt-in) | ✅ | `codec-pack.sh` — Debian multimedia opt-in, ISO stays open-only |
+| Codec pack (opt-in) | ✅ | `codec-pack.sh` — multimedia opt-in, ISO stays open-only |
 | ESG gaming overlay | ✅ | `org.aether.Overlay` + MangoHud/GameMode |
 | Accessibility suite | ✅ | `org.aether.Accessibility` / Orca+Magnifier |
 

@@ -2,17 +2,17 @@
 
 ## 1. Base decision
 
-**Debian 13 'Trixie' stable, amd64 (arm64 later).** Rationale:
+**AetherOS 1.0 base, amd64 (arm64 later).** Rationale:
 
-- Stable, reproducible, 5-year support, no telemetry by default.
-- Self-contained `live-build` + Calamares path; every Phase 1 component is a Debian package.
-- Gaming: Steam official deb + Proton-GE (runtime) + Mesa/Vulkan backports pinned by version. Arch is faster-chasing but worse for a non-technical installer; Fedora is shorter-lived.
+- Stable, reproducible, long support window, no telemetry by default.
+- Self-contained `live-build` + Calamares path; every Phase 1 component ships as a system package.
+- Gaming: Steam + Proton-GE (runtime) + Mesa/Vulkan drivers pinned by version. Fast-chasing bases are worse for a non-technical installer.
 
 ## 2. Component map
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Kernel/Graphics | Debian kernel + `mesa-vulkan-drivers`, `firmware-linux-nonfree` (opt-in) | Best open Vulkan support; NVIDIA 550+ documented |
+| Kernel/Graphics | AetherOS kernel + `mesa-vulkan-drivers`, `firmware-linux-nonfree` (opt-in) | Best open Vulkan support; NVIDIA 550+ documented |
 | Window server | GNOME Shell (Wayland), XWayland for legacy | Stable Wayland, accessibility, HDR/VVR via Mutter |
 | Shell | `aether-shell` extensions: Dock, Launcher, TopBar, notifications | Feels premium in Phase 2 without re-inventing a compositor |
 | Setup | `aether-setup` (GTK4 + libadwaita + Python) | Native gsettings/D-Bus, offline-first |

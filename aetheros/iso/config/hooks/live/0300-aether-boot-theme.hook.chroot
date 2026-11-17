@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+# Aether is the only branded splash. Keep the logo-free text theme as a fallback.
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme -R aether 2>/dev/null || true
+fi
+
+for theme_dir in /usr/share/plymouth/themes/*; do
+  [ -d "$theme_dir" ] || continue
+  case "$(basename "$theme_dir")" in
+    aether|text) continue ;;
+    *) rm -rf "$theme_dir" ;;
+  esac
+done
+
+if command -v update-initramfs >/dev/null 2>&1; then
+  update-initramfs -u 2>/dev/null || true
+fi
+
+echo "Aether boot theme installed."

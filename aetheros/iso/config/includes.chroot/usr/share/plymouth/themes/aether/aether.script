@@ -1,0 +1,18 @@
+Window.SetBackgroundTopColor(0.031, 0.035, 0.047);
+Window.SetBackgroundBottomColor(0.059, 0.075, 0.102);
+
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+
+fun center_logo() {
+    logo.sprite.SetX((Window.GetWidth() - logo.image.GetWidth()) / 2);
+    logo.sprite.SetY((Window.GetHeight() - logo.image.GetHeight()) / 2);
+}
+
+center_logo();
+
+fun refresh() {
+    center_logo();
+}
+
+Plymouth.SetRefreshFunction(refresh);
