@@ -319,12 +319,11 @@ if [[ -n "$ISO_READER" ]]; then
 fi
 
 # --- build QEMU argv (argv only, never eval / shell=true) --------------------
-# iso-hybrid images are isolinux/BIOS by default. Only switch to OVMF when the
-# ISO actually carries an EFI bootloader; forcing UEFI on a BIOS-only image
-# leaves OVMF at the DVD-ROM handoff with no kernel and an empty serial log.
-EFI_BOOT="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '(^|/)efi/boot/bootx64\.efi(;1)?$' | head -n1)"
+# Boot via SeaBIOS by default. The live image's isolinux menu auto-boots with
+# the serial console in the kernel cmdline; OVMF stops at the DVD-ROM handoff
+# on this image and yields no kernel milestone on the serial port.
 OVMF_CODE=""
-if [[ -n "$EFI_BOOT" || "${AETHER_TEST_UEFI:-0}" == "1" ]]; then
+if [[ "${AETHER_TEST_UEFI:-0}" == "1" ]]; then
   for candidate in \
     /usr/share/OVMF/OVMF_CODE.fd \
     /usr/share/OVMF/OVMF_CODE_4M.fd \
