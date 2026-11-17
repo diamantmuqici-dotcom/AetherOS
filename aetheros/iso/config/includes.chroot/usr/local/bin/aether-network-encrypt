@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# AetherOS network encryption policy CLI launcher.
+# Deliberately thin: all parsing and policy live in /usr/share/aether/core/network.
+set -euo pipefail
+exec /usr/share/aether/scripts/network-encrypt.sh "$@"

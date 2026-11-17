@@ -103,6 +103,93 @@ passphrase and recovery key on separate physical media, verify with
 `cryptsetup luksAddKey`, and back up the LUKS header with
 `cryptsetup luksHeaderBackup`.
 
+## Full-disk encryption (FDE)
+
+FDE protects the installed OS at rest. An encrypted OS still boots, which
+means the key must be available at boot time; the honest guarantee is that the
+image alone is useless without the external key material, not that the OS can
+never be decrypted.
+
+### Device layout
+
+- **ESP** (`/boot/efi`): unencrypted. UEFI firmware must read the bootloader
+  before any decryption facility exists. The ESP cannot be encrypted under
+  this boot model. Protect it with Secure Boot so only signed bootloaders and
+  kernels load, and treat the ESP as a measured, verified component.
+- **Root** (`/`): a LUKS2 container with an Argon2id KDF, formatted with
+  `--type luks2 --pbkdf argon2id`. Iteration time comes from the tuned
+  `vault-params.json` value (clamped to 100-10000 ms), defaulting to 250 ms.
+- **Swap**: a separate LUKS2 container opened at boot from a random 4096-byte
+  keyfile at `/crypto_keyfile.bin` (`0600`, `root:root`). The keyfile lives on
+  the encrypted root, never in the ISO payload, and is registered as an extra
+  keyslot on the root volume so both partitions unlock from one secret.
+
+### Bootloader limitation
+
+The EFI System Partition cannot be encrypted: the firmware reads it before
+LUKS is available. FDE here means the root and swap volumes are encrypted; the
+boot chain is covered instead by Secure Boot. `fde_status` reports
+`bootloader_encrypted=False` for a plaintext ESP and records it as a gap, so a
+machine with an encrypted root but a plain ESP grades `FDE_PARTIAL` unless the
+caller asserts Secure Boot coverage with `--bootloader-encrypted`.
+
+### External key model
+
+The passphrase and recovery key are generated and stored on separate physical
+media (a USB stick or offline backup), never embedded in the ISO image. At boot
+the operator supplies the passphrase or an external keyfile to unlock LUKS2.
+If that key material is lost, the data is not recoverable from the image alone.
+No plaintext key is written into the build tree or payload manifest.
+
+### Commands
+
+```
+# Format the root volume (destructive; requires explicit confirmation)
+AETHER_CONFIRM=LUKS luks2-setup /dev/nvme0n1p3
+
+# Format root plus an encrypted swap volume with a root-only keyfile
+AETHER_CONFIRM=LUKS AETHER_SWAP_DEVICE=/dev/nvme0n1p4 luks2-setup /dev/nvme0n1p3
+
+# Read-only inspection (no confirmation needed)
+luks2-setup --check
+```
+
+After formatting, verify the passphrase and back up the header:
+
+```
+cryptsetup luksOpen --test-passphrase /dev/nvme0n1p3
+cryptsetup luksHeaderBackup /dev/nvme0n1p3 --header-backup-file /safe/path/header.img
+```
+
+### fde-verify
+
+`aether-fde-verify` (and the in-repo `scripts/fde-verify.sh`) reads
+`cryptsetup luksDump` from a device and emits canonical JSON through
+`core/fde/status.py`:
+
+```
+aether-fde-verify --check --device /dev/nvme0n1p3 \
+    --bootloader-encrypted --swap-encrypted --keyfile-external
+aether-fde-verify --self-test   # pure-helper assertions, no cryptsetup required
+aether-fde-verify --version
+```
+
+When `cryptsetup` or the device is unavailable, `--check` still emits a
+`NOT_ENCRYPTED` report with a `reason` field and exits non-zero; it never
+fabricates state or prints key material. The three coverage flags default to
+false and can also be set with `AETHER_FDE_BOOTLOADER`, `AETHER_FDE_SWAP`, and
+`AETHER_FDE_KEY_EXTERNAL`.
+
+### Report grades
+
+- `FDE_STRONG`: LUKS2 header present, Argon2id, at least one active keyslot,
+  and all three coverage facts asserted (boot, swap, external key). No gaps.
+- `FDE_PARTIAL`: a valid LUKS2 container exists but one or more coverage facts
+  are missing (for example a plaintext ESP, unencrypted swap, or an in-image
+  keyfile). The missing items are listed in `gaps`.
+- `NOT_ENCRYPTED`: no LUKS2 header or no active keyslot. The image provides no
+  at-rest protection.
+
 ## Threat model
 
 - Offline attacker with the container file: must break Argon2id for every
