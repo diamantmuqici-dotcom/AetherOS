@@ -8,9 +8,11 @@ import json
 import pathlib
 import re
 import sys
+import threading
 
 VERSION = "1.0.0"
 _FPR_RE = re.compile(r"^[0-9A-Fa-f]{16,40}$")
+IDLE_SECONDS = 60.0
 
 
 def _bootstrap() -> None:
@@ -26,7 +28,7 @@ def _bootstrap() -> None:
 
 _bootstrap()
 
-from core.mail import pgp  # noqa: E402
+from core.mail import attachment, imap_idle, pgp  # noqa: E402
 from core.mail.account import Account, AccountError, AccountStore  # noqa: E402
 from core.mail.credentials import CredentialStore, secret_service_available  # noqa: E402
 from core.mail.html_sanitize import sanitize  # noqa: E402
@@ -48,6 +50,15 @@ def check_status() -> dict:
         "locked": True,
         "credential_backend": "secret-service" if secret_service_available() else "encrypted-file",
         "pgp_available": pgp.is_available(),
+        "attachment_policy": {
+            "max_total_bytes": attachment.MAX_TOTAL_BYTES,
+            "max_each_bytes": attachment.MAX_EACH_BYTES,
+            "max_count": attachment.MAX_ATTACHMENTS,
+            "allowed_types": sorted(attachment.DEFAULT_ALLOWED_TYPES),
+            "blocked_executable_extensions": sorted(attachment.EXECUTABLE_EXTENSIONS),
+        },
+        "idle_capable": True,
+        "idle_max_seconds": int(imap_idle.MAX_IDLE_SECONDS),
     }
 
 
@@ -82,6 +93,9 @@ def run_gui() -> int:
             self.allow_remote_images = False
             self.rows: dict[object, int] = {}
             self.folder_rows: dict[object, str] = {}
+            self.idle_session: imap_idle.IdleSession | None = None
+            self.idle_cancel = threading.Event()
+            self.idle_thread: threading.Thread | None = None
 
         def do_activate(self) -> None:
             win = Adw.ApplicationWindow(
@@ -97,10 +111,12 @@ def run_gui() -> int:
             self.sync_button = Gtk.Button(label="Sync")
             self.compose_button = Gtk.Button(label="Compose")
             self.lock_button = Gtk.Button(label="Lock / Unlock")
+            self.idle_button = Gtk.ToggleButton(label="Push (IDLE)")
             self.image_switch = Gtk.CheckButton(label="Remote images")
             header.pack_start(self.add_button)
             header.pack_start(self.sync_button)
             header.pack_start(self.compose_button)
+            header.pack_start(self.idle_button)
             header.pack_end(self.image_switch)
             header.pack_end(self.lock_button)
             root.append(header)
@@ -112,6 +128,12 @@ def run_gui() -> int:
                 margin_top=6,
             )
             root.append(self.status)
+
+            idle_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8, margin_start=12)
+            idle_row.append(Gtk.Label(label="Push:", xalign=0))
+            self.idle_led = Gtk.Label(label="○ IDLE off", xalign=0)
+            idle_row.append(self.idle_led)
+            root.append(idle_row)
 
             paned = Gtk.Paned(
                 orientation=Gtk.Orientation.HORIZONTAL,
@@ -137,6 +159,7 @@ def run_gui() -> int:
             self.sync_button.connect("clicked", self.on_sync)
             self.compose_button.connect("clicked", self.on_compose)
             self.lock_button.connect("clicked", self.on_lock_toggle)
+            self.idle_button.connect("toggled", self.on_idle_toggled)
             self.image_switch.connect("toggled", self.on_image_toggled)
             self.folders.connect("row-activated", self.on_folder_activated)
             self.messages.connect("row-activated", self.on_message_activated)
@@ -240,6 +263,93 @@ def run_gui() -> int:
 
         def on_image_toggled(self, button) -> None:
             self.allow_remote_images = button.get_active()
+
+        def _set_idle_led(self, state: str, detail: str = "") -> None:
+            glyph = "●" if state in ("on", "error") else "○"
+            label = f"{glyph} IDLE {state}"
+            if detail:
+                label += f" — {detail[:80]}"
+            self.idle_led.set_label(label[:160])
+
+        def _idle_from_thread(self, state: str, detail: str = "") -> bool:
+            self._set_idle_led(state, detail)
+            return False
+
+        def _idle_event(self, event: dict) -> bool:
+            kind = str(event.get("event", ""))
+            value = event.get("count", event.get("seq", ""))
+            self._set_status(f"Push: {kind} {value}")
+            return False
+
+        def _reset_idle_button(self) -> None:
+            button = self.idle_button
+            button.handler_block_by_func(self.on_idle_toggled)
+            button.set_active(False)
+            button.handler_unblock_by_func(self.on_idle_toggled)
+
+        def _idle_finished(self) -> bool:
+            self.idle_session = None
+            self.idle_thread = None
+            self._reset_idle_button()
+            self._set_idle_led("off")
+            return False
+
+        def on_idle_toggled(self, button) -> None:
+            if not button.get_active():
+                self.idle_cancel.set()
+                if self.idle_session is not None:
+                    self.idle_session.cancel()
+                self._set_idle_led("off", "stopping")
+                return
+            if not self._ensure_unlocked():
+                self._reset_idle_button()
+                return
+            account = self._selected_account()
+            if account is None:
+                self._set_status("Add an account first")
+                self._reset_idle_button()
+                return
+            password = self.creds.get(account.id)
+            if not password:
+                self._set_status(f"No stored credential for {account.id}")
+                self._reset_idle_button()
+                return
+
+            self.idle_cancel = threading.Event()
+
+            def factory():
+                return imap_idle.connect(account, password)
+
+            try:
+                connection = factory()
+                session = imap_idle.IdleSession(
+                    connection, connect_fn=factory, cancel_event=self.idle_cancel
+                )
+            except Exception as exc:
+                self._set_status(f"Push connect failed: {exc}")
+                self._reset_idle_button()
+                return
+            self.idle_session = session
+            self._set_idle_led("on", "starting")
+
+            def worker() -> None:
+                try:
+                    session.select("INBOX")
+                    GLib.idle_add(self._idle_from_thread, "on", "active")
+                    session.idle(
+                        IDLE_SECONDS,
+                        on_event=lambda event: GLib.idle_add(self._idle_event, event),
+                    )
+                except Exception as exc:
+                    GLib.idle_add(self._idle_from_thread, "error", str(exc))
+                finally:
+                    session.close()
+                    GLib.idle_add(self._idle_finished)
+
+            self.idle_thread = threading.Thread(
+                target=worker, name="aether-mail-idle", daemon=True
+            )
+            self.idle_thread.start()
 
         def on_tick(self) -> bool:
             if self.mail_lock is not None and not self.mail_lock.locked:
@@ -371,6 +481,8 @@ def run_gui() -> int:
                     return f"PGP: invalid fingerprint — cannot {mode}"
                 return f"PGP: {mode} with {normalized} — ready"
 
+            attached: list[attachment.Attachment] = []
+
             dialog = Gtk.Dialog(title="Compose", transient_for=self.win, modal=True)
             dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
             dialog.add_button("Review", Gtk.ResponseType.OK)
@@ -388,6 +500,10 @@ def run_gui() -> int:
             body_scroll = Gtk.ScrolledWindow(height_request=180)
             body_scroll.set_child(body_view)
             pgp_label = Gtk.Label(label="", halign=Gtk.Align.START, wrap=True)
+            attach_button = Gtk.Button(label="Attach")
+            attach_label = Gtk.Label(
+                label="Attachments: none", halign=Gtk.Align.START, wrap=True
+            )
 
             for label, widget in (
                 ("To", to_entry),
@@ -399,8 +515,44 @@ def run_gui() -> int:
                 line.append(Gtk.Label(label=label, width_chars=14, xalign=0))
                 line.append(widget)
                 box.append(line)
+            attach_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+            attach_row.append(attach_button)
+            attach_row.append(attach_label)
+            box.append(attach_row)
             box.append(body_scroll)
             box.append(pgp_label)
+
+            def on_attach(button) -> None:
+                chooser = Gtk.FileDialog(title="Attach files", modal=True)
+                file_filter = Gtk.FileFilter()
+                file_filter.set_name("Allowed attachments")
+                for mime in sorted(attachment.DEFAULT_ALLOWED_TYPES):
+                    file_filter.add_mime_type(mime)
+                chooser.set_default_filter(file_filter)
+                self._file_dialog = chooser
+
+                def chosen(source, result) -> None:
+                    try:
+                        selected = source.open_multiple_finish(result)
+                    except Exception:
+                        return
+                    paths = [
+                        pathlib.Path(item.get_path())
+                        for item in selected
+                        if item is not None and item.get_path()
+                    ]
+                    try:
+                        prepared = attachment.prepare_attachments(paths)
+                    except attachment.AttachmentError as exc:
+                        attach_label.set_label(f"Attachments: rejected — {exc}"[:200])
+                        return
+                    attached.extend(prepared)
+                    names = ", ".join(item.filename for item in attached[:3])
+                    attach_label.set_label(f"Attachments: {len(attached)} — {names}"[:200])
+
+                chooser.open_multiple(self.win, None, chosen)
+
+            attach_button.connect("clicked", on_attach)
 
             def refresh(*_) -> None:
                 pgp_label.set_label(pgp_status(mode.get_active_text() or "none", fpr_entry.get_text()))
@@ -426,8 +578,15 @@ def run_gui() -> int:
             confirm = Gtk.Dialog(title="Review before sending", transient_for=self.win, modal=True)
             confirm.add_button("Cancel", Gtk.ResponseType.CANCEL)
             confirm.add_button("Send", Gtk.ResponseType.OK)
+            attachment_line = (
+                f"Attachments: {', '.join(item.filename for item in attached)}"
+                if attached else "Attachments: none"
+            )
             summary = Gtk.Label(
-                label=f"To: {values['to']}\nSubject: {values['subject']}\n{status_text}\n\nSend now?",
+                label=(
+                    f"To: {values['to']}\nSubject: {values['subject']}\n"
+                    f"{attachment_line}\n{status_text}\n\nSend now?"
+                ),
                 wrap=True,
                 margin=12,
             )
@@ -450,6 +609,7 @@ def run_gui() -> int:
                     outgoing = pgp.sign(body_text, values["fpr"])
                     tag = "signed"
                 message = build_message(account.email, [values["to"]], values["subject"], outgoing, pgp_status=tag)
+                attachment.attach_to_message(message, attached)
                 send_message(account, password, message)
             except Exception as exc:
                 self._set_status(f"Send failed: {exc}")

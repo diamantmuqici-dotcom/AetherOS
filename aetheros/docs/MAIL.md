@@ -65,6 +65,12 @@ an XOAUTH2 bearer token in place of the password.
 - Mail bodies pass through an allowlist sanitiser. `script`, `style`, `iframe`,
   event handlers, `javascript:`/`data:` URLs, and active elements are removed.
   Remote images become inline placeholders unless explicitly enabled.
+- Outbound attachments are validated against an allowlist of MIME types. Both
+  the filename extension and sniffed magic bytes must agree; executable types
+  are blocked. Limits are 10 MiB per file, 20 MiB total, and 20 files.
+- IMAP IDLE runs on a dedicated authenticated connection with TLS. Reads are
+  bounded (1 s slices), the session is cancellable, and reconnect uses bounded
+  exponential backoff.
 
 ## OpenPGP
 
@@ -72,19 +78,48 @@ an XOAUTH2 bearer token in place of the password.
 Plaintext/ciphertext travel over stdin; only a validated hex fingerprint
 reaches argv. Missing or failing gpg fails closed.
 
+## Attachments
+
+`core/mail/attachment.py` prepares outbound files. `sanitize_filename()` strips
+path components, separators, control characters and reserved characters, caps
+the name at 120 characters, and returns a safe basename. `prepare_attachments()`
+rejects non-regular files, files over 10 MiB, batches over 20 MiB or 20 files,
+executable extensions, and any file whose extension MIME and sniffed magic do
+not agree on an allowed type. Default allowed types: `text/plain`, `text/csv`,
+`image/png`, `image/jpeg`, `image/gif`, `application/pdf`, `application/zip`.
+The allowlist is configurable in code; the executable blocklist is not.
+
+`build_mime_message()` and `attach_to_message()` emit base64 parts with
+`Content-Disposition: attachment` and the sanitised filename. The compose
+dialog uses an `Attach` button backed by the GTK file chooser and shows a
+visible rejection message on policy failure.
+
+## IMAP IDLE push
+
+`core/mail/imap_idle.py` provides `IdleSession` over a stdlib `imaplib`
+connection. `select(mailbox)` selects a folder; `idle(timeout_s)` issues the
+IDLE command and reads unsolicited responses in bounded slices until the
+timeout or cancellation; `done()` sends `DONE`. `parse_idle_unsolicited()`
+normalises `* n EXISTS`, `* n RECENT` and `* n EXPUNGE` lines. Connection
+failures trigger reconnect with bounded exponential backoff (at most three
+attempts by default). The GUI runs IDLE on a daemon thread and marshals UI
+updates through `GLib.idle_add`; the main loop is never blocked.
+
 ## Commands
 
 `aether-mail` launches the GTK4/libadwaita client.
 `aether-mail --check` prints account/lock status JSON without loading gi.
 `aether-mail --version` prints the version.
 
-In the UI: Add account, Sync, message read, Compose, Lock / Unlock.
-The Compose review step shows PGP status before any send.
+In the UI: Add account, Sync, message read, Compose with attachments, Push
+(IDLE) toggle, Lock / Unlock. The Compose review step lists attachments and
+shows PGP status before any send. `--check` reports the attachment policy and
+IDLE capability.
 
 ## Limitations
 
 No calendar, contacts, or Exchange/MAPI support. No offline queue, no
-server-side search, no thread grouping, and no attachments. HTML is shown as
-sanitised text, not rendered markup. OAuth2 needs an externally supplied token;
-there is no interactive browser login. PGP key generation and key management
-are out of scope; import keys into the user's GPG keyring first.
+server-side search, and no thread grouping. HTML is shown as sanitised text,
+not rendered markup. OAuth2 needs an externally supplied token; there is no
+interactive browser login. PGP key generation and key management are out of
+scope; import keys into the user's GPG keyring first.
