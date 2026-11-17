@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aether App Center
+Exec=aether-app-center
+Icon=system-software-install
+Terminal=false
+Categories=System;Utility;
+StartupNotify=true

@@ -1,0 +1,22 @@
+{
+  "description": "Bundled declarative tracker and advertisement filter for Aether Browser.",
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "enabled": true,
+        "id": "aether_filter",
+        "path": "rules.json"
+      }
+    ]
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "manifest_version": 3,
+  "minimum_chrome_version": "101",
+  "name": "Aether Filter",
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "version": "1.0.0"
+}
