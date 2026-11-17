@@ -277,8 +277,12 @@ rm -f "$SERIAL_LOG" "$SCREENSHOT"
 ISO_READER="$(command -v isoinfo || command -v 7z || command -v bsdtar || true)"
 
 iso_list_paths() {
+  local out
   if command -v isoinfo >/dev/null 2>&1; then
-    bounded 30 isoinfo -f -i "$ISO"
+    # Rock Ridge/Joliet preserve the real lowercase names; plain ISO9660 uppercases them and appends ;1.
+    out="$(bounded 30 isoinfo -R -J -f -i "$ISO" 2>/dev/null)"
+    [[ -n "$out" ]] || out="$(bounded 30 isoinfo -f -i "$ISO" 2>/dev/null)"
+    printf '%s\n' "$out"
   elif command -v 7z >/dev/null 2>&1; then
     bounded 30 7z l -ba "$ISO"
   elif command -v bsdtar >/dev/null 2>&1; then
@@ -289,9 +293,13 @@ iso_list_paths() {
 }
 
 iso_extract() {
-  local path="$1" rel="${1#/}"
+  local path="$1" rel="${1#/}" stored
   if command -v isoinfo >/dev/null 2>&1; then
-    bounded 60 isoinfo -i "$ISO" -x "$path"
+    # Resolve the exact stored path from the listing so extraction matches ISO9660 or Rock Ridge naming.
+    stored="$(printf '%s\n' "$ISO_PATHS" | grep -aiF "$rel" | head -n1)"
+    [[ -n "$stored" ]] || stored="$path"
+    bounded 60 isoinfo -R -J -i "$ISO" -x "$stored" 2>/dev/null ||
+      bounded 60 isoinfo -i "$ISO" -x "$stored" 2>/dev/null
   elif command -v 7z >/dev/null 2>&1; then
     bounded 60 7z x -so "$ISO" "$rel"
   elif command -v bsdtar >/dev/null 2>&1; then
@@ -306,19 +314,25 @@ if [[ -n "$ISO_READER" ]]; then
   for cfg in /isolinux/txt.cfg /isolinux/live.cfg /isolinux/isolinux.cfg /boot/grub/grub.cfg; do
     BOOT_TEXT+="$(iso_extract "$cfg" 2>/dev/null)"$'\n'
   done
-  INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '/live/initrd[0-9]*\.img$' | head -n1)"
-  [[ -n "$INITRD_PATH" ]] || INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE 'initrd[^/]*\.img$' | head -n1)"
+  INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '/live/initrd[0-9]*\.img(;1)?$' | head -n1)"
+  [[ -n "$INITRD_PATH" ]] || INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE 'initrd[^/]*\.img(;1)?$' | head -n1)"
 fi
 
 # --- build QEMU argv (argv only, never eval / shell=true) --------------------
+# iso-hybrid images are isolinux/BIOS by default. Only switch to OVMF when the
+# ISO actually carries an EFI bootloader; forcing UEFI on a BIOS-only image
+# leaves OVMF at the DVD-ROM handoff with no kernel and an empty serial log.
+EFI_BOOT="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '(^|/)efi/boot/bootx64\.efi(;1)?$' | head -n1)"
 OVMF_CODE=""
-for candidate in \
-  /usr/share/OVMF/OVMF_CODE.fd \
-  /usr/share/OVMF/OVMF_CODE_4M.fd \
-  /usr/share/OVMF/OVMF_CODE_4M.ms.fd \
-  /usr/share/qemu/OVMF.fd; do
-  [[ -f "$candidate" ]] && OVMF_CODE="$candidate" && break
-done
+if [[ -n "$EFI_BOOT" || "${AETHER_TEST_UEFI:-0}" == "1" ]]; then
+  for candidate in \
+    /usr/share/OVMF/OVMF_CODE.fd \
+    /usr/share/OVMF/OVMF_CODE_4M.fd \
+    /usr/share/OVMF/OVMF_CODE_4M.ms.fd \
+    /usr/share/qemu/OVMF.fd; do
+    [[ -f "$candidate" ]] && OVMF_CODE="$candidate" && break
+  done
+fi
 
 QEMU_ARGS=(
   -m 4096M
