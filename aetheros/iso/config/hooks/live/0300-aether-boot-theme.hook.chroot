@@ -1,15 +1,24 @@
 #!/bin/sh
 set -e
 
-# Aether is the only branded splash. Keep the logo-free text theme as a fallback.
+# Aether is the only branded splash. Keep the logo-free text themes as fallbacks.
 if command -v plymouth-set-default-theme >/dev/null 2>&1; then
-  plymouth-set-default-theme -R aether 2>/dev/null || true
+  plymouth-set-default-theme aether 2>/dev/null || true
 fi
+
+# Trixie's initramfs plymouth hook copies the configured theme verbatim. Force
+# Aether in plymouthd.conf so a stale "details" default cannot break the build.
+mkdir -p /etc/plymouth
+cat > /etc/plymouth/plymouthd.conf <<'EOF'
+[Daemon]
+Theme=aether
+ShowDelay=0
+EOF
 
 for theme_dir in /usr/share/plymouth/themes/*; do
   [ -d "$theme_dir" ] || continue
   case "$(basename "$theme_dir")" in
-    aether|text) continue ;;
+    aether|text|details) continue ;;
     *) rm -rf "$theme_dir" ;;
   esac
 done
