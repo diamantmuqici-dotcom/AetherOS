@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=aether-wallpaper-slideshow
-Exec=wallpaper-slideshow.sh
+Exec=wallpaper-slideshow
 Terminal=false
 Categories=Utility;

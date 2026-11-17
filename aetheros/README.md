@@ -33,7 +33,7 @@ aetheros/
 
 ## Docs & install
 
-See `docs/INSTALL.md` and `docs/SUPPORT_MATRIX.md` for flashing + test checklist.
+See `docs/APPS.md` for the full preinstalled app list and the one-command repair (`aether-fix`). `docs/INSTALL.md` and `docs/SUPPORT_MATRIX.md` cover flashing + test checklist.
 
 ## Design
 

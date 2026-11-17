@@ -3,6 +3,8 @@
 | Component | Status | Notes |
 |-----------|--------|-------|
 | AetherOS 1.0 (amd64) | ✅ | Reproducible container build; Aether-only branding and boot splash |
+| Preinstalled app suite | ✅ | Every desktop entry verified at build; `aether-fix` repairs at runtime |
+| Aether Browser / Mail | ✅ | Chromium / Thunderbird engines bundled with privacy defaults |
 | GNOME Wayland | ✅ | Aether shell extensions (original code) |
 | Installer | 🔜 Calamares (Phase 6) | Live-boot + first-boot wizard works today |
 | 4K display | ✅ | Wallpapers have 4K cover variants (upscaled 1080p→4K) |

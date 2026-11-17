@@ -2,6 +2,15 @@
 
 Status key: DONE (verified here), CONFIG (changed but not built/tested), OPEN (not implemented).
 
+## 0. Branding, motion and preinstalled apps (this pass)
+- [x] Aether-only branding: os-release, MOTD, website, README, architecture/support/vault docs.
+- [x] Aether Plymouth boot splash replaces upstream art; `quiet splash` on the live boot line; upstream splash themes removed at build.
+- [x] Aether Animations extension with full/reduced/off presets, installable schema, wired into setup.
+- [x] Every Aether desktop entry resolves to a real launcher (22/22 checked statically).
+- [x] Browser and Mail launch real preinstalled engines instead of printing flags / notification stubs.
+- [x] `aether-fix` repairs launchers, permissions, schemas, services and boot theme; verified at build and available on first boot.
+- [ ] ISO rebuild and boot test to verify splash, extension and app launching at runtime.
+
 ## 1. Repository audit and architecture
 - [x] Inspect working tree, branch, history, tags — created `hardening/aetheros-phase-1`.
 - [x] Read critical apps, workflows, systemd units, privileged scripts.

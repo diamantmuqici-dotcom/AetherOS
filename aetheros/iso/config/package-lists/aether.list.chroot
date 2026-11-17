@@ -2,6 +2,8 @@
 # VS Code is installed via Microsoft deb (see scripts/install-vscode.sh)
 plymouth
 plymouth-themes
+chromium
+thunderbird
 gnome-session
 gnome-shell
 gnome-shell-extensions
