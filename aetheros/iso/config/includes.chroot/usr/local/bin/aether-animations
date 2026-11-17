@@ -1,33 +1,152 @@
 #!/usr/bin/env python3
-"""Set the Aether animation preset from the command line."""
+"""Read and set Aether animation state using argv and gsettings only."""
+import json
+import math
 import subprocess
 import sys
 
-PRESETS = {"full", "reduced", "off"}
+SCHEMA = "org.aether.animations"
+INTERFACE = "org.gnome.desktop.interface"
+PRESETS = ("full", "reduced", "off")
+BOOL_KEYS = {
+    "window": "window-animations",
+    "workspace": "workspace-swipe",
+    "lock": "lock-fade",
+}
+USAGE = (
+    "usage: aether-animations full|reduced|off\n"
+    "       aether-animations set profile full|reduced|off\n"
+    "       aether-animations set intensity <0..2>\n"
+    "       aether-animations set window on|off\n"
+    "       aether-animations set workspace on|off\n"
+    "       aether-animations set lock on|off\n"
+    "       aether-animations status"
+)
 
 
-def gsettings(schema, key, value):
-    subprocess.run(
-        ["gsettings", "set", schema, key, value],
-        check=False,
-        timeout=5,
+class GSettingsResult:
+    returncode = 1
+    stdout = ""
+    stderr = "gsettings unavailable"
+
+
+def gsettings(*args):
+    try:
+        return subprocess.run(
+            ["gsettings", *args], capture_output=True, text=True, timeout=5
+        )
+    except (OSError, subprocess.SubprocessError):
+        return GSettingsResult()
+
+
+def set_key(key, value, schema=SCHEMA):
+    result = gsettings("set", schema, key, value)
+    if result.returncode != 0:
+        print(result.stderr.strip() or f"failed to set {key}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def set_preset(preset):
+    if set_key("profile", preset):
+        return 1
+    return set_key(
+        "enable-animations",
+        "false" if preset == "off" else "true",
+        INTERFACE,
     )
+
+
+def get_raw(key, schema=SCHEMA):
+    result = gsettings("get", schema, key)
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip()
+
+
+def parse_bool(raw):
+    if raw is None:
+        return None
+    return raw.lower() == "true"
+
+
+def parse_string(raw):
+    if raw is None:
+        return None
+    return raw.strip().strip("'")
+
+
+def parse_double(raw):
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def do_status():
+    profile = parse_string(get_raw("profile"))
+    intensity = parse_double(get_raw("intensity"))
+    data = {
+        "profile": profile,
+        "intensity": intensity,
+        "window-animations": parse_bool(get_raw("window-animations")),
+        "workspace-swipe": parse_bool(get_raw("workspace-swipe")),
+        "lock-fade": parse_bool(get_raw("lock-fade")),
+        "enable-animations": parse_bool(
+            get_raw("enable-animations", INTERFACE)
+        ),
+    }
+    print(json.dumps(data, sort_keys=True))
+    return 0
+
+
+def do_set(argv):
+    if len(argv) != 4:
+        print(USAGE, file=sys.stderr)
+        return 2
+
+    target, value = argv[2], argv[3]
+    if target == "profile":
+        if value not in PRESETS:
+            print(USAGE, file=sys.stderr)
+            return 2
+        return set_preset(value)
+
+    if target == "intensity":
+        try:
+            number = float(value)
+        except ValueError:
+            print("intensity must be a number from 0.0 to 2.0", file=sys.stderr)
+            return 2
+        if not math.isfinite(number) or not 0.0 <= number <= 2.0:
+            print("intensity must be a number from 0.0 to 2.0", file=sys.stderr)
+            return 2
+        return set_key("intensity", repr(number))
+
+    if target in BOOL_KEYS:
+        if value not in ("on", "off"):
+            print(USAGE, file=sys.stderr)
+            return 2
+        return set_key(BOOL_KEYS[target], "true" if value == "on" else "false")
+
+    print(USAGE, file=sys.stderr)
+    return 2
 
 
 def main(argv):
-    if len(argv) != 2 or argv[1] not in PRESETS:
-        print("usage: aether-animations full|reduced|off", file=sys.stderr)
-        return 2
+    if len(argv) == 2 and argv[1] in PRESETS:
+        return set_preset(argv[1])
 
-    profile = argv[1]
-    gsettings("org.aether.animations", "profile", profile)
-    gsettings(
-        "org.gnome.desktop.interface",
-        "enable-animations",
-        "false" if profile == "off" else "true",
-    )
-    print(f"Aether animations: {profile}")
-    return 0
+    if len(argv) == 2 and argv[1] == "status":
+        return do_status()
+
+    if len(argv) >= 2 and argv[1] == "set":
+        return do_set(argv)
+
+    print(USAGE, file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":

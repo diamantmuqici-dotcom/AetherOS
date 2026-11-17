@@ -7,10 +7,28 @@ Each panel uses real backends:
   Controllers via evdev, Privacy via ~/.config/aether/*.json + gsettings.
 """
 import json, subprocess, pathlib, sys
-import gi
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw
+
+# Gtk/Adw are bound in main() so this module stays importable without gi.
+Gtk = None
+Adw = None
+
+ANIMATIONS_CLI = "aether-animations"
+
+def anim_run(*args):
+    try:
+        return subprocess.run([ANIMATIONS_CLI, *args], timeout=5, check=False)
+    except Exception:
+        return None
+
+def anim_status():
+    try:
+        result = subprocess.run(
+            [ANIMATIONS_CLI, "status"],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+        return json.loads(result.stdout)
+    except Exception:
+        return {}
 
 def gset(schema, key, val):
     try: subprocess.run(["gsettings","set",schema,key,str(val)], timeout=5, check=False)
@@ -40,7 +58,7 @@ class Settings(Adw.Application):
         sidebar = Gtk.ListBox()
         sidebar.set_selection_mode(Gtk.SelectionMode.SINGLE)
         for name in ["Appearance","Wallpaper","Mouse & Pointer","Keyboard","Displays","Sound","Network",
-                     "Bluetooth & Devices","Controllers","Power","Gaming","Focus","Accessibility","Privacy & Security","Apps"]:
+                     "Bluetooth & Devices","Controllers","Power","Gaming","Focus","Accessibility","Animations","Privacy & Security","Apps"]:
             row = Gtk.ActionRow(title=name)
             try:
                 from pathlib import Path
@@ -93,6 +111,44 @@ class Settings(Adw.Application):
             box.append(Gtk.Label(label="Theme / accent / transparency / animations — applies immediately."))
             add_toggle("Dark mode (color-scheme)", "org.gnome.desktop.interface", "color-scheme")  # note: real enum mapping refined per release
             add_slider("Accent (info color index)", "org.gnome.desktop.interface", "accent-color", 0, 10, 0)
+        elif name == "Animations":
+            box.append(Gtk.Label(label="Spring motion for windows, workspaces and the lock screen."))
+            state = anim_status()
+
+            preset = Gtk.ComboBoxText()
+            for option in ("full", "reduced", "off"):
+                preset.append(option, option)
+            preset.set_active_id(state.get("profile") or "full")
+            preset.connect("changed", lambda c: anim_run(c.get_active_id()))
+            preset_row = Gtk.Box(spacing=8)
+            preset_row.append(Gtk.Label(label="Preset"))
+            preset_row.append(preset)
+            box.append(preset_row)
+
+            try:
+                current = float(state.get("intensity", 1.0))
+            except (TypeError, ValueError):
+                current = 1.0
+            scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0.0, 2.0, 0.05)
+            scale.set_value(current)
+            scale.set_hexpand(True)
+            scale.connect("value-changed", lambda s: anim_run("set", "intensity", f"{s.get_value():.2f}"))
+            intensity_row = Gtk.Box(spacing=8)
+            intensity_row.append(Gtk.Label(label="Intensity"))
+            intensity_row.append(scale)
+            box.append(intensity_row)
+
+            for label, key, cli_name in (
+                ("Window motion", "window-animations", "window"),
+                ("Workspace swipe", "workspace-swipe", "workspace"),
+                ("Lock-screen fade", "lock-fade", "lock"),
+            ):
+                toggle = Gtk.CheckButton(label=label)
+                toggle.set_active(bool(state.get(key, True)))
+                toggle.connect("toggled", lambda c, name=cli_name: anim_run(
+                    "set", name, "on" if c.get_active() else "off"
+                ))
+                box.append(toggle)
         elif name == "Wallpaper":
             box.append(Gtk.Label(label="Official Aether wallpapers (offline). Select to apply."))
             bgdir = pathlib.Path("/usr/share/backgrounds/aether")
@@ -186,5 +242,15 @@ class Settings(Adw.Application):
             except Exception as e:
                 box.append(Gtk.Label(label=f"Gaming backend: {e}"))
 
+def main():
+    global Gtk, Adw
+    import gi
+    gi.require_version("Gtk", "4.0")
+    gi.require_version("Adw", "1")
+    from gi.repository import Gtk as _Gtk, Adw as _Adw
+    Gtk, Adw = _Gtk, _Adw
+    return Settings().run(sys.argv)
+
+
 if __name__ == "__main__":
-    sys.exit(Settings().run(sys.argv))
+    sys.exit(main())
