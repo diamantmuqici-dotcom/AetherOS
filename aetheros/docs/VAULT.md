@@ -39,6 +39,27 @@ derived from data, counters, or the password.
 - v1 migration uses the legacy KDF, verifies the new container on disk, and
   renames the original to `vault.enc.v1` rather than deleting it.
 
+## Clipboard auto-clear
+
+Copying a secret in the GTK interface (master password, record secret, or
+recovery phrase) places it on both the CLIPBOARD and PRIMARY selections and
+arms a timed wipe. The wipe is handled by the headless logic in
+`aetheros/core/vault/clipboard.py`; the app only supplies GLib and Gtk.
+
+- `ClipboardTimer` is monotonic-time based and takes `now` as an argument, so
+  expiry math is deterministic and testable without a clipboard or GUI.
+- Default timeout is 30 seconds. `AETHER_CLIPBOARD_TIMEOUT` overrides it in
+  whole seconds; values outside 1..300 and non-integers fall back to 30.
+- Each arm issues a new owner token. The previous GLib source is removed, and
+  a stale callback that still fires is rejected by the owner-token check. The
+  clear backend runs at most once per copy.
+- State logs carry only a 128-bit SHA-256 prefix of the copied text
+  (`redact_fingerprint`). No secret, fingerprint, or clipboard content is
+  written to disk or to logs.
+- Copy buttons carry a plain-language tooltip naming the timeout.
+- `NullBackend` provides the same API headlessly; `GtkBackend` imports `gi`
+  inside its methods, so importing the module never requires a display.
+
 ## Limitations
 
 - An application lock is not operating-system account security. A process running
@@ -67,7 +88,9 @@ aether-vault migrate --from-file ~/.config/aether/vault.enc
 ```
 cd Aether
 python -m unittest discover -s aetheros/tests -p 'test_secure_vault.py' -v
+python -m unittest discover -s aetheros/tests -p 'test_clipboard.py' -v
 ```
 
-Result at time of writing: 15 tests, 0 failures (Windows/Python 3.12.10,
-cryptography 50.0.2). Directory fsync executes only on POSIX.
+Result at time of writing: 15 secure-vault tests, 0 failures; 12 clipboard
+tests, 0 failures (Windows/Python 3.12.10, cryptography 50.0.2). Directory
+fsync executes only on POSIX.

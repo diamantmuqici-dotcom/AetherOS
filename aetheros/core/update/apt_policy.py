@@ -1,7 +1,8 @@
-"""APT state inspection through bounded, argument-vector subprocesses.
+"""APT state inspection and signed-manifest-driven policy (argv-only, fail closed).
 
-No shell is used. Simulation output is parsed into pinned upgrade records and
-anything that does not match the expected apt format is rejected, never guessed.
+Existing inspection helpers are unchanged. The policy layer below converts an
+already-verified release manifest into an allow-list of exact version pins; any
+package or version not pinned is denied. No shell is ever used.
 """
 
 from __future__ import annotations
@@ -9,11 +10,20 @@ from __future__ import annotations
 import re
 import subprocess
 
+from .release import ReleaseError, load_release, select_channel
+
 __all__ = [
     "parse_apt_policy",
     "parse_simulated_upgrade",
     "run_apt_policy",
     "run_simulated_upgrade",
+    "PolicyError",
+    "POLICY",
+    "build_policy_from_manifest",
+    "evaluate_package_policy",
+    "intersect_upgrades_with_policy",
+    "validate_plan",
+    "build_apt_argv",
 ]
 
 _TIMEOUT_MAX = 30
@@ -102,3 +112,170 @@ def run_apt_policy(package: str, timeout: int = _TIMEOUT_MAX) -> tuple[dict, str
         return {}, f"apt-policy-failed:rc={result.returncode}"
     policy = parse_apt_policy(result.stdout)
     return (policy, "ok") if policy else ({}, "unrecognized-output")
+
+
+# --- authenticated APT policy -------------------------------------------------
+
+class PolicyError(ValueError):
+    """Raised when a manifest cannot yield a usable policy (fail closed)."""
+
+
+class POLICY:
+    """Decision states and the only APT actions a signed policy may emit."""
+
+    ALLOWED = "allowed"
+    DISALLOWED = "disallowed"
+    PINNED = "pinned"
+    ACTIONS = ("install", "upgrade", "hold")
+    SOURCE = "signed-manifest"
+
+
+def build_policy_from_manifest(manifest: dict, channel: str = "stable") -> dict:
+    """Build a fail-closed policy from an already-verified manifest payload.
+
+    Verification happens upstream in signature.verify_release; this function only
+    validates structure and converts the signed pins into the allow-list.
+    """
+    if not isinstance(manifest, dict):
+        raise PolicyError("manifest must be a dict")
+    if not isinstance(channel, str) or not channel:
+        raise PolicyError("invalid channel")
+    try:
+        view = select_channel(load_release(manifest), channel)
+    except ReleaseError as exc:
+        raise PolicyError(f"invalid manifest: {exc}") from exc
+    pins = view["packages"]
+    if not isinstance(pins, dict):
+        raise PolicyError("package pins must be an object")
+    for name, version in pins.items():
+        if not isinstance(name, str) or not name:
+            raise PolicyError("invalid package name in pins")
+        if not isinstance(version, str) or not version:
+            raise PolicyError(f"invalid pin for {name}")
+    return {
+        "source": POLICY.SOURCE,
+        "signature": "VALID",
+        "channel": channel,
+        "expires": view["expires"],
+        "min_os_version": view["min_os_version"],
+        "pinned": dict(pins),
+        "allowed": sorted(pins),
+        "action": POLICY.PINNED,
+    }
+
+
+def evaluate_package_policy(
+    policy: dict,
+    package: str,
+    candidate: str | None = None,
+    action: str = "upgrade",
+) -> dict:
+    """Decide whether one package action is permitted by the signed policy."""
+    record = {
+        "package": package if isinstance(package, str) else "",
+        "candidate": candidate if isinstance(candidate, str) else None,
+        "action": action if isinstance(action, str) else "",
+        "decision": POLICY.DISALLOWED,
+        "state": POLICY.DISALLOWED,
+        "pinned_version": None,
+        "reason": "",
+    }
+    pins = policy.get("pinned") if isinstance(policy, dict) else None
+    if not isinstance(pins, dict):
+        record["reason"] = "no-policy"
+        return record
+    if not isinstance(package, str) or not package:
+        record["reason"] = "invalid-package"
+        return record
+    if package not in pins:
+        record["reason"] = "not-pinned"
+        return record
+    if not isinstance(action, str) or action not in POLICY.ACTIONS:
+        record["reason"] = "invalid-action"
+        return record
+    pinned = pins[package]
+    if candidate is not None and candidate != pinned:
+        record["reason"] = "version-mismatch"
+        record["pinned_version"] = pinned
+        return record
+    record["decision"] = POLICY.ALLOWED
+    record["state"] = POLICY.PINNED
+    record["pinned_version"] = pinned
+    record["version"] = pinned
+    record["reason"] = "pinned"
+    return record
+
+
+def intersect_upgrades_with_policy(
+    policy: dict,
+    upgrades: list[dict],
+    action: str = "upgrade",
+) -> list[dict]:
+    """Return only the observed upgrades the signed policy allows; no fabrication."""
+    if not isinstance(upgrades, list):
+        return []
+    result: list[dict] = []
+    for entry in upgrades:
+        if not isinstance(entry, dict):
+            continue
+        decision = evaluate_package_policy(
+            policy, entry.get("package"), entry.get("candidate"), action,
+        )
+        if decision["decision"] != POLICY.ALLOWED:
+            continue
+        decision["current"] = entry.get("current", "")
+        decision["origin"] = entry.get("origin", "")
+        result.append(decision)
+    return result
+
+
+def validate_plan(policy: dict, entries: list[dict]) -> tuple[list[dict], str]:
+    """Validate every entry against signed pins; fail closed on any violation."""
+    if not isinstance(entries, list):
+        return [], "invalid-plan"
+    normalized: list[dict] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return [], "invalid-entry"
+        package = entry.get("package")
+        version = entry.get("version", entry.get("candidate"))
+        action = entry.get("action", "upgrade")
+        decision = evaluate_package_policy(policy, package, version, action)
+        if decision["decision"] != POLICY.ALLOWED:
+            return [], f"denied:{decision['reason']}"
+        normalized.append({
+            "package": package,
+            "version": decision["pinned_version"],
+            "action": action,
+        })
+    return normalized, "ok"
+
+
+def build_apt_argv(entries: list[dict], action: str = "install") -> list[list[str]]:
+    """Return a list of argv lists (never shell strings) for the allowed entries."""
+    if not isinstance(entries, list):
+        return []
+    plans: list[list[str]] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        package = entry.get("package")
+        version = entry.get("version", entry.get("candidate"))
+        act = entry.get("action", action)
+        if not isinstance(package, str) or not package:
+            continue
+        if act not in POLICY.ACTIONS:
+            continue
+        if act == "hold":
+            plans.append(["apt-mark", "hold", package])
+            continue
+        if not isinstance(version, str) or not version:
+            continue
+        pin = f"{package}={version}"
+        if act == "upgrade":
+            plans.append(["apt-get", "install", "--only-upgrade", "-y", pin])
+        else:
+            plans.append([
+                "apt-get", "install", "-y", "--no-install-recommends", pin,
+            ])
+    return plans

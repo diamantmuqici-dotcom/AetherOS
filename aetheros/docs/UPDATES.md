@@ -47,36 +47,64 @@ formatting differences do not break verification. The public key is packaged at
    intersects APT's simulated upgrades with the manifest pins.
 4. `aether-updater` refuses to enable its Accept action unless the signature
    status is `VALID`, and re-checks the signature at apply time.
+5. `update-push.py` builds the same policy in `core/update/apt_policy.py`. Its
+   plan mode revalidates every entry against the signed pins and emits APT argv
+   without executing anything.
 
-## Headless check
+## Authenticated APT policy (update-push.py)
 
-The updater exposes a JSON status mode used by tests and CI. It imports no GTK
-modules:
+`update-push.py` replaced the old unverified GitHub release check. It fetches no
+release data over the network. APT actions (`install`, `upgrade`, `hold`) are
+permitted only for packages pinned at an exact version in a manifest that has
+already passed `verify_release`. Anything not pinned is denied; a missing,
+invalid, or expired manifest allows nothing.
+
+The CLI is argv-only and offline:
 
 ```bash
-python3 /usr/share/aether/updater/aether-updater.py --check
+python3 /usr/share/aether/scripts/update-push.py --check
+python3 /usr/share/aether/scripts/update-push.py --apply-plan plan.json
+python3 /usr/share/aether/scripts/update-push.py --version
 ```
 
-Example output:
+- `--check` emits a JSON status report containing `policy_source`, `signature`,
+  `allowed_packages`, `pending_upgrades` (APT's simulated upgrades intersected
+  with the signed pins), `apt_status`, and `error`. When the signature is not
+  `VALID`, `allowed_packages` and `pending_upgrades` are empty. On a host without
+  `apt-get`/`apt-cache` it reports `apt_status: "apt-unavailable"` and no state
+  is fabricated.
+- `--apply-plan <plan.json>` validates every entry against the signed manifest
+  and prints an APT argument-vector plan to stdout. It never runs APT. A plan is
+  a list, or an object with an `entries` list, whose entries are
+  `{"package": ..., "version": ..., "action": "install"|"upgrade"|"hold"}`.
+  Any unpinned package, version mismatch, or unknown action denies the whole
+  plan (`status: "denied"`, empty `argv`, non-zero exit). Valid argv are lists
+  of strings such as `["apt-get", "install", "-y", "--no-install-recommends",
+  "aether-shell=1.4-2"]`.
+- `--version` prints the tool version.
+
+Example `--check` output:
 
 ```json
 {
+  "version": "update-push 1.0",
+  "policy_source": "signed-manifest",
   "signature": "VALID",
   "channel": "stable",
+  "allowed_packages": ["aether-shell", "aether-updater"],
+  "pending_upgrades": [
+    {"package": "aether-shell", "current": "1.3-1", "version": "1.4-2", "origin": "Debian:13/stable"}
+  ],
+  "apt_status": "ok",
   "expires": "2026-12-01T00:00:00Z",
   "min_os_version": "1.0",
-  "apt_status": "ok",
-  "upgrades": [
-    {"package": "aether-shell", "version": "1.4-2", "current": "1.3-1", "origin": "Debian:13/stable"}
-  ],
   "error": null
 }
 ```
 
-`signature` is `VALID`, `INVALID`, or `MISSING`. When it is not `VALID`,
-`upgrades` is always empty. APT is invoked as `apt-get -s upgrade` and
-`apt-cache policy <pkg>` with argument vectors and a 30-second timeout; no shell
-is used.
+`signature` is `VALID`, `INVALID`, or `MISSING`. APT is invoked only through the
+argument-vector helper in `core/update/apt_policy.py` (`apt-get -s upgrade`,
+`apt-cache policy <pkg>`) with a bounded 30-second timeout; no shell is used.
 
 Environment overrides:
 

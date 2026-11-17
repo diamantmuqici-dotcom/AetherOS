@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import pathlib
 import sys
+import time
 
 APP_ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(APP_ROOT))
@@ -22,6 +23,10 @@ from core.vault.secure_vault import (  # noqa: E402
     VaultError,
     migrate_legacy_vault,
 )
+try:
+    from core.vault import clipboard as clip  # noqa: E402
+except ImportError:  # ISO layout keeps vault helpers under /usr/share/aether/vault
+    from vault import clipboard as clip  # noqa: E402
 
 DEFAULT_PATH = pathlib.Path.home() / ".config" / "aether" / "vault.enc"
 
@@ -103,12 +108,36 @@ def gui_main() -> int:
 
     gi.require_version("Gtk", "4.0")
     gi.require_version("Adw", "1")
-    from gi.repository import Adw, Gtk
+    from gi.repository import Adw, GLib, Gtk
 
     class VaultApp(Adw.Application):
         def __init__(self) -> None:
             super().__init__(application_id="org.aether.Vault")
             self.vault: SecureVault | None = None
+            self.clipboard_timer = clip.ClipboardTimer(clip.timeout_from_env())
+            self.clipboard_backend = clip.GtkBackend()
+            self.clear_source = 0
+            self.clip_hint = (
+                "Copies this secret to the clipboard and wipes it automatically "
+                f"after {self.clipboard_timer.timeout_s} seconds."
+            )
+
+        def copy_secret(self, text: str) -> None:
+            if not text:
+                return
+            if self.clear_source:
+                GLib.source_remove(self.clear_source)
+                self.clear_source = 0
+            token = clip.arm_secret(
+                self.clipboard_backend, text, self.clipboard_timer, time.monotonic()
+            )
+            self.clear_source = GLib.timeout_add(500, self._clear_tick, token)
+
+        def _clear_tick(self, token: int) -> bool:
+            keep = clip.schedule_clear(self.clipboard_backend, self.clipboard_timer, token)
+            if not keep:
+                self.clear_source = 0
+            return keep
 
         def do_activate(self) -> None:
             window = Adw.ApplicationWindow(application=self, title="Aether Vault")
@@ -120,6 +149,9 @@ def gui_main() -> int:
             unlock_page.set_margin_end(32)
             password = Gtk.PasswordEntry(show_peek_icon=True)
             password.set_placeholder_text("Master password")
+            password_copy = Gtk.Button(label="Copy password")
+            password_copy.set_tooltip_text(self.clip_hint)
+            password_copy.connect("clicked", lambda _b: self.copy_secret(password.get_text()))
             status = Gtk.Label(label="Locked")
             unlock_button = Gtk.Button(label="Unlock")
             unlock_button.add_css_class("suggested-action")
@@ -142,12 +174,31 @@ def gui_main() -> int:
                     page.remove(child)
                 for record in self.vault.payload.get("records", []):
                     row = Adw.ActionRow(title=record.get("site", ""), subtitle=record.get("user", ""))
+                    copy = Gtk.Button()
+                    copy.set_icon_name("edit-copy-symbolic")
+                    copy.set_tooltip_text(self.clip_hint)
+                    copy.connect(
+                        "clicked",
+                        lambda _b, s=record.get("secret", ""): self.copy_secret(s),
+                    )
+                    row.add_suffix(copy)
                     page.add(row)
+                phrase = self.vault.payload.get("recovery_phrase", "")
+                phrase_row = Adw.ActionRow(title="Recovery phrase", subtitle="Stored with the vault")
+                phrase_copy = Gtk.Button(label="Copy")
+                phrase_copy.set_tooltip_text(self.clip_hint)
+                phrase_copy.set_sensitive(bool(phrase))
+                phrase_copy.connect(
+                    "clicked", lambda _b, p=phrase: self.copy_secret(p)
+                )
+                phrase_row.add_suffix(phrase_copy)
+                page.add(phrase_row)
                 page.add(Gtk.Label(label=status.get_label()))
 
             page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
             unlock_button.connect("clicked", on_unlock)
             unlock_page.append(password)
+            unlock_page.append(password_copy)
             unlock_page.append(unlock_button)
             unlock_page.append(status)
             stacked.add_titled(unlock_page, "unlock", "Unlock")

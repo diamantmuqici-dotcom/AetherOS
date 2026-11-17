@@ -41,6 +41,24 @@ and checksum mismatches with `RecoveryError`.
 lanes). The salt must be 16-64 bytes. No plaintext key or derived seed is
 persisted; the phrase plus a stored salt are sufficient to regenerate it.
 
+## Clipboard auto-clear
+
+The GTK vault copies secrets (master password, record secrets, recovery
+phrase) through `aetheros/core/vault/clipboard.py`, which wipes them on a timer.
+
+- `arm_secret` puts the text on the board and claims a fresh owner token from
+  `ClipboardTimer`. A new copy removes the pending GLib source and invalidates
+  the old token, so a late callback from a previous copy cannot clear the new
+  secret or be cleared by it.
+- Timeout defaults to 30 seconds; `AETHER_CLIPBOARD_TIMEOUT` accepts whole
+  seconds in 1..300 and invalid values fall back to the default.
+- The timer uses injected monotonic time, so no wall-clock or GUI dependency is
+  needed to verify before/at/after-deadline behaviour.
+- Only a 128-bit SHA-256 prefix (`redact_fingerprint`) is available for state
+  reporting. Plaintext is never persisted to a file or emitted to logs.
+- `GtkBackend` writes to both CLIPBOARD and PRIMARY selections and defers its
+  `gi` import until a method is called; `NullBackend` is the headless equivalent.
+
 ## Argon2id tuning
 
 Run the tuner on the target machine before enrolling vaults:
@@ -101,6 +119,10 @@ passphrase and recovery key on separate physical media, verify with
   on an invalid phrase.
 - Header tampering: the vault AEAD authenticates KDF parameters, salt, and
   nonce, so downgrade attempts fail authentication.
+- Clipboard exposure window: a copied secret is readable by other clients
+  until the timer fires (30 seconds by default). Lowering
+  `AETHER_CLIPBOARD_TIMEOUT` shortens that window. The timer is best-effort UI
+  hygiene, not memory protection.
 - Not covered: a process running as the unlocked user can read vault memory;
   SSD/journaled filesystems do not guarantee secure deletion; the recovery
   checksum is an integrity check, not an authentication tag against a
