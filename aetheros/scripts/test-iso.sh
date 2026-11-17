@@ -316,12 +316,26 @@ if [[ -n "$ISO_READER" ]]; then
   done
   INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '/live/initrd[0-9]*\.img(;1)?$' | head -n1)"
   [[ -n "$INITRD_PATH" ]] || INITRD_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE 'initrd[^/]*\.img(;1)?$' | head -n1)"
+  KERNEL_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE '/live/vmlinuz(;[0-9]+)?$' | head -n1)"
+  [[ -n "$KERNEL_PATH" ]] || KERNEL_PATH="$(printf '%s\n' "$ISO_PATHS" | grep -aiE 'vmlinuz(;[0-9]+)?$' | head -n1)"
 fi
 
 # --- build QEMU argv (argv only, never eval / shell=true) --------------------
-# Boot via SeaBIOS by default. The live image's isolinux menu auto-boots with
-# the serial console in the kernel cmdline; OVMF stops at the DVD-ROM handoff
-# on this image and yields no kernel milestone on the serial port.
+# Boot the ISO's own kernel/initrd directly with an explicit serial cmdline.
+# The isolinux/OVMF bootloader paths on this hybrid image never forward a
+# console to ttyS0, so firmware boot produces an empty serial log. Direct
+# kernel boot keeps the CD attached for the live squashfs and is deterministic.
+BOOT_KERNEL=""
+BOOT_INITRD=""
+if [[ -n "$ISO_READER" && -n "$KERNEL_PATH" && -n "$INITRD_PATH" ]]; then
+  if iso_extract "$KERNEL_PATH" > "$WORK_DIR/vmlinuz" 2>/dev/null &&
+     iso_extract "$INITRD_PATH" > "$WORK_DIR/initrd.img" 2>/dev/null &&
+     [[ -s "$WORK_DIR/vmlinuz" && -s "$WORK_DIR/initrd.img" ]]; then
+    BOOT_KERNEL="$WORK_DIR/vmlinuz"
+    BOOT_INITRD="$WORK_DIR/initrd.img"
+  fi
+fi
+
 OVMF_CODE=""
 if [[ "${AETHER_TEST_UEFI:-0}" == "1" ]]; then
   for candidate in \
@@ -341,6 +355,14 @@ QEMU_ARGS=(
   -serial "file:$SERIAL_LOG"
   -drive "file=$ISO,media=cdrom,readonly=on"
 )
+
+BOOT_APPEND="boot=live components quiet splash loglevel=7 console=ttyS0,115200 hostname=aetheros-live username=aether union=overlay apparmor=1"
+if [[ -n "$BOOT_KERNEL" ]]; then
+  QEMU_ARGS+=(-kernel "$BOOT_KERNEL" -initrd "$BOOT_INITRD" -append "$BOOT_APPEND")
+  note "boot_mode: direct kernel/initrd from ISO with serial cmdline"
+else
+  note "boot_mode: firmware boot (kernel/initrd extraction unavailable)"
+fi
 
 if [[ -n "$OVMF_CODE" ]]; then
   QEMU_ARGS+=(-drive "if=pflash,format=raw,readonly=on,file=$OVMF_CODE")
@@ -365,7 +387,7 @@ else
   QEMU_ARGS+=(-monitor none)
 fi
 
-log "booting: $ISO (timeout ${TIMEOUT}s, OVMF=${OVMF_CODE:-none})"
+log "booting: $ISO (timeout ${TIMEOUT}s, mode=$([[ -n "$BOOT_KERNEL" ]] && echo direct-kernel || echo firmware), OVMF=${OVMF_CODE:-none})"
 "$QEMU" "${QEMU_ARGS[@]}" &
 QEMU_PID=$!
 
