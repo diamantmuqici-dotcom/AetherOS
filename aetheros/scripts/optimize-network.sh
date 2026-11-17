@@ -19,7 +19,7 @@ if [ -n "$CONN" ]; then
 else
   echo "No active NM connection (ok) — DNS will apply on next setup"
 fi
-# BBR congestion control (safe, kernel built-in on Debian)
+# BBR congestion control (safe, kernel built-in on this system)
 if [ -f /proc/sys/net/ipv4/tcp_congestion_control ]; then
   echo bbr | sudo tee /proc/sys/net/ipv4/tcp_congestion_control >/dev/null 2>&1 || true
   echo "BBR enabled (if supported)"

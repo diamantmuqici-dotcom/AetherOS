@@ -1,9 +1,11 @@
+# VERSION_CODENAME and ID_LIKE are functional base fields, not branding: apt and
+# unattended-upgrades depend on the trixie codename and debian lineage.
 PRETTY_NAME="AetherOS 1.0"
 NAME="AetherOS"
 VERSION_ID="1.0"
-VERSION_CODENAME=aether
+VERSION_CODENAME=trixie
 ID=aetheros
-ID_LIKE="unix"
+ID_LIKE="debian"
 HOME_URL="https://github.com/diamantmuqici-dotcom/AetherOS"
 BUG_REPORT_URL="https://github.com/diamantmuqici-dotcom/AetherOS/issues"
 LOGO="aether-logo"
