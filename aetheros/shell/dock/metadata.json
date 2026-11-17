@@ -1,0 +1,8 @@
+{
+  "uuid": "dock@aether",
+  "name": "Aether Dock",
+  "description": "Windows/macOS-style bottom taskbar with app icons, active-window indicators, Show Apps and a clock.",
+  "shell-version": ["45", "46", "47", "48"],
+  "version": 1,
+  "url": "https://github.com/diamantmuqici-dotcom/AetherOS"
+}

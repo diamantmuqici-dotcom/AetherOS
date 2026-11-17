@@ -1,0 +1,63 @@
+/* Aether Dock — bottom taskbar styling.
+   Palette: #0F131A panel, #00A3FF accent, #EBEEF2 foreground. */
+
+.aether-dock {
+  background-color: #0F131A;
+  border: 1px solid rgba(0, 163, 255, 0.35);
+  border-radius: 14px;
+  padding: 6px 10px;
+  spacing: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 0 12px rgba(0, 163, 255, 0.18);
+}
+
+.aether-dock-showapps {
+  background-color: rgba(0, 163, 255, 0.10);
+  border-radius: 10px;
+  padding: 4px;
+}
+.aether-dock-showapps:hover { background-color: rgba(0, 163, 255, 0.22); }
+.aether-dock-showapps:active { background-color: rgba(0, 163, 255, 0.34); }
+
+.aether-dock-button {
+  border-radius: 10px;
+  padding: 2px;
+}
+.aether-dock-button:hover { background-color: rgba(0, 163, 255, 0.18); }
+.aether-dock-button:active { background-color: rgba(0, 163, 255, 0.30); }
+
+.aether-dock-icon {
+  icon-size: 40px;
+  color: #EBEEF2;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.aether-dock-showapps:hover .aether-dock-icon,
+.aether-dock-button:hover .aether-dock-icon { color: #00A3FF; }
+.aether-dock-button:active .aether-dock-icon { color: #0080CC; }
+
+.aether-dock-indicator {
+  width: 6px;
+  height: 6px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background-color: rgba(235, 238, 242, 0.35);
+  transition-duration: 150ms;
+  transition-property: background-color, box-shadow;
+}
+.aether-dock-indicator.active {
+  background-color: #00A3FF;
+  box-shadow: 0 0 8px rgba(0, 163, 255, 0.9);
+}
+
+.aether-dock-clock {
+  color: #EBEEF2;
+  font-size: 11pt;
+  font-weight: 600;
+  padding: 0 6px 0 10px;
+  border-left: 1px solid rgba(0, 163, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aether-dock-icon,
+  .aether-dock-indicator { transition-duration: 1ms; }
+}
