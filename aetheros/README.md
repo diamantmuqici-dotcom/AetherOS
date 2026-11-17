@@ -22,22 +22,30 @@ Welcome → Language → Keyboard → Network → **Choose Your Aether** (cover-
 ```
 aetheros/
   iso/       live-build config + payload (gsettings, wallpapers, hooks)
-  core/      vault/, update/, mail/ — audited crypto, signed updates, real mail
+  core/      vault/, update/, mail/, backup/ — audited crypto, signed updates, real mail, verified restore
   shell/     GNOME extensions: dock/ launcher/ notifications/ animations/
   setup/     Aether Setup — GTK4 wizard (10 wallpapers, 4K, guided tour)
   settings/  Aether Settings — sidebar + Power/Gaming/Animations panels
-  apps/      browser/ mail/ app-center/ security-center/ vault/ updater/ gaming-hub/
-  scripts/   mk-thumbs, mk-4k, aether-fix, aether-doctor, aether-tune-vault, test-iso, sign-iso
-  tests/     vault, update-signature, mail, hardening, iso (83 tests)
+  apps/      browser/ mail/ app-center/ security-center/ vault/ updater/ gaming-hub/ antivirus/ backup/
+  scripts/   mk-thumbs, mk-4k, aether-fix, aether-doctor, aether-tune-vault, test-iso, sign-iso,
+             sync-payloads, payload-manifest, generate-release-key, make-release-metadata
+  tests/     vault, update-signature, apt-policy, AV, mail (+extras), backup, gamemode,
+             clipboard, release-metadata, gtk-readiness, payload-sync, hardening, iso (235 tests)
   assets/    wallpapers, logo, emblem, manifest (1080p + 4K)
-  docs/      APPS, BROWSER, MAIL, UPDATES, RECOVERY, ENCRYPTION, ANIMATIONS,
-             BEGINNERS, TESTING, HARDENING, SUPPORT_MATRIX, INSTALL
+  docs/      APPS, BROWSER, MAIL, UPDATES, RECOVERY, ENCRYPTION, ANIMATIONS, AV, BACKUP,
+             BEGINNERS, TESTING, HARDENING, SUPPORT_MATRIX, INSTALL, PAYLOADS, RELEASE, GTK-AUDIT
 ```
 
 Preinstalled: Aether Browser (Chromium + managed policy + MV3 filter), Mail
-(IMAP/SMTP/PGP), Vault, Updater (signed), App Center, Security Center, Animations,
-Gaming Hub, Doctor, Fix, plus the GNOME/gaming/media stack. Everything launches
-without a download first.
+(IMAP/SMTP/PGP, attachments, IDLE push), Vault (keyfile + 30s clipboard auto-clear),
+Updater (signed, authenticated APT policy), Antivirus (signed definitions,
+fail-closed), Backup (verified non-destructive restore), App Center, Security Center,
+Animations, Gaming Hub (PID-scoped GameMode), Doctor, Fix, plus the GNOME/gaming/media
+stack. Everything launches without a download first.
+
+Verification status: 235 tests pass (20 environment-gated skips); 68/68 payload
+mirrors byte-identical. ISO boot, live GTK rendering and live IMAP/SMTP remain
+owed on a Linux runner — see `docs/SUPPORT_MATRIX.md` and `docs/GTK-AUDIT.md`.
 
 ## Docs & install
 
