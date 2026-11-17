@@ -6,6 +6,14 @@ After=multi-user.target
 Type=oneshot
 ExecStart=/usr/local/bin/aether-av
 RemainAfterExit=yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/.config/aether /usr/share/aether/antivirus
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target

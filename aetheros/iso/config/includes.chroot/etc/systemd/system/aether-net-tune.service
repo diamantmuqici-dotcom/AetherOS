@@ -7,6 +7,14 @@ Wants=NetworkManager.service
 Type=oneshot
 ExecStart=/usr/local/bin/boot-net-tune
 RemainAfterExit=yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/etc/aether /etc/NetworkManager /var/lib/NetworkManager /var/log/aether-boot.log
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target

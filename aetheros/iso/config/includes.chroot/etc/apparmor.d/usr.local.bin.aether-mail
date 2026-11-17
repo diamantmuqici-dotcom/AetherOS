@@ -1,0 +1,31 @@
+#include <tunables/global>
+
+/usr/local/bin/aether-mail {
+    #include <abstractions/base>
+    #include <abstractions/X>
+    #include <abstractions/fonts>
+    #include <abstractions/dbus-session>
+
+    /usr/local/bin/aether-mail r,
+    /usr/bin/python3 rix,
+    /usr/bin/python3.[0-9]* rix,
+    /usr/share/aether/** r,
+    /usr/share/aether/aether-mail.py r,
+    /usr/lib/thunderbird/** rix,
+    /usr/lib/thunderbird/thunderbird rix,
+    /usr/lib/chromium/** r,
+    /etc/chromium/policies/** r,
+    owner @{HOME}/.config/aether/** rwk,
+    owner @{HOME}/.thunderbird/** rwk,
+    owner @{HOME}/.cache/** rwk,
+
+    network inet stream,
+    network inet6 stream,
+    network unix,
+
+    deny /etc/** w,
+    audit deny owner @{HOME}/.ssh/** rwk,
+    audit deny owner @{HOME}/.gnupg/** rwk,
+    audit deny owner @{HOME}/.aws/** rwk,
+    audit deny owner @{HOME}/.config/aether/vault/** rwk,
+}

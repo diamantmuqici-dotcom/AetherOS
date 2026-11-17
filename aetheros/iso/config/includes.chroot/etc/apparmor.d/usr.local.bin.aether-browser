@@ -1,0 +1,30 @@
+#include <tunables/global>
+
+/usr/local/bin/aether-browser {
+    #include <abstractions/base>
+    #include <abstractions/X>
+    #include <abstractions/fonts>
+    #include <abstractions/dbus-session>
+
+    /usr/local/bin/aether-browser r,
+    /usr/bin/python3 rix,
+    /usr/bin/python3.[0-9]* rix,
+    /usr/share/aether/** r,
+    /usr/share/aether/browser/** r,
+    /usr/lib/chromium/** rix,
+    /usr/lib/chromium/chromium rix,
+    /usr/lib/thunderbird/** r,
+    /etc/chromium/policies/** r,
+    owner @{HOME}/.config/aether/** rwk,
+    owner @{HOME}/.cache/** rwk,
+
+    network inet stream,
+    network inet6 stream,
+    network unix,
+
+    deny /etc/** w,
+    audit deny owner @{HOME}/.ssh/** rwk,
+    audit deny owner @{HOME}/.gnupg/** rwk,
+    audit deny owner @{HOME}/.aws/** rwk,
+    audit deny owner @{HOME}/.config/aether/vault/** rwk,
+}

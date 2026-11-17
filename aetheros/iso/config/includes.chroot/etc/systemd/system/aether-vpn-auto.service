@@ -7,6 +7,13 @@ Wants=network.target
 Type=oneshot
 ExecStart=/usr/local/bin/aether-vpn-auto
 RemainAfterExit=yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target

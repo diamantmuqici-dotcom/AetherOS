@@ -6,6 +6,14 @@ After=multi-user.target
 Type=oneshot
 ExecStart=/usr/local/bin/self-repair
 RemainAfterExit=yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/.config/aether /root/.config/monitors.xml /root/.config/monitors.xml.bak /root/.local/share/Trash /var/log/aether-repair.log
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
 
 [Install]
 WantedBy=multi-user.target
