@@ -18,7 +18,12 @@
 | Service + AppArmor hardening | ✅ | 5 services sandboxed, 2 enforce profiles; 9 tests |
 | GameMode | ✅ | PID-scoped + `/proc` verified, `trap` guaranteed restore, presets (16 tests) |
 | Aether Backup | ✅ | sha256 manifest, no `--delete`, dry-run default, verified non-destructive restore (16 tests) |
-| Payload single source | ✅ | 68 source→chroot pairs in `payload-manifest.txt`, strict `sync-payloads.sh check` |
+| Payload single source | ✅ | 84 source→chroot pairs in `payload-manifest.txt`, strict `sync-payloads.sh check` |
+| Aether taskbar / dock | ✅ | Real GNOME Shell extension (Show Apps, favorites, running icons, indicators, clock); 13 static tests, live render owed on a runner (`TASKBAR.md`) |
+| No-telemetry enforcement | ✅ | URL allowlist + static source scanner + dconf lockdown + `aether-privacy` CLI (25 tests); no geolocation/MAC/telemetry (`PRIVACY.md`) |
+| Full-disk encryption | ✅ | LUKS2 setup (external key + encrypted swap), fail-closed `fde-verify`; 17 tests. ESP stays plaintext by UEFI design (`ENCRYPTION.md`) |
+| Network encryption | ✅ | DNS-over-TLS, MAC randomization, anti-spoof sysctls, `network-encrypt` CLI; 25 tests, config=renderer byte match (`NETWORK.md`). Live check owed |
+| Download website | ✅ | `website/` AetherOS portal: real release links, verification walkthroughs, zero trackers, no fake checksums |
 | Release metadata | ✅ | Offline Ed25519 keygen + canonical signed JSON/SHA256SUMS (12 tests); key held outside repo |
 | ISO boot test / CI | CONFIG | `test-iso.sh --self-test` (12 assertions) + `ci.yml` skip-fails; full QEMU boot not run on a Linux runner here |
 | GTK UI runtime | CONFIG | Static audit + `gtk-smoke.sh --all` headless check; per-window/button render owed on a live desktop (`GTK-AUDIT.md`) |

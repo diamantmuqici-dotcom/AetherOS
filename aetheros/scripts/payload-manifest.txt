@@ -70,3 +70,20 @@ aetheros/shell/animations/aether-animations|aetheros/iso/config/includes.chroot/
 aetheros/shell/animations/extension.js|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/animations@aether/extension.js
 aetheros/shell/animations/metadata.json|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/animations@aether/metadata.json
 aetheros/shell/animations/stylesheet.css|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/animations@aether/stylesheet.css
+# sovereign-edition: taskbar, privacy, fde, network mirrors
+aetheros/shell/dock/extension.js|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/dock@aether/extension.js
+aetheros/shell/dock/metadata.json|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/dock@aether/metadata.json
+aetheros/shell/dock/stylesheet.css|aetheros/iso/config/includes.chroot/usr/share/gnome-shell/extensions/dock@aether/stylesheet.css
+aetheros/core/privacy/__init__.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/privacy/__init__.py
+aetheros/core/privacy/policy.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/privacy/policy.py
+aetheros/core/privacy/audit.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/privacy/audit.py
+aetheros/scripts/aether-privacy.sh|aetheros/iso/config/includes.chroot/usr/share/aether/scripts/aether-privacy.sh
+aetheros/scripts/aether-privacy.sh|aetheros/iso/config/includes.chroot/usr/local/bin/aether-privacy
+aetheros/scripts/luks2-setup.sh|aetheros/iso/config/includes.chroot/usr/share/aether/scripts/luks2-setup.sh
+aetheros/scripts/fde-verify.sh|aetheros/iso/config/includes.chroot/usr/share/aether/scripts/fde-verify.sh
+aetheros/scripts/fde-verify.sh|aetheros/iso/config/includes.chroot/usr/local/bin/aether-fde-verify
+aetheros/core/fde/__init__.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/fde/__init__.py
+aetheros/core/fde/status.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/fde/status.py
+aetheros/core/network/__init__.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/network/__init__.py
+aetheros/core/network/policy.py|aetheros/iso/config/includes.chroot/usr/share/aether/core/network/policy.py
+aetheros/scripts/network-encrypt.sh|aetheros/iso/config/includes.chroot/usr/share/aether/scripts/network-encrypt.sh

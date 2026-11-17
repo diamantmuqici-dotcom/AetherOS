@@ -83,10 +83,34 @@ validates boot-check logic without QEMU; `.github/workflows/ci.yml` runs the rea
 boot test on a Linux runner. `scripts/gtk-smoke.sh --all` validates headless modes;
 `docs/GTK-AUDIT.md` enumerates the owed desktop checks.
 
+## Sovereign-edition focused audit (branch `privacy/sovereign-edition`)
+
+A second source-first audit of the current tree produced one CONFIRMED medium and
+three NEEDS-VALIDATION candidates. Full report: `C:\temp\opencode\aether-audit-2026.md`
+(outside the repo).
+
+| ID | Finding | Disposition |
+|---|---|---|
+| F-1 | Four installer helpers downloaded `.deb` files to predictable `/tmp` names with no pin, then `sudo dpkg -i` — local race plus unpinned remote bytes | FIXED in source — private `mktemp -d` + `trap EXIT`, optional enforced `AETHER_*_SHA256` pin, `dpkg-deb --info` structural check before dpkg; all four scripts and mirrors byte-identical |
+| V-1 | Backup manifest verify is fail-open when no public key is supplied | KNOWN CONDITION — unsigned backups are an intentional supported mode; the app passes no key only when none is provisioned, and tests exercise verification with a key. Documented here, not silently broken. Verify with a key file to get Ed25519 enforcement |
+| V-2 | Launcher calculator used `eval` on regex input admitting `**` (exponentiation bomb) | FIXED — replaced with a bounded shunting-yard integer parser (64-char cap, no `**`, safe-integer overflow guard, no `eval`); source + mirror byte-identical, `node --check` clean |
+| V-3 | `launcher-search.sh` calc called `eval` with undefined `sys` (dead path, injection sink) | FIXED — eval line removed; calculator lives only in the bounded shell-extension parser. Source + mirror byte-identical |
+
+No finding in the update, vault, mail, FDE, network, or website paths. The audit
+also confirmed the dock/animation extension teardown removes all signals and timers.
+
+## Full verification (sovereign-edition integration)
+
+`python -m unittest discover -s aetheros/tests -p 'test_*.py'` → **315 tests, OK
+(20 skips)**. New suites: taskbar 13, privacy 25, FDE 17, network-encryption 25.
+`compileall` clean; 12 JSON, 2 XML, 3 workflow YAML parse; secret scan clean.
+**84/84** source→chroot payload pairs byte-identical (`sync-payloads.sh check`).
+
 ## Remaining work
 
-See `IMPLEMENTATION_PLAN.md`. No OPEN findings remain in the table above. The
-release and AV public keys are intentionally not generated on this bench; place
-`aether-release.pub.pem` and `aether-av.pub.pem` in the ISO staging dir before a
-signed build. The ISO was not built or booted here; no claim of a verified OS
-build is made here.
+See `IMPLEMENTATION_PLAN.md`. No OPEN findings remain. The release and AV public
+keys are intentionally not generated on this bench; place `aether-release.pub.pem`
+and `aether-av.pub.pem` in the ISO staging dir before a signed build. The ISO was
+not built or booted here; no claim of a verified OS build is made here. The taskbar
+was not rendered on a live GNOME Shell, and no live network/DoT verification ran —
+both owed on a Linux runner.
