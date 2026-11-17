@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="aether">
+  <schema id="org.aether.animations" path="/org/aether/animations/">
+    <key name="profile" type="s">
+      <default>'full'</default>
+      <choices>
+        <choice value='full'/>
+        <choice value='reduced'/>
+        <choice value='off'/>
+      </choices>
+      <summary>Animation preset</summary>
+      <description>full uses spring motion, reduced shortens transitions, off disables compositor animations.</description>
+    </key>
+  </schema>
+</schemalist>

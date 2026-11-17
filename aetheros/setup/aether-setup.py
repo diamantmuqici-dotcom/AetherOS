@@ -380,7 +380,11 @@ class AetherSetup(Adw.Application):
         gtk_theme = "Aether-Dark" if theme == "Dark" else "Aether-Light" if theme == "Light" else "Aether-Dark"
         gset("org.gnome.desktop.interface", "gtk-theme", gtk_theme)
         gset("org.gnome.desktop.interface", "color-scheme", "prefer-dark" if theme == "Dark" else "prefer-light" if theme == "Light" else "default")
-        gset("org.gnome.desktop.interface", "enable-animations", "false" if animations == "Disabled" else "true")
+        preset = {"Disabled": "off", "Reduced": "reduced"}.get(animations, "full")
+        try:
+            subprocess.run(["/usr/local/bin/aether-animations", preset], check=False, timeout=5)
+        except Exception:
+            gset("org.gnome.desktop.interface", "enable-animations", "false" if preset == "off" else "true")
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         (STATE_DIR / "appearance.json").write_text(json.dumps({"theme": theme, "accent": accent, "transparency": transparency, "animations": animations}, indent=2))
         return True

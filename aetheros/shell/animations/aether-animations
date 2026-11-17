@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""Set the Aether animation preset from the command line."""
+import subprocess
+import sys
+
+PRESETS = {"full", "reduced", "off"}
+
+
+def gsettings(schema, key, value):
+    subprocess.run(
+        ["gsettings", "set", schema, key, value],
+        check=False,
+        timeout=5,
+    )
+
+
+def main(argv):
+    if len(argv) != 2 or argv[1] not in PRESETS:
+        print("usage: aether-animations full|reduced|off", file=sys.stderr)
+        return 2
+
+    profile = argv[1]
+    gsettings("org.aether.animations", "profile", profile)
+    gsettings(
+        "org.gnome.desktop.interface",
+        "enable-animations",
+        "false" if profile == "off" else "true",
+    )
+    print(f"Aether animations: {profile}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

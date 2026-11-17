@@ -1,0 +1,8 @@
+{
+  "uuid": "animations@aether",
+  "name": "Aether Animations",
+  "description": "Spring dock, glide overview and soft notification motion with Full / Reduced / Off presets.",
+  "shell-version": ["45", "46", "47", "48"],
+  "version": 1,
+  "url": "https://github.com/diamantmuqici-dotcom/AetherOS"
+}
