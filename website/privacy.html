@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="AetherOS privacy commitment: no telemetry, no geolocation, no MAC collection. The only outbound Aether call is a signed antivirus definition fetch.">
+<title>Privacy commitment — AetherOS 1.0</title>
+<link rel="icon" href="assets/aether.ico" sizes="any">
+<link rel="stylesheet" href="assets/style.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><img src="assets/aether-logo.svg" alt="" width="30" height="30"> AetherOS</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="download.html">Download</a>
+      <a href="verify.html">Verify</a>
+      <a href="privacy.html" aria-current="page">Privacy</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Releases</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <img class="logo" src="assets/aether-logo.svg" alt="AetherOS mark" width="112" height="112">
+      <div>
+        <p class="kicker">Privacy commitment &middot; AetherOS 1.0</p>
+        <h1>Nothing leaves the machine by default.</h1>
+        <p class="lede">Aether's own components do not phone home. This page lists the exact outbound traffic the OS initiates, the traffic it never initiates, and the boundary around software you install yourself.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>What Aether sends</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Destination</th><th>When</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>Aether Antivirus</b></td>
+              <td>Signed definition files from GitHub Releases: <code>aether-av-sigs.json</code> and its <code>.sig</code>, under <code>https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/</code>.</td>
+              <td>Only on an explicit <code>aether-av --update</code>. Definitions are verified in memory before use; a failed fetch or bad signature leaves existing definitions untouched.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>That is the complete list of outbound calls initiated by Aether's own software. It is a fetch of two static files over HTTPS from the project's own release channel.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>What Aether does not send</h2>
+      <div class="grid">
+        <article class="card"><span class="tag">NO TELEMETRY</span><h3>No usage metrics</h3><p>No analytics, crash uploads, behavior tracking, or advertising identifiers in Aether apps. Diagnostics and crash reporting are off by default and opt-in only.</p></article>
+        <article class="card"><span class="tag">NO LOCATION</span><h3>No geolocation</h3><p>Aether apps do not request or transmit your location, and do not derive it from network or device data.</p></article>
+        <article class="card"><span class="tag">NO DEVICE IDS</span><h3>No MAC collection</h3><p>Aether apps do not collect MAC addresses or hardware serials for tracking or reporting.</p></article>
+        <article class="card"><span class="tag">NO SYNC</span><h3>No hidden cloud sync</h3><p>Vault, mail, and settings stay local. Browser sync and sign-in are disabled by managed policy.</p></article>
+        <article class="card"><span class="tag">UPDATES</span><h3>No release-data polling</h3><p>The updater applies only packages pinned by an already-signed manifest. Its check and plan modes are offline and emit no network request.</p></article>
+        <article class="card"><span class="tag">CONTROL</span><h3>One privacy switch</h3><p><code>~/.config/aether/privacy.json</code> is the single source of truth for the optional diagnostics toggle. There is no second settings path.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Browser defaults</h2>
+      <p>Aether Browser ships with the search default set to <a href="https://duckduckgo.com/">DuckDuckGo</a>. DNS-over-HTTPS is enabled and WebRTC IP handling is hardened so a non-proxied UDP path does not leak your local address. Sync and sign-in are disabled, metrics reporting is off, and notifications are blocked by default.</p>
+      <p>A bundled content filter blocks known advertising and tracking hosts. These are managed policy and extension settings, not runtime command-line switches.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>The third-party boundary</h2>
+      <p>These guarantees cover software Aether ships and configures. Software you install yourself is outside Aether's control: a third-party app can make its own network connections under your user account. That traffic is the app's behavior, not Aether's, and is not covered by this commitment.</p>
+      <p>Browsing to a site is likewise your own action; the browser's privacy defaults reduce leakage but do not make a remote site private.</p>
+
+      <h2 style="margin-top:34px">Source documents</h2>
+      <p>The full policy text lives in the repository, outside this published site:</p>
+      <ul>
+        <li><code>aetheros/docs/PRIVACY.md</code> &mdash; the canonical privacy policy: default-off diagnostics, the <code>privacy.json</code> switch, and the no-cloud-sync rule.</li>
+        <li><code>aetheros/docs/SUPPORT_MATRIX.md</code> &mdash; the per-component status table, including signed updates, browser policy, antivirus, and release metadata.</li>
+      </ul>
+      <p>These are repository-relative paths, not links on this site; the docs are not part of the published <code>website/</code> directory.</p>
+
+      <div class="cta">
+        <a class="btn primary" href="download.html">Download AetherOS</a>
+        <a class="btn" href="verify.html">Verify your download</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AetherOS 1.0 &mdash; private by design. Verify every release.</span>
+    <span><a href="download.html">Download</a> &middot; <a href="verify.html">Verify</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Source &amp; releases</a></span>
+  </div>
+</footer>
+</body>
+</html>

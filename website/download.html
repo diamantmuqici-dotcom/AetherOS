@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Download the AetherOS 1.0 amd64 live ISO, SHA256SUMS, signed release metadata, and verification keys from GitHub Releases.">
+<title>Download AetherOS 1.0 (amd64)</title>
+<link rel="icon" href="assets/aether.ico" sizes="any">
+<link rel="stylesheet" href="assets/style.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><img src="assets/aether-logo.svg" alt="" width="30" height="30"> AetherOS</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="download.html" aria-current="page">Download</a>
+      <a href="verify.html">Verify</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Releases</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <img class="logo" src="assets/aether-logo.svg" alt="AetherOS mark" width="112" height="112">
+      <div>
+        <p class="kicker">Downloads &middot; AetherOS 1.0 &middot; amd64</p>
+        <h1>AetherOS 1.0 live image</h1>
+        <p class="lede">One amd64 live ISO. All artifacts are served from the project's GitHub Releases. This site hosts no binaries and collects no download analytics.</p>
+        <div class="chips">
+          <span class="chip">Architecture: amd64</span>
+          <span class="chip">Image: hybrid live ISO</span>
+          <span class="chip">Version token: <code>1.0</code></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="callout verify">
+        <p><strong>Verify before booting.</strong> Hash the ISO and check the Ed25519 signature before you write it to a USB drive or start a virtual machine. <a href="verify.html">Open the verification walkthrough</a>.</p>
+      </div>
+
+      <h2 id="files">Release artifacts</h2>
+      <p>Every URL below uses the GitHub Releases <code>latest/download</code> asset path. The version segment is a placeholder token set to <code>1.0</code> &mdash; update it to the exact release version each time a new release is published. No checksum value is printed on this site; read it from the downloaded <code>SHA256SUMS</code>.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>File</th><th>What it is</th><th>Published</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/aetheros-live-1.0_amd64.iso">aetheros-live-1.0_amd64.iso</a></b></td>
+              <td>The amd64 live ISO. Flash to USB or attach to a VM.</td>
+              <td>Every release</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/SHA256SUMS">SHA256SUMS</a></b></td>
+              <td>Coreutils-format line: <code>&lt;sha256&gt;  aetheros-live-1.0_amd64.iso</code>.</td>
+              <td>Every release</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/release-metadata.json">release-metadata.json</a></b></td>
+              <td>Canonical signed JSON: ISO filename, size, SHA-256, version, timestamp, and embedded Ed25519 signature.</td>
+              <td>Every release</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/aetheros-live-1.0_amd64.iso.sha256">aetheros-live-1.0_amd64.iso.sha256</a></b></td>
+              <td><code>sha256sum</code> output produced by the signing script.</td>
+              <td>Every release</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/aetheros-live-1.0_amd64.iso.sha256.asc">aetheros-live-1.0_amd64.iso.sha256.asc</a></b></td>
+              <td>GPG detached signature over the checksum file. <span class="conditional">Present only when a GPG release key is configured.</span></td>
+              <td class="conditional">Conditional</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/release-manifest.json.sig">release-manifest.json.sig</a></b></td>
+              <td>Raw 64-byte Ed25519 signature over the <code>aether-release/1</code> update manifest. <span class="conditional">Present only when that manifest is published.</span></td>
+              <td class="conditional">Conditional</td>
+            </tr>
+            <tr>
+              <td><b><a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest/download/aether-release.pub.pem">aether-release.pub.pem</a></b></td>
+              <td>Ed25519 public key used to verify release metadata and manifests. The same key is staged inside the ISO.</td>
+              <td>Every release</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a class="btn" href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Browse all files on GitHub Releases</a></p>
+
+      <h2 style="margin-top:34px">Build and hosting status</h2>
+      <div class="callout info">
+        <p>The ISO is built in GitHub Actions. No locally built ISO is claimed or hosted here. Links resolve to the project's published Releases assets; if an asset has not been uploaded for the current release, the link returns 404.</p>
+      </div>
+
+      <h2 style="margin-top:34px">After the download</h2>
+      <ol class="steps">
+        <li>
+          <h3>Verify the image</h3>
+          <p>Check the SHA-256 digest and the signature. <a href="verify.html">Follow the Linux, Windows, and OpenSSL commands</a>.</p>
+        </li>
+        <li>
+          <h3>Flash the ISO</h3>
+          <p>Write the verified image to a USB drive in UEFI mode, then boot from it.</p>
+        </li>
+        <li>
+          <h3>Set up AetherOS</h3>
+          <p>Aether Setup creates your vault, passphrase, and recovery phrase. Full-disk encryption is configured during install.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AetherOS 1.0 &mdash; private by design. Verify every release.</span>
+    <span><a href="download.html">Download</a> &middot; <a href="verify.html">Verify</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Source &amp; releases</a></span>
+  </div>
+</footer>
+</body>
+</html>

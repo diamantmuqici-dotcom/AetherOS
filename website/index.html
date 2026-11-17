@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="AetherOS 1.0 — Debian Trixie internals with an Aether-only UI. No telemetry, Ed25519-signed updates, LUKS2 encryption. Download the amd64 live image.">
+<title>AetherOS 1.0 — Private by design</title>
+<link rel="icon" href="assets/aether.ico" sizes="any">
+<link rel="stylesheet" href="assets/style.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><img src="assets/aether-logo.svg" alt="" width="30" height="30"> AetherOS</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="download.html">Download</a>
+      <a href="verify.html">Verify</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Releases</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <img class="logo" src="assets/aether-logo.svg" alt="AetherOS mark" width="112" height="112">
+      <div>
+        <p class="kicker">AetherOS 1.0 &middot; Debian Trixie &middot; amd64</p>
+        <h1>A private desktop that feels like home.</h1>
+        <p class="lede">Debian Trixie internals under an Aether-only interface. A familiar taskbar for Windows and macOS users, a full app suite out of the box, and no telemetry phoning home. Flash the live image, boot, and set up in minutes.</p>
+        <div class="chips">
+          <span class="chip">amd64 live ISO</span>
+          <span class="chip">Debian Trixie</span>
+          <span class="chip">GNOME Wayland</span>
+          <span class="chip">LUKS2 full-disk encryption</span>
+          <span class="chip">Ed25519-signed updates</span>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="download.html">Download AetherOS 1.0</a>
+          <a class="btn" href="privacy.html">Privacy commitment</a>
+          <a class="btn" href="verify.html">How to verify</a>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <figure class="preview">
+        <img src="assets/aether-preview.png" alt="AetherOS desktop showing the Aether-only interface and taskbar" width="1280" height="720">
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="wrap">
+      <h2>Built in, not bolted on</h2>
+      <p>Every Aether component ships with the image. Nothing here needs a post-install download or an account.</p>
+      <div class="grid">
+        <article class="card">
+          <span class="tag">PRIVACY</span>
+          <h3>No telemetry, no location tracking</h3>
+          <p>Aether apps collect no usage metrics, advertising identifiers, geolocation, or MAC addresses. Diagnostics are off by default and opt-in only.</p>
+        </article>
+        <article class="card">
+          <span class="tag">INTEGRITY</span>
+          <h3>Ed25519-signed updates</h3>
+          <p>Updates and release metadata are verified against a public key staged inside the image before anything is installed. Invalid or expired signatures stop the update.</p>
+        </article>
+        <article class="card">
+          <span class="tag">AT REST</span>
+          <h3>LUKS2 full-disk encryption</h3>
+          <p>The installer sets up LUKS2 with a keyfile and a 24-word recovery phrase. Your data is encrypted from the first boot.</p>
+        </article>
+        <article class="card">
+          <span class="tag">READY</span>
+          <h3>Preinstalled apps</h3>
+          <p>Browser, mail, vault, antivirus, backup, media tools, and gaming utility are bundled and verified at build time. <code>aether-fix</code> repairs them at runtime.</p>
+        </article>
+        <article class="card">
+          <span class="tag">FAMILIAR</span>
+          <h3>Windows/macOS-style taskbar</h3>
+          <p>Dock, launcher, notifications, workspaces, and window snapping land where you expect them. No relearning the basics.</p>
+        </article>
+        <article class="card">
+          <span class="tag">FOUNDATION</span>
+          <h3>Debian Trixie core</h3>
+          <p>A real Debian base with Aether branding, a custom boot splash, and the Aether-only UI layered on top. No wrapper distro, no proprietary shell.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="start">
+    <div class="wrap">
+      <h2>Three steps to AetherOS</h2>
+      <ol class="steps">
+        <li>
+          <h3>Download and verify</h3>
+          <p>Grab the amd64 live ISO from the download page, then check its SHA-256 digest and the release signature before you boot. <a href="verify.html">Verification walkthrough</a>.</p>
+        </li>
+        <li>
+          <h3>Flash a USB drive</h3>
+          <p>Write the image in UEFI mode with your preferred flasher. The image is a hybrid ISO and boots on amd64 hardware.</p>
+        </li>
+        <li>
+          <h3>Boot and set up</h3>
+          <p>Boot from USB, run Aether Setup, create your vault passphrase and recovery phrase, and you are in.</p>
+        </li>
+      </ol>
+      <div class="callout verify">
+        <p><strong>Verify before booting.</strong> A checksum confirms the bytes; the Ed25519 signature confirms the release. <a href="verify.html">Read the verification guide</a> before you write the image to a drive.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AetherOS 1.0 &mdash; private by design. Verify every release.</span>
+    <span><a href="download.html">Download</a> &middot; <a href="verify.html">Verify</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Source &amp; releases</a></span>
+  </div>
+</footer>
+</body>
+</html>

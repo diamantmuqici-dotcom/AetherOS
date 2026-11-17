@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Verify an AetherOS download: SHA-256 checks on Linux and Windows, Ed25519 signature verification with the repo tooling or OpenSSL, and the trust chain.">
+<title>Verify an AetherOS release</title>
+<link rel="icon" href="assets/aether.ico" sizes="any">
+<link rel="stylesheet" href="assets/style.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="index.html"><img src="assets/aether-logo.svg" alt="" width="30" height="30"> AetherOS</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="download.html">Download</a>
+      <a href="verify.html" aria-current="page">Verify</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Releases</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <img class="logo" src="assets/aether-logo.svg" alt="AetherOS mark" width="112" height="112">
+      <div>
+        <p class="kicker">Verification &middot; AetherOS 1.0 &middot; amd64</p>
+        <h1>Verify before you boot.</h1>
+        <p class="lede">Download the ISO plus its checksum and signature files from <a href="download.html">the download page</a>. Then work through the four steps below. A checksum proves the bytes; the signature proves the release.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>The trust chain</h2>
+      <ol class="steps">
+        <li>
+          <h3>The signing key is generated offline</h3>
+          <p>An Ed25519 keypair is created on an offline or secured host. The private key is mode <code>0600</code>, stored in a CI secret or hardware-backed keystore, and never enters the repository, a workflow file, or an ISO. Only the public key ships.</p>
+        </li>
+        <li>
+          <h3>The public key is staged inside the image</h3>
+          <p>The public PEM is written to <code>/usr/share/aether/updates/aether-release.pub.pem</code> at build time. Its fingerprint &mdash; SHA-256 of the SPKI DER bytes, printed as <code>SHA256:&lt;hex&gt;</code> by the key generator &mdash; is published with the release notes. Check the key in your image against that fingerprint before trusting any signature it verifies.</p>
+        </li>
+        <li>
+          <h3>Release metadata is signed</h3>
+          <p><code>release-metadata.json</code> binds the ISO filename, byte size, SHA-256 digest, version, and timestamp. Its Ed25519 signature is embedded as base64 in the <code>signature</code> field and covers the canonical JSON of every other field. The <code>status: signed</code> marker is inside the signed bytes, so it cannot be flipped without breaking the signature.</p>
+        </li>
+        <li>
+          <h3>Checksums bind the ISO bytes</h3>
+          <p><code>SHA256SUMS</code> carries the digest line for the ISO. Verifying it confirms that the image you downloaded is the exact image the signed metadata describes. The <code>aether-release/1</code> update manifest is signed the same way and the updater refuses to apply anything whose signature is not <code>VALID</code>.</p>
+        </li>
+      </ol>
+
+      <div class="callout verify">
+        <p><strong>Private keys never ship.</strong> If a download asks you to install a private key, stop. AetherOS distributes public keys and signatures only.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Step 1 &mdash; Collect the artifacts</h2>
+      <p>From <a href="download.html">the download page</a>, save these beside the ISO in one directory:</p>
+      <ul>
+        <li><code>aetheros-live-1.0_amd64.iso</code></li>
+        <li><code>SHA256SUMS</code></li>
+        <li><code>release-metadata.json</code></li>
+        <li><code>aether-release.pub.pem</code></li>
+        <li><code>release-manifest.json</code> and <code>release-manifest.json.sig</code> when that manifest is published</li>
+      </ul>
+      <p>Replace <code>1.0</code> with the version of the release you actually downloaded.</p>
+
+      <h2 style="margin-top:34px">Step 2 &mdash; Check the SHA-256 digest</h2>
+
+      <h3>Linux</h3>
+      <pre><code>cd ~/Downloads
+sha256sum -c SHA256SUMS</code></pre>
+      <p>Expected result for a good image:</p>
+      <pre><code>aetheros-live-1.0_amd64.iso: OK</code></pre>
+      <p>Any <code>FAILED</code> line means the ISO bytes do not match the published checksum. Re-download the image before going further.</p>
+
+      <h3>Windows (PowerShell)</h3>
+      <pre><code>Get-Content .\SHA256SUMS
+Get-FileHash .\aetheros-live-1.0_amd64.iso -Algorithm SHA256 | Format-List</code></pre>
+      <p>Compare the <code>Hash</code> value with the digest in <code>SHA256SUMS</code>. To have PowerShell make the comparison:</p>
+      <pre><code>$want = (Get-Content .\SHA256SUMS -Raw) -split '\s+' | Select-Object -First 1
+$got  = (Get-FileHash .\aetheros-live-1.0_amd64.iso -Algorithm SHA256).Hash.ToLower()
+if ($got -eq $want.ToLower()) { 'ISO checksum OK' } else { throw 'checksum mismatch' }</code></pre>
+
+      <div class="copy-row">
+        <label class="chip" for="digest">Digest from SHA256SUMS</label>
+        <input id="digest" type="text" spellcheck="false" autocomplete="off" value="&lt;paste the 64-hex digest from SHA256SUMS&gt;">
+        <button class="btn copy" type="button" data-copy-target="#digest">Copy digest</button>
+      </div>
+      <p>The copy button reads that field locally. It makes no network request.</p>
+
+      <h2 style="margin-top:34px">Step 3 &mdash; Verify the Ed25519 signature</h2>
+
+      <h3>Option A &mdash; repository tooling (preferred)</h3>
+      <p>Run from the repository root with Python and <code>cryptography</code> installed. This uses the same canonical bytes and verification functions as the build.</p>
+      <pre><code>python3 - &lt;&lt;'PY'
+import json, pathlib
+from scripts.signing.make_release_metadata import verify_metadata
+
+meta = json.loads(pathlib.Path("release-metadata.json").read_text(encoding="utf-8"))
+key  = pathlib.Path("aether-release.pub.pem")
+print("METADATA OK" if verify_metadata(meta, key) else "METADATA FAILED")
+PY</code></pre>
+      <p>For a published <code>aether-release/1</code> update manifest:</p>
+      <pre><code>python3 - &lt;&lt;'PY'
+import pathlib
+from core.update.signature import verify_release
+
+manifest = pathlib.Path("release-manifest.json").read_bytes()
+payload  = verify_release(manifest, "release-manifest.json.sig", "aether-release.pub.pem")
+print("MANIFEST OK", payload["schema"], payload["channel"])
+PY</code></pre>
+      <p>A bad signature, wrong schema, or expired manifest raises <code>SignatureError</code> and returns no payload.</p>
+
+      <h3>Option B &mdash; OpenSSL pkeyutl</h3>
+      <p>Use this when you want a standalone check without the Python package. Ed25519 needs <code>-rawin</code>; OpenSSL 1.1.1 or newer is required.</p>
+      <p>For the update manifest, the signature covers the canonical JSON of the whole file:</p>
+      <pre><code>python3 - &lt;&lt;'PY' &gt; canonical-manifest.bin
+import json
+p = json.load(open("release-manifest.json", encoding="utf-8"))
+print(json.dumps(p, sort_keys=True, separators=(",", ":")), end="")
+PY
+openssl pkeyutl -verify -pubin -inkey aether-release.pub.pem \
+  -rawin -in canonical-manifest.bin -sigfile release-manifest.json.sig</code></pre>
+      <p>For <code>release-metadata.json</code>, the base64 signature lives in the <code>signature</code> field and the signed bytes exclude that field:</p>
+      <pre><code>python3 - &lt;&lt;'PY'
+import base64, json
+p = json.load(open("release-metadata.json", encoding="utf-8"))
+open("metadata.sig", "wb").write(base64.b64decode(p["signature"], validate=True))
+unsigned = {k: v for k, v in p.items() if k != "signature"}
+open("canonical-metadata.bin", "w", encoding="utf-8").write(
+    json.dumps(unsigned, sort_keys=True, separators=(",", ":"))
+)
+PY
+openssl pkeyutl -verify -pubin -inkey aether-release.pub.pem \
+  -rawin -in canonical-metadata.bin -sigfile metadata.sig</code></pre>
+      <p>OpenSSL prints <code>Signature Verified Successfully</code> on a match and exits non-zero on failure. On Windows the same commands work in WSL or in an OpenSSL install that provides <code>openssl.exe</code>.</p>
+
+      <h2 style="margin-top:34px">Step 4 &mdash; Check the public key fingerprint</h2>
+      <p>Confirm the key you downloaded matches the fingerprint published with the release notes:</p>
+      <pre><code>openssl pkey -pubin -in aether-release.pub.pem -outform DER | sha256sum</code></pre>
+      <p>The output hex must equal the <code>SHA256:&lt;hex&gt;</code> value in the release notes. The same key inside a booted image is at <code>/usr/share/aether/updates/aether-release.pub.pem</code>:</p>
+      <pre><code>openssl pkey -pubin -in /usr/share/aether/updates/aether-release.pub.pem -outform DER | sha256sum</code></pre>
+      <p>Once the fingerprint matches, the checksum passes, and the metadata signature verifies, the image is ready to flash.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Failure reference</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Symptom</th><th>Meaning</th><th>Next move</th></tr></thead>
+          <tbody>
+            <tr><td><code>sha256sum -c</code> reports <code>FAILED</code></td><td>ISO bytes differ from <code>SHA256SUMS</code>.</td><td>Re-download the ISO and re-check.</td></tr>
+            <tr><td><code>Signature does not match manifest</code></td><td>Signed bytes were altered, or the wrong public key was used.</td><td>Check the key fingerprint, then re-download the metadata or manifest.</td></tr>
+            <tr><td><code>release manifest has expired</code></td><td>The manifest's <code>expires</code> timestamp is in the past.</td><td>Fetch the current release manifest.</td></tr>
+            <tr><td><code>status: unsigned</code> in metadata</td><td>Metadata was emitted without a signing key.</td><td>Treat as unverified; do not trust the image.</td></tr>
+            <tr><td><code>SIGNATURE_MISSING</code> in a booted image</td><td>Public key was not staged into the ISO.</td><td>Re-flash from a correctly built release image.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="download.html">Get the release artifacts</a>
+        <a class="btn" href="privacy.html">Privacy commitment</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AetherOS 1.0 &mdash; private by design. Verify every release.</span>
+    <span><a href="download.html">Download</a> &middot; <a href="verify.html">Verify</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/diamantmuqici-dotcom/AetherOS/releases/latest">Source &amp; releases</a></span>
+  </div>
+</footer>
+</body>
+</html>
