@@ -299,6 +299,9 @@ def _quarantine_file(path: pathlib.Path, digest: str, qdir: pathlib.Path) -> boo
         try:
             output = dest.open("xb")
         except FileExistsError:
+            # POSIX reports EEXIST when dest is a directory; that is a hard block, not a retryable name clash.
+            if dest.is_dir():
+                return False
             continue
         except OSError:
             return False
